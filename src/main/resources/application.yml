@@ -1,0 +1,15 @@
+spring:
+ datasource:
+  url: jdbc:hsqldb:mem:shelter
+  username: sa
+  password:
+  driverClassName: org.hsqldb.jdbcDriver
+
+ jpa:
+  database: HSQL
+  show-sql: true
+  hibernate:
+   ddl-auto: create-drop
+   dialect: org.hibernate.dialect.HSQLDialect
+server:
+  port: 9080
