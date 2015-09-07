@@ -61,6 +61,16 @@ public class Dweller extends AbstractEntity {
 		this.setExperience(0);
 		this.setSpecial(special);
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.getFirstname());
+		sb.append(" ");
+		sb.append(this.getName());
+		sb.append(", level : ");
+		sb.append(this.getLevel());
+		return sb.toString();
+	}
 
 	public int getLevel() {
 		return level;

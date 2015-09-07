@@ -9,6 +9,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import fr.jchaline.shelter.dao.RoomDao;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
+import fr.jchaline.shelter.utils.SpecialEnum;
+
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
@@ -23,7 +25,7 @@ public class RoomServiceTest {
 	
 	@Test
 	public void merge(){
-		RoomType type = new RoomType("power", 2);
+		RoomType type = new RoomType("power", 2, SpecialEnum.S);
 		Room right = new Room(type);
 		Room left = new Room(type);
 		when( dao.getOne(1l) ).thenReturn( right );

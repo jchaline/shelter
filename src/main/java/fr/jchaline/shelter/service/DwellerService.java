@@ -41,20 +41,27 @@ public class DwellerService {
 	}
 	
 	/**
-	 * Affecte un resident à une pièce, 
-	 * echange l'affectation d'un autre si la pièce est pleine
-	 * @param idDweller
-	 * @param idRoom
+	 * Assign dweller to room, 
+	 * swap assignment if room is full
+	 * @param idDweller The dweller id
+	 * @param idRoom The room id
 	 */
 	public void assign(long idDweller, long idRoom) {
 		Room room = roomDao.getOne(idRoom);
 		Dweller dweller = dao.getOne(idDweller);
 		List<Dweller> assignToRoom = findAssignToRoom(idRoom);
 		
+		//not enough place
 		if (assignToRoom.size() >= room.getSize()) {
-			
+			//find one to swap
+			int min = assignToRoom.stream().mapToInt(d -> d.getSpecial().getValue(room.getRoomType().getSpecial())).summaryStatistics().getMin();
+			assignToRoom.stream()
+			.filter(d -> d.getSpecial().getValue(room.getRoomType().getSpecial()) == min)
+			.findAny().ifPresent(d -> {
+				d.setRoom(dweller.getRoom());
+				dao.save(d);
+			});
 		}
-		
 		dweller.setRoom(room);
 		dao.save(dweller);
 	}

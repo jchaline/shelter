@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -31,9 +29,9 @@ import fr.jchaline.shelter.domain.Item;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
 import fr.jchaline.shelter.domain.Shelter;
-import fr.jchaline.shelter.domain.Special;
 import fr.jchaline.shelter.domain.Suit;
 import fr.jchaline.shelter.domain.Weapon;
+import fr.jchaline.shelter.utils.SpecialEnum;
 
 /**
  * TODO : generate test data in dev mode only
@@ -110,7 +108,7 @@ public class FactoryService {
 					new SimpleEntry<String, Integer>(Constant.FOOD, 2),
 					new SimpleEntry<String, Integer>(Constant.WATER, 2),
 					new SimpleEntry<String, Integer>(Constant.POWER, 2))
-			.forEach(e -> roomTypeDao.save(new RoomType(e.getKey(), e.getValue())));
+			.forEach(e -> roomTypeDao.save(new RoomType(e.getKey(), e.getValue(), SpecialEnum.S)));
 		}
 	}
 	
@@ -129,26 +127,24 @@ public class FactoryService {
 	
 	public void generateItems(Game game) {
 		if(itemDao.count() == 0){
-			List<Item> items = new ArrayList<Item>();
-			IntStream.rangeClosed(1, 1).forEach( n -> {
-				items.addAll(Arrays.asList("gun" + n, "rifle" + n).stream()
-					.map(String::toUpperCase)
-					.map(s -> weaponDao.save(new Weapon(s, 20)))
-					.collect(Collectors.toList()));//terminate operation
+			
+			Arrays.asList("gun", "rifle").stream().forEach(w -> {
+				Stream.iterate(1L, n  ->  n  + 1).limit(25)
+						.map(s -> weaponDao.save(new Weapon(w + s, 20)))
+						.collect(Collectors.toList());
 			});
 
-			IntStream.rangeClosed(1, 1).forEach( n -> {
-				items.addAll(Arrays.asList("plate" + n, "coat" + n).stream()
-					.map(String::toUpperCase)
-					.map(s -> suitDao.save(new Suit(s, 20)))
-					.collect(Collectors.toList()));//terminate operation
+			Arrays.asList("plate", "coat").stream().forEach(w -> {
+				Stream.iterate(1L, n  ->  n  + 1).limit(25)
+						.map(s -> suitDao.save(new Suit(w + s, 20)))
+						.collect(Collectors.toList());
 			});
 		}
 	}
 	
 	public void generateDwellers(Game game) {
-		if(dwellerDao.count() == 0){
-			List<Dweller> dwellers = Arrays.asList("", "", "", "", "").stream()
+		if(dwellerDao.count() == 0) {
+			List<Dweller> dwellers = Stream.iterate(1L, n  ->  n  + 1).limit(25)
 				.map(s -> dwellerDao.save(dwellerService.generate()))//add operation
 				.collect(Collectors.toList());//perform operation on stream and collect result as list (terminate operation)
 			

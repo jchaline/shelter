@@ -7,6 +7,8 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import fr.jchaline.shelter.utils.SpecialEnum;
+
 @Entity
 @Table
 public class RoomType extends AbstractEntity {
@@ -19,13 +21,17 @@ public class RoomType extends AbstractEntity {
 	@Min(1)
 	private int size;
 	
+	@Column(nullable = false)
+	private SpecialEnum special;
+	
 	public RoomType(){
 		
 	}
 	
-	public RoomType(String name, int size){
+	public RoomType(String name, int size, SpecialEnum special){
 		this.setName(name);
 		this.setSize(size);
+		this.setSpecial(special);
 	}
 
 	public String getName() {
@@ -42,5 +48,13 @@ public class RoomType extends AbstractEntity {
 
 	public void setSize(int size) {
 		this.size = size;
+	}
+
+	public SpecialEnum getSpecial() {
+		return special;
+	}
+
+	public void setSpecial(SpecialEnum special) {
+		this.special = special;
 	}
 }
