@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,7 @@ import fr.jchaline.shelter.domain.Item;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
 import fr.jchaline.shelter.domain.Shelter;
+import fr.jchaline.shelter.domain.Special;
 import fr.jchaline.shelter.domain.Suit;
 import fr.jchaline.shelter.domain.Weapon;
 
@@ -38,6 +42,8 @@ import fr.jchaline.shelter.domain.Weapon;
  */
 @Service
 public class FactoryService {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(FactoryService.class);
 	
 	@Autowired
 	private DwellerDao dwellerDao;
@@ -63,10 +69,23 @@ public class FactoryService {
 	@Autowired
 	private FloorDao floorDao;
 	
+	@Autowired
+	private DwellerService dwellerService;
+	
 	private static final int NB_FLOOR = 4;
 	
 	public void initData() {
 		initRoomType();
+	}
+
+	public void generateData() {
+		LOGGER.debug("start generate data");
+		Game game = generateGame();
+		generateItems(game);
+		generateDwellers(game);
+		generateFloor(game, NB_FLOOR);
+		generateRoom(game);
+		LOGGER.debug("generate data over");
 	}
 	
 	public Game generateGame(){
@@ -76,34 +95,29 @@ public class FactoryService {
 		return gameDao.save(g);
 	}
 
-	public void generateData() {
-		Game game = generateGame();
-		generateItems();
-		generateDwellers();
-		generateFloor(game, NB_FLOOR);
-		generateRoom();
-	}
-	
 	private void generateFloor(Game game, int nbFloor) {
+		game.getShelter().setFloors(new HashMap<Integer, Floor>());
 		for(int number=0; number<nbFloor; number++) {
-			game.getShelter().setFloors(new HashMap<Integer, Floor>());
 			game.getShelter().getFloors().put(number, floorDao.save(new Floor(number)));
-			gameDao.save(game);
 		};
+		gameDao.save(game);
 	}
 	
 	private void initRoomType() {
 		if(roomTypeDao.count() == 0){
-			Stream.of(new SimpleEntry<>(Constant.ELEVATOR, 1),
-					new SimpleEntry<>(Constant.FOOD, 2),
-					new SimpleEntry<>(Constant.WATER, 2),
-					new SimpleEntry<>(Constant.POWER, 2))
+			Stream.of(
+					new SimpleEntry<String, Integer>(Constant.ELEVATOR, 1),
+					new SimpleEntry<String, Integer>(Constant.FOOD, 2),
+					new SimpleEntry<String, Integer>(Constant.WATER, 2),
+					new SimpleEntry<String, Integer>(Constant.POWER, 2))
 			.forEach(e -> roomTypeDao.save(new RoomType(e.getKey(), e.getValue())));
 		}
 	}
 	
-	private void generateRoom() {
-		floorDao.findAll().stream().filter(f -> f.getNumber() == 1).findFirst().ifPresent(floor -> {
+	private void generateRoom(Game game) {
+		game.getShelter().getFloors().entrySet().stream()
+		.forEach(entry -> {
+			Floor floor = entry.getValue();
 			floor.setRooms(new ArrayList<Room>());
 			roomTypeDao.findAll().stream()
 			.forEach(type -> {
@@ -113,7 +127,7 @@ public class FactoryService {
 		});
 	}
 	
-	public void generateItems() {
+	public void generateItems(Game game) {
 		if(itemDao.count() == 0){
 			List<Item> items = new ArrayList<Item>();
 			IntStream.rangeClosed(1, 1).forEach( n -> {
@@ -132,23 +146,22 @@ public class FactoryService {
 		}
 	}
 	
-	public void generateDwellers() {
+	public void generateDwellers(Game game) {
 		if(dwellerDao.count() == 0){
-			IntStream.rangeClosed(1, 1).forEach( n -> {
-				List<Dweller> dwellers = Arrays.asList("john" + n, "jack" + n, "jim" + n).stream()
-					.map(String::toUpperCase)//add operation to the stream
-					.map(s -> dwellerDao.save(new Dweller(s)))//add operation
-					.collect(Collectors.toList());//perform operation on stream and collect result as list (terminate operation)
-				
-				dwellers.stream()
-					.findFirst().ifPresent(x -> {
-						List<Item> items = itemDao.findAll();
-						List<Weapon> weapons = weaponDao.findAll();
-						weapons.stream().findFirst().ifPresent(x::setWeapon);
-						x.setItems(items);
-						dwellerDao.save(x);
-					});
+			List<Dweller> dwellers = Arrays.asList("", "", "", "", "").stream()
+				.map(s -> dwellerDao.save(dwellerService.generate()))//add operation
+				.collect(Collectors.toList());//perform operation on stream and collect result as list (terminate operation)
+			
+			dwellers.stream().findFirst()
+			.ifPresent(x -> {
+				List<Item> items = itemDao.findAll();
+				List<Weapon> weapons = weaponDao.findAll();
+				weapons.stream().findFirst().ifPresent(x::setWeapon);
+				x.setItems(items);
+				dwellerDao.save(x);
 			});
+			game.getShelter().setDwellers(dwellers);
+			gameDao.save(game);
 		}
 	}
 }

@@ -21,7 +21,8 @@ public class Room extends AbstractEntity {
 	}
 	
 	public Room(RoomType type){
-		this.setRoomType(type);;
+		this.setRoomType(type);
+		this.setSize(type.getSize());
 	}
 
 
@@ -31,6 +32,14 @@ public class Room extends AbstractEntity {
 
 	public void setRoomType(RoomType roomType) {
 		this.roomType = roomType;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
 	}
 
 }

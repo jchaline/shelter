@@ -2,12 +2,14 @@ package fr.jchaline.shelter.domain;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -15,9 +17,16 @@ import org.hibernate.validator.constraints.NotBlank;
 @Table
 public class Dweller extends AbstractEntity {
 	
-	@Column(unique = true, nullable = false)
+	@Column(nullable = false)
+	private Boolean male;
+
+	@Column(nullable = false)
 	@NotBlank
-	private String nickname;
+	private String name;
+
+	@Column(nullable = false)
+	@NotBlank
+	private String firstname;
 	
 	@Column(nullable = false)
 	@Min(1)
@@ -33,22 +42,24 @@ public class Dweller extends AbstractEntity {
 	@OneToOne
 	private Weapon weapon;
 	
+	@OneToOne
+	private Room room;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@NotNull
+	private Special special;
+	
 	public Dweller(){
 		
 	}
 
-	public Dweller(String nickname){
-		this.nickname = nickname;
-		this.level = 1;
-		this.experience = 0;
-	}
-
-	public String getNickname() {
-		return nickname;
-	}
-
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
+	public Dweller(boolean male, String name, String firstname, Special special){
+		this.setMale(male);
+		this.setName(name);
+		this.setFirstname(firstname);
+		this.setLevel(1);
+		this.setExperience(0);
+		this.setSpecial(special);
 	}
 
 	public int getLevel() {
@@ -81,6 +92,46 @@ public class Dweller extends AbstractEntity {
 
 	public void setWeapon(Weapon weapon) {
 		this.weapon = weapon;
+	}
+
+	public Room getRoom() {
+		return room;
+	}
+
+	public void setRoom(Room room) {
+		this.room = room;
+	}
+
+	public Special getSpecial() {
+		return special;
+	}
+
+	public void setSpecial(Special special) {
+		this.special = special;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public Boolean getMale() {
+		return male;
+	}
+
+	public void setMale(Boolean male) {
+		this.male = male;
 	}
 
 }

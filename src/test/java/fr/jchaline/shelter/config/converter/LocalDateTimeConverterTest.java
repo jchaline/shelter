@@ -1,4 +1,4 @@
-package fr.jchaline.schedule.config.converter;
+package fr.jchaline.shelter.config.converter;
 
 import java.time.LocalDateTime;
 import java.util.Date;

@@ -1,2 +1,1 @@
- Version ${application.version} 
- Powered by Spring Boot ${spring-boot.version}
+This is Bruce !
