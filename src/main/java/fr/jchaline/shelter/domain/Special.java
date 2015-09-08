@@ -21,8 +21,8 @@ import fr.jchaline.shelter.utils.SpecialEnum;
 public class Special extends AbstractEntity {
 
 	@ElementCollection(fetch = FetchType.EAGER)
-	@MapKeyColumn(name = "special")
 	@MapKeyEnumerated(EnumType.STRING)
+	@MapKeyColumn(name = "key")
 	@Column(name = "value")
 	private Map<SpecialEnum, Integer> values;
 
