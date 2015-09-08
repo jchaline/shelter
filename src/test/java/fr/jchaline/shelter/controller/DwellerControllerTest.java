@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import fr.jchaline.shelter.config.WebConfig;
 import fr.jchaline.shelter.domain.Dweller;
+import fr.jchaline.shelter.domain.Special;
 import fr.jchaline.shelter.service.DwellerService;
 
 
@@ -54,12 +55,16 @@ public class DwellerControllerTest {
 	}
 
 	@Test
-	public void testSampleController() throws Exception {
-		when( service.list() ).thenReturn( Arrays.asList(new Dweller()) );
-		String contentExpected = "[{\"id\":null,\"male\":null,\"name\":null,\"firstname\":null,\"level\":0,\"experience\":0,\"items\":null,\"weapon\":null,\"room\":null,\"special\":null}]";
+	public void list() throws Exception {
+		Special special = new Special(Arrays.asList(1,2,3,2,1,3,1));
+		when( service.list() ).thenReturn( Arrays.asList(new Dweller(), new Dweller(true, "Hardy", "Tom", special)) );
+		String contentExpected = "["
+				+ "{\"id\":null,\"male\":null,\"name\":null,\"firstname\":null,\"level\":0,\"experience\":0,\"items\":null,\"weapon\":null,\"room\":null,\"special\":null},"
+				+ "{\"id\":null,\"male\":true,\"name\":\"Hardy\",\"firstname\":\"Tom\",\"level\":1,\"experience\":0,\"items\":null,\"weapon\":null,\"room\":null,\"special\":{\"id\":null,\"values\":{\"P\":2,\"I\":1,\"C\":2,\"E\":3,\"A\":3,\"L\":1,\"S\":1}}}"
+				+ "]";
 		
 		this.mockMvc.perform(get("/dweller/list")).andExpect(status().isOk())
-		.andExpect(content().string(contentExpected));
+		.andExpect(content().json(contentExpected));
 	}
 
 	@After
