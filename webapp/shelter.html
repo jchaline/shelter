@@ -1,0 +1,112 @@
+<!doctype html>
+<html ng-app="ShelterModule">
+<head>
+    <title>Shelter</title>
+	<meta charset="utf-8" />
+
+    <script type="text/javascript" src="angular.min.js"></script>
+
+</head>
+
+<body ng-controller="shelterController">
+
+	<button ng-click="updateRoom()">refresh room</button><br/>
+	<button ng-click="updateDweller()">refresh dweller</button><br/>
+	room json : {{roomJson}}<br/>
+	dweller json : {{dwellerJson}}
+
+	<script type="text/javascript">
+		var app = angular.module( "ShelterModule", [] )
+		
+		app.controller(
+			"shelterController",
+			function( $scope, shelterService ) {
+				$scope.updateRoom = function() {
+					shelterService.updateRoom().then(thenDoUpdateRoom)
+				}
+
+				$scope.updateDweller = function() {
+					shelterService.updateDweller().then(thenDoUpdateDweller)
+				}
+				
+				// when request is ok, processing server data
+				function thenDoUpdateRoom(data) {
+					$scope.roomJson = data
+				}
+				
+				function thenDoUpdateDweller(data) {
+					$scope.dwellerJson = data
+				}
+			}
+		)
+		app.service(
+			"shelterService",
+			function( $http, $q ) {
+				
+				var baseUrl = "http://localhost:9080"
+				// Return public API.
+				return({
+					updateRoom: updateRoom,
+					updateDweller: updateDweller
+				})
+				
+				function updateRoom( ) {
+					var request = $http({
+						method: "get",
+						url: baseUrl + "/room/list",
+						params: {
+							//action: "add"
+						},
+						data: {
+							//name: ""
+						}
+					})
+					return( request.then( handleSuccess, handleError ) )
+				}
+				
+				function updateDweller( ) {
+					var request = $http({
+						method: "get",
+						url: baseUrl + "/dweller/list",
+						params: {
+							//action: "add"
+						},
+						data: {
+							//name: ""
+						}
+					})
+					return( request.then( handleSuccess, handleError ) )
+				}
+				
+				// ---
+				// PRIVATE METHODS.
+				// ---
+				// I transform the error response, unwrapping the application dta from
+				// the API response payload.
+				function handleError( response ) {
+					console.log("handle error !")
+					// The API response from the server should be returned in a
+					// nomralized format. However, if the request was not handled by the
+					// server (or what not handles properly - ex. server error), then we
+					// may have to normalize it on our end, as best we can.
+					if (
+						! angular.isObject( response.data ) ||
+						! response.data.message
+					) {
+						return( $q.reject( "An unknown error occurred." ) )
+					}
+						// Otherwise, use expected error message.
+						return( $q.reject( response.data.message ) )
+				}
+				
+				// I transform the successful response, unwrapping the application data
+				// from the API response payload.
+				function handleSuccess( response ) {
+					console.log("handle success !")
+					return( response.data )
+				}
+			}
+		)
+	</script>
+</body>
+</html>

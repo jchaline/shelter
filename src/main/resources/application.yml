@@ -10,6 +10,7 @@ spring:
   username: sa
   password:
   driverClassName: org.hsqldb.jdbcDriver
+#use for p6spy logs : driverClassName: com.p6spy.engine.spy.P6SpyDriver 
 
  jpa:
   database: HSQL
@@ -28,6 +29,7 @@ spring:
   driverClassName: com.mysql.jdbc.Driver
  jpa:
   database: MYSQL
+  show-sql: false
   hibernate:
    ddl-auto: create-drop
    dialect: org.hibernate.dialect.MySQL5Dialect

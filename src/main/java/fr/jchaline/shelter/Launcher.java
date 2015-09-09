@@ -15,7 +15,7 @@ public class Launcher {
 		FactoryService factory = ctx.getBean(FactoryService.class);
 		
 		factory.initData();
-		factory.generateData();
+		factory.testGenerateData();
 		
 	}
 }

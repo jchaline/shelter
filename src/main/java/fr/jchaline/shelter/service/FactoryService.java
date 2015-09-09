@@ -72,17 +72,49 @@ public class FactoryService {
 	
 	private static final int NB_FLOOR = 4;
 	
+	/**
+	 * Initialize mandatory data
+	 */
 	public void initData() {
 		initRoomType();
 	}
+	
+	/**
+	 * Create data for a real game
+	 */
+	public void realCreateData() {
+		//create a game with the player's shelter
+		Game game = generateGame();
+		
+		//add rooms (split in about 3~4 floors)
+		realCreateRooms(game);
+		
+	}
 
-	public void generateData() {
+	private void realCreateRooms(Game game) {
+		int nbFloors = 4;
+		game.getShelter().setFloors(new HashMap<Integer, Floor>());
+		for (int number=0; number<nbFloors; number++) {
+			Floor floor = new Floor(number);
+			floor.setRooms(new ArrayList<Room>());
+			game.getShelter().getFloors().put(number, floorDao.save(floor));
+		};
+		
+		
+		
+		gameDao.save(game);
+	}
+
+	/**
+	 * Create huge data for test
+	 */
+	public void testGenerateData() {
 		LOGGER.debug("start generate data");
 		Game game = generateGame();
-		generateItems(game);
-		generateDwellers(game);
-		generateFloor(game, NB_FLOOR);
-		generateRoom(game);
+		testGenerateItems(game);
+		testGenerateDwellers(game);
+		testGenerateFloor(game, NB_FLOOR);
+		testGenerateRoom(game);
 		LOGGER.debug("generate data over");
 	}
 	
@@ -93,7 +125,7 @@ public class FactoryService {
 		return gameDao.save(g);
 	}
 
-	private void generateFloor(Game game, int nbFloor) {
+	private void testGenerateFloor(Game game, int nbFloor) {
 		game.getShelter().setFloors(new HashMap<Integer, Floor>());
 		for(int number=0; number<nbFloor; number++) {
 			game.getShelter().getFloors().put(number, floorDao.save(new Floor(number)));
@@ -112,7 +144,7 @@ public class FactoryService {
 		}
 	}
 	
-	private void generateRoom(Game game) {
+	private void testGenerateRoom(Game game) {
 		game.getShelter().getFloors().entrySet().stream()
 		.forEach(entry -> {
 			Floor floor = entry.getValue();
@@ -125,7 +157,7 @@ public class FactoryService {
 		});
 	}
 	
-	public void generateItems(Game game) {
+	public void testGenerateItems(Game game) {
 		if(itemDao.count() == 0){
 			
 			Arrays.asList("gun", "rifle").stream().forEach(w -> {
@@ -142,7 +174,7 @@ public class FactoryService {
 		}
 	}
 	
-	public void generateDwellers(Game game) {
+	public void testGenerateDwellers(Game game) {
 		if(dwellerDao.count() == 0) {
 			List<Dweller> dwellers = Stream.iterate(1L, n  ->  n  + 1).limit(25)
 				.map(s -> dwellerDao.save(dwellerService.generate()))//add operation

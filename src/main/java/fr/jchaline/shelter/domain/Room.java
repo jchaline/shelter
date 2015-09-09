@@ -10,7 +10,7 @@ import javax.persistence.Table;
 @Table
 public class Room extends AbstractEntity {
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private RoomType roomType;
 	
 	@Column(nullable=false)

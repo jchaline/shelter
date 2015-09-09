@@ -21,8 +21,7 @@ public class DwellerController {
 	
 	@RequestMapping("/list")
 	public List<Dweller> list(){
-		List<Dweller> list = service.list();
-		return list;
+		return service.list();
 	}
 	
 	@RequestMapping("/paginate/{pageNumber}/{offset}")

@@ -24,6 +24,11 @@ public class RoomServiceTest {
 	private RoomService service = new RoomService();
 	
 	@Test
+	public void canAddRoom() {
+		service.canAddRoom(1l, 2, 3);
+	}
+	
+	@Test
 	public void merge(){
 		RoomType type = new RoomType("power", 2, SpecialEnum.S);
 		Room right = new Room(type);
