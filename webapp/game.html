@@ -1,0 +1,6 @@
+<div ng-repeat="floor in floors | orderBy:'-number'">
+	Floor n°{{ floor.number }} ({{ floor.size }} space): 
+	<span ng-repeat="room in floor.rooms | orderBy:'cells'">
+		[{{ room.roomType.name }}, {{ room.size }} on {{ room.cells }}. ({{ room.roomType.special }})]
+	</span>
+</div>
