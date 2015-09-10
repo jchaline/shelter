@@ -1,6 +1,10 @@
 package fr.jchaline.shelter.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -16,13 +20,17 @@ public class Room extends AbstractEntity {
 	@Column(nullable=false)
 	private int size;
 	
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Set<Integer> cells = new HashSet<Integer>();
+	
 	public Room(){
 		
 	}
 	
-	public Room(RoomType type){
+	public Room(RoomType type, Set<Integer> cells) {
 		this.setRoomType(type);
 		this.setSize(type.getSize());
+		this.setCells(cells);
 	}
 
 
@@ -40,6 +48,14 @@ public class Room extends AbstractEntity {
 
 	public void setSize(int size) {
 		this.size = size;
+	}
+
+	public Set<Integer> getCells() {
+		return cells;
+	}
+
+	public void setCells(Set<Integer> cells) {
+		this.cells = cells;
 	}
 
 }

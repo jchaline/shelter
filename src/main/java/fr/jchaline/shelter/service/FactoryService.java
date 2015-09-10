@@ -1,10 +1,9 @@
 package fr.jchaline.shelter.service;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fr.jchaline.shelter.config.Constant;
 import fr.jchaline.shelter.dao.DwellerDao;
@@ -39,6 +39,7 @@ import fr.jchaline.shelter.utils.SpecialEnum;
  *
  */
 @Service
+@Transactional
 public class FactoryService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FactoryService.class);
@@ -92,15 +93,28 @@ public class FactoryService {
 	}
 
 	private void realCreateRooms(Game game) {
-		int nbFloors = 4;
-		game.getShelter().setFloors(new HashMap<Integer, Floor>());
-		for (int number=0; number<nbFloors; number++) {
-			Floor floor = new Floor(number);
-			floor.setRooms(new ArrayList<Room>());
-			game.getShelter().getFloors().put(number, floorDao.save(floor));
-		};
+		int nbFloors = 1;
+		Map<Integer, Floor> floors = game.getShelter().getFloors();
+		for (int number = 0; number < nbFloors; number++) {
+			Floor floor = new Floor(number, Constant.FLOOR_SIZE);
+			floors.put(number, floorDao.save(floor));
+		}
 		
+		RoomType elevator = roomTypeDao.findByName(Constant.ELEVATOR);
+		RoomType power = roomTypeDao.findByName(Constant.POWER);
+		RoomType water = roomTypeDao.findByName(Constant.WATER);
+		RoomType food = roomTypeDao.findByName(Constant.FOOD);
 		
+		Room f0Elevator = new Room(elevator, Stream.of(0).collect(Collectors.toSet()));
+		Room f0Power = new Room(power, Stream.of(1, 2).collect(Collectors.toSet()));
+		Room f0Water = new Room(water, Stream.of(3, 4).collect(Collectors.toSet()));
+		Room f0Food = new Room(food, Stream.of(5, 6).collect(Collectors.toSet()));
+		floors.get(0).getRooms().add(f0Elevator);
+		floors.get(0).getRooms().add(f0Power);
+		floors.get(0).getRooms().add(f0Water);
+		floors.get(0).getRooms().add(f0Food);
+		
+		floorDao.save(floors.get(0));
 		
 		gameDao.save(game);
 	}
@@ -126,9 +140,8 @@ public class FactoryService {
 	}
 
 	private void testGenerateFloor(Game game, int nbFloor) {
-		game.getShelter().setFloors(new HashMap<Integer, Floor>());
-		for(int number=0; number<nbFloor; number++) {
-			game.getShelter().getFloors().put(number, floorDao.save(new Floor(number)));
+		for (int number=0; number<nbFloor; number++) {
+			game.getShelter().getFloors().put(number, floorDao.save(new Floor(number, Constant.FLOOR_SIZE)));
 		};
 		gameDao.save(game);
 	}
@@ -145,14 +158,16 @@ public class FactoryService {
 	}
 	
 	private void testGenerateRoom(Game game) {
+		List<RoomType> allType = roomTypeDao.findAll();
 		game.getShelter().getFloors().entrySet().stream()
 		.forEach(entry -> {
 			Floor floor = entry.getValue();
-			floor.setRooms(new ArrayList<Room>());
-			roomTypeDao.findAll().stream()
-			.forEach(type -> {
-				floor.getRooms().add(roomDao.save(new Room(type)));
-			});
+			int i = 0;
+			for(RoomType type : allType) {
+				Room entity = new Room(type, Stream.of(i+=2).collect(Collectors.toSet()));
+				floor.getRooms().add(entity);
+				roomDao.save(entity);
+			}
 			floorDao.save(floor);
 		});
 	}

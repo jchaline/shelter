@@ -10,8 +10,10 @@
 
 <body ng-controller="shelterController">
 
+	<button ng-click="updateGame()">refresh game</button><br/>
 	<button ng-click="updateRoom()">refresh room</button><br/>
 	<button ng-click="updateDweller()">refresh dweller</button><br/>
+	game json : {{gameJson}}<br/>
 	room json : {{roomJson}}<br/>
 	dweller json : {{dwellerJson}}
 
@@ -21,6 +23,10 @@
 		app.controller(
 			"shelterController",
 			function( $scope, shelterService ) {
+				$scope.updateGame = function() {
+					shelterService.updateGame().then(thenDoUpdateGame)
+				}
+				
 				$scope.updateRoom = function() {
 					shelterService.updateRoom().then(thenDoUpdateRoom)
 				}
@@ -30,6 +36,10 @@
 				}
 				
 				// when request is ok, processing server data
+				function thenDoUpdateGame(data) {
+					$scope.gameJson = data
+				}
+
 				function thenDoUpdateRoom(data) {
 					$scope.roomJson = data
 				}
@@ -46,19 +56,30 @@
 				var baseUrl = "http://localhost:9080"
 				// Return public API.
 				return({
+					updateGame: updateGame,
 					updateRoom: updateRoom,
 					updateDweller: updateDweller
 				})
+				
+				function updateGame( ) {
+					var request = $http({
+						method: "get",
+						url: baseUrl + "/game/list",
+						params: {
+						},
+						data: {
+						}
+					})
+					return( request.then( handleSuccess, handleError ) )
+				}
 				
 				function updateRoom( ) {
 					var request = $http({
 						method: "get",
 						url: baseUrl + "/room/list",
 						params: {
-							//action: "add"
 						},
 						data: {
-							//name: ""
 						}
 					})
 					return( request.then( handleSuccess, handleError ) )

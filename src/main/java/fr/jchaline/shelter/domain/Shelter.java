@@ -1,5 +1,6 @@
 package fr.jchaline.shelter.domain;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public class Shelter extends AbstractEntity {
 	
 	@OneToMany(cascade = CascadeType.ALL)
 	@MapKey(name = "number")
-	private Map<Integer, Floor> floors;
+	private Map<Integer, Floor> floors = new HashMap<Integer, Floor>();
 	
 	@OneToMany
 	private List<Dweller> dwellers;

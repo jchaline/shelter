@@ -1,5 +1,7 @@
 package fr.jchaline.shelter.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -14,7 +16,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	 */
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/dweller/list");
-		registry.addMapping("/room/list");
+		Arrays.asList("/game/list", "/dweller/list", "/room/list")
+			.stream()
+			.forEach(registry::addMapping);
 	}
 }

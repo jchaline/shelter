@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.jchaline.shelter.config.Constant;
 import fr.jchaline.shelter.dao.RoomDao;
 import fr.jchaline.shelter.dao.RoomTypeDao;
+import fr.jchaline.shelter.domain.Floor;
 import fr.jchaline.shelter.domain.Room;
 
 /**
@@ -59,12 +60,16 @@ public class RoomService {
 		return false;
 	}
 	
-	public boolean hasRoomAdjoins(int floor, int pos) {
+	public boolean hasRoomHorizontal(int floor, int pos) {
 		return false;
 	}
 	
-	public boolean hasElevatorAdjoins(int floor, int pos) {
+	public boolean hasElevatorVertical(int floor, int pos) {
 		return false;
+	}
+	
+	public void addRoom(Floor floor, Room room){
+		
 	}
 	
 	/**

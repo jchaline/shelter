@@ -1,10 +1,12 @@
 package fr.jchaline.shelter.domain;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -17,34 +19,46 @@ import javax.persistence.Table;
 @Table
 public class Floor extends AbstractEntity {
 	
-	@OneToMany(cascade = CascadeType.ALL)
-	private List<Room> rooms;
-	
 	@Column(nullable=false)
 	private int number;
+	
+	@Column(nullable=false)
+	private int size;
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private Set<Room> rooms = new HashSet<Room>();
 	
 	public Floor(){
 		
 	}
 	
-	public Floor(int number){
+	public Floor(int number, int size){
 		this.setNumber(number);
+		this.setSize(size);
 	}
-
-	public List<Room> getRooms() {
-		return rooms;
-	}
-
-	public void setRooms(List<Room> rooms) {
-		this.rooms = rooms;
-	}
-
+	
 	public int getNumber() {
 		return number;
 	}
 
 	public void setNumber(int number) {
 		this.number = number;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public Set<Room> getRooms() {
+		return rooms;
+	}
+
+	public void setRooms(Set<Room> rooms) {
+		this.rooms = rooms;
 	}
 	
 }

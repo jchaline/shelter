@@ -5,7 +5,7 @@ public class Constant {
 	/**
 	 * Nombre de Room constructible par étage
 	 */
-	public static final int FLOOR_SPACE = 18;
+	public static final int FLOOR_SIZE = 18;
 	
 	public static final int ROOM_MAX_SIZE = 6;
 	
