@@ -13,9 +13,20 @@
 	<button ng-click="updateGame()">refresh game</button><br/>
 	<button ng-click="updateRoom()">refresh room</button><br/>
 	<button ng-click="updateDweller()">refresh dweller</button><br/>
-	game json : {{gameJson}}<br/>
-	room json : {{roomJson}}<br/>
-	dweller json : {{dwellerJson}}
+	<div>
+		<div data-ng-repeat="floor in floors">
+			Floor n°{{ floor.number }} ({{ floor.size }} space):
+			<span data-ng-repeat="room in floor.rooms">
+				[{{ room.roomType.name }}, {{ room.size }} on {{ room.cells }}. ({{ room.roomType.special }})]
+			</span>
+		</div>
+	</div>
+	<hr>
+	<div>
+		game json : {{gameJson}}<br/>
+		room json : {{roomJson}}<br/>
+		dweller json : {{dwellerJson}}
+	</div>
 
 	<script type="text/javascript">
 		var app = angular.module( "ShelterModule", [] )
@@ -38,6 +49,9 @@
 				// when request is ok, processing server data
 				function thenDoUpdateGame(data) {
 					$scope.gameJson = data
+					
+					$scope.floors = data[0].shelter.floors
+					
 				}
 
 				function thenDoUpdateRoom(data) {

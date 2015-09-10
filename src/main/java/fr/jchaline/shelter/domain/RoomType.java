@@ -21,7 +21,7 @@ public class RoomType extends AbstractEntity {
 	@Min(1)
 	private int size;
 	
-	@Column(nullable = false)
+	@Column
 	private SpecialEnum special;
 	
 	public RoomType(){
