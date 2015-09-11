@@ -56,14 +56,6 @@
 						<i class="glyphicon glyphicon-refresh"></i>
 		    			<span class="hidden-xs">refresh game</span>
 		    		</button>
-					<button class="btn btn-xs btn-danger" data-ng-click="debugRoom()">
-						<i class="glyphicon glyphicon-refresh"></i>
-						<span class="hidden-xs">debug room</span>
-					</button>
-					<button class="btn btn-xs btn-danger" data-ng-click="debugDweller()">
-						<i class="glyphicon glyphicon-refresh"></i>
-						<span class="hidden-xs">debug dweller</span>
-					</button>
 		    	</span>
 				<h3>Shelter view</h3>
 				<div data-ng-view="shelterView" id="game">
@@ -105,12 +97,6 @@
 							</button>
 						</span>
 					</div>
-				</div>
-				<hr>
-				<h3>Debug</h3>
-				<div>
-					game json : {{gameJson}}<br /> room json : {{roomJson}}<br /> dweller
-					json : {{dwellerJson}}
 				</div>
 			</div>
 		</div>
@@ -156,7 +142,7 @@
 				
 				// when request is ok, processing server data
 				function thenDoUpdateGame(data) {
-					$scope.gameJson = data
+					
 					var floors = data[0].shelter.floors
 					
 					fillEmptySpace(floors)
@@ -192,15 +178,6 @@
 				angular.element(document).ready(function () {
 					$scope.updateGame()
 			    });
-				
-				//debug function
-				$scope.debugRoom = function() {
-					shelterService.getData("/room/list").then(function(data){$scope.roomJson = data})
-				}
-
-				$scope.debugDweller = function() {
-					shelterService.getData("/dweller/list").then(function(data){$scope.dwellerJson = data})
-				}
 			}
 		)//controller end
 		

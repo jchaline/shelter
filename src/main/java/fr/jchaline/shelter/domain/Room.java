@@ -10,6 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 @Entity
 @Table
 public class Room extends AbstractEntity {
@@ -21,6 +23,7 @@ public class Room extends AbstractEntity {
 	private int size;
 	
 	@ElementCollection(fetch = FetchType.EAGER)
+	@NotEmpty
 	private Set<Integer> cells = new HashSet<Integer>();
 	
 	public Room(){

@@ -1,10 +1,12 @@
 tech :
  - integration test 
  - map with all shelter (graph representation ? currently using https://github.com/jgrapht/jgrapht)
- - generation map
- - metrics
+ - generation map : create map with selters, buildings, school, market, ...
+ - spring security, default user in dev mode. Used to find the user's shelter
  - DBUnit (see http://blog.netapsys.fr/realiser-ses-tests-dintegration-avec-spring-test-dbunit/)
+ - metrics
  
 game : 
  - display resources (http get) and increase with js. Compute and update the new values if necessary (build, sell, all actions from player)
  - define how to increase/earn money
+ - 

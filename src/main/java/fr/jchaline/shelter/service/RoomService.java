@@ -1,6 +1,8 @@
 package fr.jchaline.shelter.service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,28 +57,61 @@ public class RoomService {
 	 * @param pos
 	 * @return
 	 */
-	public Integer canAddRoom(long idType, int floor, int pos) {
-		//first, it is an elevator ?
-		if (roomTypeDao.findByName(Constant.ELEVATOR).getId().equals(idType)) {
-			//room adjoins left/right or elevator at top/bottom ?
+	public Optional<Set<Integer>> canAddRoom(long idType, long idFloor, int pos) {
+		if(isEmpty(idFloor, pos)){
+			//first, it is an elevator ?
+			if (roomTypeDao.findByName(Constant.ELEVATOR).getId().equals(idType)) {
+				Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, pos);
+				if(hasElevatorVertical(idFloor, pos) || okHorizontal.isPresent()) {
+					return Optional.of(Stream.of(pos).collect(Collectors.toSet()));
+				}
+			}
+			//else, another room adjoins left/right ?
+			else {
+				Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, pos);
+				if(isEmpty(idFloor, pos) && okHorizontal.isPresent()){
+					return okHorizontal;
+				}
+			}
 		}
-		//else, another room adjoins left/right ?
-		else {
-			
+		return Optional.empty();
+	}
+	
+	/**
+	 * If a new room can be add
+	 * @param idFloor
+	 * @param pos
+	 * @return
+	 */
+	public Optional<Set<Integer>> isOkHorizontal(long idType, long idFloor, int pos) {
+		RoomType type = roomTypeDao.findOne(idType);
+		Room right = dao.findOneByFloorAndCell(idFloor, pos + 1);
+		Room left = dao.findOneByFloorAndCell(idFloor, pos - 1);
+		//TODO : a factoriser/optimiser ...
+		if(type.getSize() == 1 && (right != null || left != null)){
+			return Optional.of(Stream.of(pos).collect(Collectors.toSet()));
 		}
-		return null;
+		else if ((right != null || left != null) && (right == null | left == null) || type.getSize() == 1) {
+			if (left == null) {
+				return Optional.of(Stream.of(pos, pos - 1).collect(Collectors.toSet()));
+			} else {
+				return Optional.of(Stream.of(pos, pos + 1).collect(Collectors.toSet()));
+			}
+		}
+		return Optional.empty();
 	}
 	
-	public boolean hasRoomHorizontal(int floor, int pos) {
-		return false;
+	public boolean isEmpty(long idFloor, int pos) {
+		return dao.findByFloorAndCell(idFloor, pos).isEmpty();
 	}
 	
-	public boolean hasElevatorVertical(int floor, int pos) {
-		return false;
-	}
-	
-	public void addRoom(Floor floor, Room room){
-		
+	public boolean hasElevatorVertical(long idFloor, int pos) {
+		Floor floor = floorDao.findOne(idFloor);
+		Floor downstair = floorDao.findByNumber(floor.getNumber() + 1);
+		Floor upstair = floorDao.findByNumber(floor.getNumber() - 1);
+		Room roomUp = upstair != null ? dao.findOneByFloorAndCell(upstair.getId(), pos) : null;
+		Room roomDown = downstair != null ? dao.findOneByFloorAndCell(downstair.getId(), pos) : null;
+		return roomUp != null && Constant.ELEVATOR.equals(roomUp.getRoomType().getName()) || roomDown != null && Constant.ELEVATOR.equals(roomDown.getRoomType().getName());
 	}
 	
 	/**
@@ -96,13 +131,16 @@ public class RoomService {
 	}
 	
 	@Transactional
-	public Floor construct(int floorNuber, int cell, String typeName) {
-		Floor floor = floorDao.findByNumber(floorNuber);
+	public Floor construct(int floorNumber, int cell, String typeName) {
+		Floor floor = floorDao.findByNumber(floorNumber);
 		RoomType type = roomTypeDao.findByName(typeName);
 		
-		//check space availability before do that ! find the cell pos with canAddRoom
-		Room room = new Room(type, Stream.of(cell, cell + 1).collect(Collectors.toSet()));
-		floor.getRooms().add(room);
+		Optional<Set<Integer>> canAddRoom = canAddRoom(type.getId(), floor.getId(), cell);
+		canAddRoom.ifPresent(value -> {
+			Room room = new Room(type, value);
+			floor.getRooms().add(room);
+			dao.save(room);
+		});
 		
 		return floorDao.save(floor);
 	}

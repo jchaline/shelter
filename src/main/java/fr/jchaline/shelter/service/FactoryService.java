@@ -111,6 +111,7 @@ public class FactoryService {
 			floor.getRooms().add(f0Power);
 			floor.getRooms().add(f0Water);
 			floor.getRooms().add(f0Food);
+			floor.getRooms().forEach(roomDao::save);
 			floorDao.save(floor);
 		}
 		gameDao.save(game);
