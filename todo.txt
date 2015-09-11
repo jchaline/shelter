@@ -1,0 +1,10 @@
+tech :
+ - integration test 
+ - map with all shelter (graph representation ? currently using https://github.com/jgrapht/jgrapht)
+ - generation map
+ - metrics
+ - DBUnit (see http://blog.netapsys.fr/realiser-ses-tests-dintegration-avec-spring-test-dbunit/)
+ 
+game : 
+ - display resources (http get) and increase with js. Compute and update the new values if necessary (build, sell, all actions from player)
+ - define how to increase/earn money

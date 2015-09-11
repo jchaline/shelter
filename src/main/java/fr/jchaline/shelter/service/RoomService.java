@@ -87,5 +87,9 @@ public class RoomService {
 		dao.delete(left);
 		return right;
 	}
+
+	public Room find(long id) {
+		return dao.findOne(id);
+	}
 	
 }
