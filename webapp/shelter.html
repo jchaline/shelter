@@ -69,20 +69,19 @@
 				<div data-ng-view="shelterView" id="game">
 					<span class="text-center">{{ money }} $, {{food}}/{{foodRequired}} food, {{water}}/{{waterRequired}} water</span>
 					<div data-ng-repeat="floor in floors | orderBy: number">
-						Floor n°{{ floor.number }} ({{ floor.size }} space): 
-						<span data-ng-repeat="room in floor.rooms | orderBy:'cells'">
-							<span title="{{ room.roomType.name }}" data-ng-click="displayRoom(room)" id="room{{ room.id }}">
+						<span data-ng-repeat="room in floor.rooms | orderBy:roomOrder">
+							<span title="{{ room.roomType.name }}" data-ng-click="actionRoom(floor, room)" id="room{{ room.id }}">
 								[{{ room.roomType.name | firstLetter }}, {{ room.size }} {{ room.cells }}. ({{ room.roomType.special }})]
 							</span>
 						</span>
 					</div>
 					<hr>
 					<div >
-						<span data-room-id="{{ displayedRoom.id }}" data-ng-if="displayedRoom.id">
+						<span data-ng-show="showDisplayRoom" class="ng-hide">
 							Room selected : {{ displayedRoom }}
-							<button class="btn btn-xs btn-primary" data-ng-click="displayedRoom.id = undefined">
-								<i class="glyphicon glyphicon-zoom-out"></i>
-								<span class="hidden-xs">Abort</span>
+							<button class="btn btn-xs btn-primary" data-ng-click="showDisplayRoom = false">
+								<i class="glyphicon glyphicon-ban-circle"></i>
+								<span class="hidden-xs">Cancel</span>
 							</button>
 							<button class="btn btn-xs btn-success" data-ng-click="upgradeRoom(displayedRoom)">
 								<i class="glyphicon glyphicon-upload"></i>
@@ -91,6 +90,18 @@
 							<button class="btn btn-xs btn-danger" data-ng-click="sellRoom(displayedRoom)">
 								<i class="glyphicon glyphicon-trash"></i>
 								<span class="hidden-xs">Sell</span>
+							</button>
+						</span>
+						<span data-ng-show="showConstructRoom" class="ng-hide">
+							Construct : 
+							<span data-ng-repeat="type in roomtype | orderBy:id">
+								<span data-ng-click="construct(constructFloor, constructCell, type.name)">
+									[{{type.name}}, {{type.size}}, {{type.special}}]: {{type.cost}}$
+								</span>
+							</span>
+							<button class="btn btn-xs btn-primary" data-ng-click="showConstructRoom = false">
+								<i class="glyphicon glyphicon-ban-circle"></i>
+								<span class="hidden-xs">Cancel</span>
 							</button>
 						</span>
 					</div>
@@ -111,19 +122,39 @@
 		app.controller(
 			"shelterController",
 			function( $scope, shelterService ) {
+				
 				$scope.updateGame = function() {
 					shelterService.getData("/game/list").then(thenDoUpdateGame)
+					$scope.showDisplayRoom = false
+					$scope.showConstructRoom = false
 				}
 				
-				$scope.displayRoom = function(room) {
-					shelterService.getData("/room/"+room.id).then(thenDisplayRoom)
+				$scope.actionRoom = function(floor, room) {
+					$scope.showDisplayRoom = false
+					$scope.showConstructRoom = false
+					if(room.id > 0){
+						$scope.showDisplayRoom = true
+						shelterService.getData("/room/"+room.id).then(function(data){
+							$scope.displayedRoom = data
+						})
+					} else {
+						$scope.showConstructRoom = true
+						shelterService.getData("/room/types").then(function(data){
+							$scope.roomtype = data
+							$scope.constructFloor = floor.number
+							$scope.constructCell = room.cells[0]
+						})
+					}
+				}
+				
+				$scope.construct = function(floor, cell, type) {
+					console.log("construct"+floor+type+cell)
+					shelterService.postData("/room/construct", {floor:floor, cell:cell, type:type}).then(function(data){
+						$scope.updateGame()
+					})
 				}
 				
 				// when request is ok, processing server data
-				function thenDisplayRoom(data){
-					$scope.displayedRoom = data
-				}
-				
 				function thenDoUpdateGame(data) {
 					$scope.gameJson = data
 					var floors = data[0].shelter.floors
@@ -133,8 +164,7 @@
 					$scope.floors = floors
 				}
 				
-				function fillEmptySpace(floors){
-					
+				function fillEmptySpace(floors) {
 					var keys = Object.keys(floors)
 					for (var key in keys) {
 						var floor = floors[key]
@@ -147,11 +177,16 @@
 						})
 						cellList.forEach(function(e) {
 							if($.inArray(e, used) == - 1){
-								floor.rooms.push({'size':1, 'cells':[e], 'roomType':{'name':'vide'}})
+								var emptySpace = {id:-1, 'size':1, floor:key, 'cells':[e], 'roomType':{'name':'vide'}}
+								floor.rooms.push(emptySpace)
 							}
 						})
 					}
 					return floors
+				}
+				
+				$scope.roomOrder = function(room){
+				    return room.cells[0];
 				}
 
 				angular.element(document).ready(function () {
@@ -169,24 +204,32 @@
 			}
 		)//controller end
 		
+		app.filter('firstLetter', function() {
+		    return function(input) {
+		      return (!!input) ? input.charAt(0).toUpperCase() : '';
+		    }
+		})
+		
 		app.service(
 			"shelterService",
 			function( $http, $q ) {
 				
 				var baseUrl = "http://localhost:9080"
+				
 				// Return public API.
 				return({
-					getData: getData
+					getData: getData,
+					postData: postData
 				})
 				
 				// generic get data
 				function getData(url) {
-					var request = $http({
-						method: "get",
-						url: baseUrl + url,
-						params: {},
-						data: {}
-					})
+					var request = $http({ method: "GET", url: baseUrl + url, params: {}, data: {} })
+					return( request.then( handleSuccess, handleError ) )
+				}
+				
+				function postData(url, data){
+					var request = $http({ method: "POST", url: baseUrl + url, params: {}, data: data })
 					return( request.then( handleSuccess, handleError ) )
 				}
 				
@@ -198,17 +241,16 @@
 				function handleError( response ) {
 					console.log("handle error !")
 					// The API response from the server should be returned in a
-					// nomralized format. However, if the request was not handled by the
+					// normalized format. However, if the request was not handled by the
 					// server (or what not handles properly - ex. server error), then we
 					// may have to normalize it on our end, as best we can.
-					if (
-						! angular.isObject( response.data ) ||
-						! response.data.message
-					) {
+					if ( ! angular.isObject( response.data ) || !response.data.message ) {
 						return( $q.reject( "An unknown error occurred." ) )
 					}
-						// Otherwise, use expected error message.
+					// Otherwise, use expected error message.
+					else {
 						return( $q.reject( response.data.message ) )
+					}
 				}
 				
 				// I transform the successful response, unwrapping the application data
@@ -219,12 +261,6 @@
 				}
 			}
 		)//service end
-		
-		app.filter('firstLetter', function() {
-		    return function(input) {
-		      return (!!input) ? input.charAt(0).toUpperCase() : '';
-		    }
-		});
 	</script>
 </body>
 </html>

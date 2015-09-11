@@ -145,12 +145,11 @@ public class FactoryService {
 	
 	private void initRoomType() {
 		if(roomTypeDao.count() == 0){
-			Stream.of(
-					new Triplet<String, Integer, SpecialEnum>(Constant.ELEVATOR, 1, null),
-					new Triplet<String, Integer, SpecialEnum>(Constant.FOOD, 2, SpecialEnum.A),
-					new Triplet<String, Integer, SpecialEnum>(Constant.WATER, 2, SpecialEnum.P),
-					new Triplet<String, Integer, SpecialEnum>(Constant.POWER, 2, SpecialEnum.S))
-			.forEach(e -> roomTypeDao.save(new RoomType(e.first, e.second, e.third)));
+			Stream.of(	new RoomType(Constant.ELEVATOR, 1, null, 150),
+						new RoomType(Constant.FOOD, 2, SpecialEnum.A, 100),
+						new RoomType(Constant.WATER, 2, SpecialEnum.P, 100),
+						new RoomType(Constant.POWER, 2, SpecialEnum.S, 90))
+			.forEach(roomTypeDao::save);
 		}
 	}
 	
@@ -203,18 +202,5 @@ public class FactoryService {
 			game.getShelter().setDwellers(dwellers);
 			gameDao.save(game);
 		}
-	}
-	
-	private class Triplet<F, S, T> {
-
-	    public final F first;
-	    public final S second;
-	    public final T third;
-
-	    public Triplet(F first, S second, T third) {
-	        this.first = first;
-	        this.second = second;
-	        this.third = third;
-	    }
 	}
 }

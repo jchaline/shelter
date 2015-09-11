@@ -21,6 +21,9 @@ public class RoomType extends AbstractEntity {
 	@Min(1)
 	private int size;
 	
+	@Column(nullable = false)
+	private int cost;
+	
 	@Column
 	private SpecialEnum special;
 	
@@ -28,10 +31,11 @@ public class RoomType extends AbstractEntity {
 		
 	}
 	
-	public RoomType(String name, int size, SpecialEnum special){
+	public RoomType(String name, int size, SpecialEnum special, int cost){
 		this.setName(name);
 		this.setSize(size);
 		this.setSpecial(special);
+		this.setCost(cost);
 	}
 
 	public String getName() {
@@ -56,5 +60,13 @@ public class RoomType extends AbstractEntity {
 
 	public void setSpecial(SpecialEnum special) {
 		this.special = special;
+	}
+
+	public int getCost() {
+		return cost;
+	}
+
+	public void setCost(int cost) {
+		this.cost = cost;
 	}
 }

@@ -1,16 +1,20 @@
 package fr.jchaline.shelter.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.jchaline.shelter.config.Constant;
+import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.RoomDao;
 import fr.jchaline.shelter.dao.RoomTypeDao;
 import fr.jchaline.shelter.domain.Floor;
 import fr.jchaline.shelter.domain.Room;
+import fr.jchaline.shelter.domain.RoomType;
 
 /**
  * @author jeremy
@@ -20,6 +24,9 @@ import fr.jchaline.shelter.domain.Room;
 @Transactional(readOnly = true)
 public class RoomService {
 	
+	@Autowired
+	private FloorDao floorDao;
+
 	@Autowired
 	private RoomDao dao;
 
@@ -48,7 +55,7 @@ public class RoomService {
 	 * @param pos
 	 * @return
 	 */
-	public boolean canAddRoom(long idType, int floor, int pos) {
+	public Integer canAddRoom(long idType, int floor, int pos) {
 		//first, it is an elevator ?
 		if (roomTypeDao.findByName(Constant.ELEVATOR).getId().equals(idType)) {
 			//room adjoins left/right or elevator at top/bottom ?
@@ -57,7 +64,7 @@ public class RoomService {
 		else {
 			
 		}
-		return false;
+		return null;
 	}
 	
 	public boolean hasRoomHorizontal(int floor, int pos) {
@@ -87,9 +94,25 @@ public class RoomService {
 		dao.delete(left);
 		return right;
 	}
+	
+	@Transactional
+	public Floor construct(int floorNuber, int cell, String typeName) {
+		Floor floor = floorDao.findByNumber(floorNuber);
+		RoomType type = roomTypeDao.findByName(typeName);
+		
+		//check space availability before do that ! find the cell pos with canAddRoom
+		Room room = new Room(type, Stream.of(cell, cell + 1).collect(Collectors.toSet()));
+		floor.getRooms().add(room);
+		
+		return floorDao.save(floor);
+	}
 
 	public Room find(long id) {
 		return dao.findOne(id);
+	}
+
+	public List<RoomType> types() {
+		return roomTypeDao.findAll();
 	}
 	
 }
