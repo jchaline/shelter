@@ -40,15 +40,6 @@ public class RoomService {
 	}
 	
 	/**
-	 * Add a room if possible
-	 * @param floor
-	 * @param pos
-	 */
-	public void addRoom(long idType, int floor, int pos) {
-		
-	}
-	
-	/**
 	 * Check if it's possible to add a room to the shelter.
 	 * Vertical : only elevator (if enough place), Horizontal : only if adjoins left/right to another room and enough place.
 	 * If you try to add room to cell, this method check right and left to find enough place (if the room take more than 1 cell).
@@ -58,7 +49,7 @@ public class RoomService {
 	 * @return
 	 */
 	public Optional<Set<Integer>> canAddRoom(long idType, long idFloor, int pos) {
-		if(isEmpty(idFloor, pos)){
+		if(isCellEmpty(idFloor, pos)){
 			//first, it is an elevator ?
 			if (roomTypeDao.findByName(Constant.ELEVATOR).getId().equals(idType)) {
 				Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, pos);
@@ -69,7 +60,7 @@ public class RoomService {
 			//else, another room adjoins left/right ?
 			else {
 				Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, pos);
-				if(isEmpty(idFloor, pos) && okHorizontal.isPresent()){
+				if(isCellEmpty(idFloor, pos) && okHorizontal.isPresent()){
 					return okHorizontal;
 				}
 			}
@@ -87,30 +78,29 @@ public class RoomService {
 		RoomType type = roomTypeDao.findOne(idType);
 		Room right = dao.findOneByFloorAndCell(idFloor, pos + 1);
 		Room left = dao.findOneByFloorAndCell(idFloor, pos - 1);
-		//TODO : a factoriser/optimiser ...
-		if(type.getSize() == 1 && (right != null || left != null)){
+		boolean rightEmpty = right == null;
+		boolean leftEmpty = left == null;
+		
+		if (type.getSize() == 1 && (!rightEmpty || !leftEmpty)) {
 			return Optional.of(Stream.of(pos).collect(Collectors.toSet()));
-		}
-		else if ((right != null || left != null) && (right == null | left == null) || type.getSize() == 1) {
-			if (left == null) {
-				return Optional.of(Stream.of(pos, pos - 1).collect(Collectors.toSet()));
-			} else {
-				return Optional.of(Stream.of(pos, pos + 1).collect(Collectors.toSet()));
+		} else {
+			if (rightEmpty ^ leftEmpty) {
+				return Optional.of(Stream.of(pos, leftEmpty ? pos - 1 : pos + 1).collect(Collectors.toSet()));
 			}
 		}
 		return Optional.empty();
 	}
 	
-	public boolean isEmpty(long idFloor, int pos) {
-		return dao.findByFloorAndCell(idFloor, pos).isEmpty();
+	public boolean isCellEmpty(long idFloor, int cell) {
+		return dao.findByFloorAndCell(idFloor, cell).isEmpty();
 	}
 	
-	public boolean hasElevatorVertical(long idFloor, int pos) {
+	public boolean hasElevatorVertical(long idFloor, int cell) {
 		Floor floor = floorDao.findOne(idFloor);
 		Floor downstair = floorDao.findByNumber(floor.getNumber() + 1);
 		Floor upstair = floorDao.findByNumber(floor.getNumber() - 1);
-		Room roomUp = upstair != null ? dao.findOneByFloorAndCell(upstair.getId(), pos) : null;
-		Room roomDown = downstair != null ? dao.findOneByFloorAndCell(downstair.getId(), pos) : null;
+		Room roomUp = upstair != null ? dao.findOneByFloorAndCell(upstair.getId(), cell) : null;
+		Room roomDown = downstair != null ? dao.findOneByFloorAndCell(downstair.getId(), cell) : null;
 		return roomUp != null && Constant.ELEVATOR.equals(roomUp.getRoomType().getName()) || roomDown != null && Constant.ELEVATOR.equals(roomDown.getRoomType().getName());
 	}
 	
@@ -124,7 +114,7 @@ public class RoomService {
 	public Room merge(long idA, long idB) {
 		final Room right = dao.getOne(idA);
 		final Room left = dao.getOne(idB);
-		right.setSize(right.getSize()+left.getSize());
+		right.setSize(right.getSize() + left.getSize());
 		dao.save(right);
 		dao.delete(left);
 		return right;
@@ -139,6 +129,7 @@ public class RoomService {
 		canAddRoom.ifPresent(value -> {
 			Room room = new Room(type, value);
 			floor.getRooms().add(room);
+			//TODO : merge if possible !
 			dao.save(room);
 		});
 		
@@ -149,7 +140,7 @@ public class RoomService {
 		return dao.findOne(id);
 	}
 
-	public List<RoomType> types() {
+	public List<RoomType> findAllType() {
 		return roomTypeDao.findAll();
 	}
 	

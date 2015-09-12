@@ -3,10 +3,13 @@ package fr.jchaline.shelter.config;
 public class Constant {
 	
 	/**
-	 * Nombre de Room constructible par étage
+	 * Space for rooms per floor
 	 */
 	public static final int FLOOR_SIZE = 18;
-	
+
+	/**
+	 * Max size for room (when merged)
+	 */
 	public static final int ROOM_MAX_SIZE = 6;
 	
 	public static final String POWER = "power";

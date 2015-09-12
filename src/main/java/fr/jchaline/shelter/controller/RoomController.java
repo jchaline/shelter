@@ -31,7 +31,7 @@ public class RoomController {
 
 	@RequestMapping("/types")
 	public List<RoomType> types(){
-		return service.types();
+		return service.findAllType();
 	}
 	
 	@RequestMapping("/{id}")
