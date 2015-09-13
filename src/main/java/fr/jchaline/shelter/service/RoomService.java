@@ -35,7 +35,7 @@ public class RoomService {
 	@Autowired
 	private RoomTypeDao roomTypeDao;
 	
-	public List<Room> list(){
+	public List<Room> list() {
 		return dao.findAll();
 	}
 	
@@ -45,22 +45,22 @@ public class RoomService {
 	 * If you try to add room to cell, this method check right and left to find enough place (if the room take more than 1 cell).
 	 * @param idType
 	 * @param floor
-	 * @param pos
+	 * @param cell
 	 * @return
 	 */
-	public Optional<Set<Integer>> canAddRoom(long idType, long idFloor, int pos) {
-		if(isCellEmpty(idFloor, pos)){
+	public Optional<Set<Integer>> canAddRoom(long idType, long idFloor, int cell) {
+		if(isCellEmpty(idFloor, cell)){
 			//first, it is an elevator ?
 			if (roomTypeDao.findByName(Constant.ELEVATOR).getId().equals(idType)) {
-				Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, pos);
-				if(hasElevatorVertical(idFloor, pos) || okHorizontal.isPresent()) {
-					return Optional.of(Stream.of(pos).collect(Collectors.toSet()));
+				Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, cell);
+				if(hasElevatorVertical(idFloor, cell) || okHorizontal.isPresent()) {
+					return Optional.of(Stream.of(cell).collect(Collectors.toSet()));
 				}
 			}
 			//else, another room adjoins left/right ?
 			else {
-				Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, pos);
-				if(isCellEmpty(idFloor, pos) && okHorizontal.isPresent()){
+				Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, cell);
+				if(isCellEmpty(idFloor, cell) && okHorizontal.isPresent()){
 					return okHorizontal;
 				}
 			}
@@ -71,21 +71,21 @@ public class RoomService {
 	/**
 	 * If a new room can be add
 	 * @param idFloor
-	 * @param pos
+	 * @param cell
 	 * @return
 	 */
-	public Optional<Set<Integer>> isOkHorizontal(long idType, long idFloor, int pos) {
+	public Optional<Set<Integer>> isOkHorizontal(long idType, long idFloor, int cell) {
 		RoomType type = roomTypeDao.findOne(idType);
-		Room right = dao.findOneByFloorAndCell(idFloor, pos + 1);
-		Room left = dao.findOneByFloorAndCell(idFloor, pos - 1);
+		Room right = dao.findOneByFloorAndCell(idFloor, cell + 1);
+		Room left = dao.findOneByFloorAndCell(idFloor, cell - 1);
 		boolean rightEmpty = right == null;
 		boolean leftEmpty = left == null;
 		
 		if (type.getSize() == 1 && (!rightEmpty || !leftEmpty)) {
-			return Optional.of(Stream.of(pos).collect(Collectors.toSet()));
+			return Optional.of(Stream.of(cell).collect(Collectors.toSet()));
 		} else {
-			if (rightEmpty ^ leftEmpty) {
-				return Optional.of(Stream.of(pos, leftEmpty ? pos - 1 : pos + 1).collect(Collectors.toSet()));
+			if (leftEmpty ^ rightEmpty) {
+				return Optional.of(Stream.of(cell, leftEmpty ? cell - 1 : cell + 1).collect(Collectors.toSet()));
 			}
 		}
 		return Optional.empty();
@@ -111,9 +111,7 @@ public class RoomService {
 	 * @return the new merged room
 	 */
 	@Transactional
-	public Room merge(long idA, long idB) {
-		final Room right = dao.getOne(idA);
-		final Room left = dao.getOne(idB);
+	public Room merge(Room left, Room right) {
 		right.setSize(right.getSize() + left.getSize());
 		dao.save(right);
 		dao.delete(left);
@@ -129,11 +127,22 @@ public class RoomService {
 		canAddRoom.ifPresent(value -> {
 			Room room = new Room(type, value);
 			floor.getRooms().add(room);
-			//TODO : merge if possible !
 			dao.save(room);
+			
+			Room right = dao.findOneByFloorAndCell(floor.getId(), cell + 1);
+			Room left = dao.findOneByFloorAndCell(floor.getId(), cell - 1);
+			if (isMergeable(room, right)) {
+				merge(room, right);
+			} else if (isMergeable(room, left)) {
+				merge(left, room);
+			}
 		});
 		
 		return floorDao.save(floor);
+	}
+
+	private boolean isMergeable(Room newRoom, Room oldRoom) {
+		return oldRoom.getRoomType().equals(newRoom.getRoomType()) && oldRoom.getLevel() == newRoom.getLevel();
 	}
 
 	public Room find(long id) {
@@ -142,6 +151,14 @@ public class RoomService {
 
 	public List<RoomType> findAllType() {
 		return roomTypeDao.findAll();
+	}
+	
+	@Transactional
+	public Room upgrade(long id){
+		Room room = dao.findOne(id);
+		room.setLevel(room.getLevel() + 1);
+		dao.save(room);
+		return room;
 	}
 	
 }

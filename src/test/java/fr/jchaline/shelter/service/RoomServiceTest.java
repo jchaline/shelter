@@ -38,14 +38,14 @@ public class RoomServiceTest {
 	}
 	
 	@Test
-	public void merge(){
+	public void merge() {
 		RoomType type = new RoomType("power", 2, SpecialEnum.S, 0);
 		Room right = new Room(type, null);
 		Room left = new Room(type, null);
 		when( dao.getOne(1l) ).thenReturn( right );
 		when( dao.getOne(2l) ).thenReturn( left );
 		
-		Room merge = service.merge(1l, 2l);
+		Room merge = service.merge(left, right);
 		assertEquals(4, merge.getSize());
 	}
 }

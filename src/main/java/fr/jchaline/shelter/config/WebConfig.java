@@ -16,7 +16,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	 */
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		Arrays.asList("/game/list", "/dweller/list", "/room/list", "/room/*")
+		Arrays.asList("/game/list", "/dweller/list", "/room/list", "/room/*", "/room/upgrade/*")
 			.stream()
 			.forEach(registry::addMapping);
 	}

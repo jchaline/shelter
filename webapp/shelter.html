@@ -132,6 +132,11 @@
 						})
 					}
 				}
+				$scope.upgradeRoom = function(room) {
+					shelterService.postData("/room/upgrade/"+room.id, {}).then(function(data){
+						$scope.updateGame()
+					})
+				}
 				
 				$scope.construct = function(floor, cell, type) {
 					console.log("construct"+floor+type+cell)

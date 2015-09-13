@@ -44,4 +44,10 @@ public class RoomController {
 		return service.construct(construct.getFloor(), construct.getCell(), construct.getType());
 	}
 	
+	@RequestMapping(value = "/upgrade/{id}", method = RequestMethod.POST)
+	public Room upgrade(@PathVariable long id) {
+		return service.upgrade(id);
+	}
+	
+	
 }

@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -26,6 +27,10 @@ public class Room extends AbstractEntity {
 	@NotEmpty
 	private Set<Integer> cells = new HashSet<Integer>();
 	
+	@Column(nullable=false)
+	@Min(1)
+	private int level;
+	
 	public Room(){
 		
 	}
@@ -34,6 +39,7 @@ public class Room extends AbstractEntity {
 		this.setRoomType(type);
 		this.setSize(type.getSize());
 		this.setCells(cells);
+		this.setLevel(1);
 	}
 
 
@@ -59,6 +65,14 @@ public class Room extends AbstractEntity {
 
 	public void setCells(Set<Integer> cells) {
 		this.cells = cells;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
 	}
 
 }
