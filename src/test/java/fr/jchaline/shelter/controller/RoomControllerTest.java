@@ -1,11 +1,13 @@
 package fr.jchaline.shelter.controller;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,9 +23,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import fr.jchaline.shelter.config.WebConfig;
-import fr.jchaline.shelter.domain.Dweller;
-import fr.jchaline.shelter.domain.Special;
-import fr.jchaline.shelter.service.DwellerService;
+import fr.jchaline.shelter.domain.Room;
+import fr.jchaline.shelter.domain.RoomType;
+import fr.jchaline.shelter.service.RoomService;
 
 
 /**
@@ -38,13 +40,12 @@ import fr.jchaline.shelter.service.DwellerService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = WebConfig.class)
-public class DwellerControllerTest {
-
+public class RoomControllerTest {
 	@Mock
-    private DwellerService service;
+    private RoomService service;
 	
 	@InjectMocks
-	private DwellerController controller;
+	private RoomController controller;
 
 	private MockMvc mockMvc;
 
@@ -55,18 +56,15 @@ public class DwellerControllerTest {
 	}
 
 	@Test
-	public void list() throws Exception {
-		Special special = new Special(Arrays.asList(1,2,3,2,1,3,1));
-		when( service.list() ).thenReturn( Arrays.asList(new Dweller(), new Dweller(true, "Hardy", "Tom", special)) );
-		String contentExpected = "["
-				+ "{id:null, male:null, name:null, firstname:null, level:0, experience:0, items:null, weapon:null, room:null, special:null},"
-				+ "{id:null, male:true, name:Hardy, firstname:Tom, level:1, experience:0, items:null, weapon:null, room:null, special:{id:null, values:{P:2,I:1,C:2,E:3,A:3,L:1,S:1}}}"
-				+ "]";
+	public void upgrade() throws Exception {
+		Room room = new Room(new RoomType("Water", 2, null, 100, 6), Stream.of(1, 2).collect(Collectors.toSet()));
+		when( service.upgrade(1l)).thenReturn(room);
 		
-		this.mockMvc.perform(get("/dweller/list")).andExpect(status().isOk())
+		String contentExpected = "{id:null, size:2, cells:[1, 2], level:1, roomType:{id:null, name:Water, size:2, cost:100, special:null, maxSize:6}}";
+		this.mockMvc.perform(post("/room/upgrade/1")).andExpect(status().isOk())
 		.andExpect(content().json(contentExpected));
 	}
-
+	
 	@After
 	public void downUp() {
 		this.mockMvc = null;
