@@ -31,7 +31,7 @@ public class RoomServiceTest {
 	@Test
 	public void canAddRoom() {
 		long idType = 1l;
-		RoomType type = new RoomType("power", 2, SpecialEnum.S, 0);
+		RoomType type = new RoomType("power", 2, SpecialEnum.S, 0, 6);
 		type.setId(idType);
 		when( roomTypeDao.findByName(any(String.class))).thenReturn( type );
 		service.canAddRoom(idType, 2, 3);
@@ -39,7 +39,7 @@ public class RoomServiceTest {
 	
 	@Test
 	public void merge() {
-		RoomType type = new RoomType("power", 2, SpecialEnum.S, 0);
+		RoomType type = new RoomType("power", 2, SpecialEnum.S, 0, 6);
 		Room right = new Room(type, null);
 		Room left = new Room(type, null);
 		when( dao.getOne(1l) ).thenReturn( right );

@@ -3,10 +3,12 @@ package fr.jchaline.shelter.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import fr.jchaline.shelter.config.Constant;
 import fr.jchaline.shelter.utils.SpecialEnum;
 
 @Entity
@@ -27,15 +29,21 @@ public class RoomType extends AbstractEntity {
 	@Column
 	private SpecialEnum special;
 	
+	@Column(nullable = false)
+	@Min(1)
+	@Max(Constant.ROOM_MAX_SIZE)
+	private int maxSize;
+	
 	public RoomType(){
 		
 	}
 	
-	public RoomType(String name, int size, SpecialEnum special, int cost){
+	public RoomType(String name, int size, SpecialEnum special, int cost, int maxSize){
 		this.setName(name);
 		this.setSize(size);
 		this.setSpecial(special);
 		this.setCost(cost);
+		this.setMaxSize(maxSize);
 	}
 
 	public String getName() {
@@ -68,5 +76,13 @@ public class RoomType extends AbstractEntity {
 
 	public void setCost(int cost) {
 		this.cost = cost;
+	}
+
+	public int getMaxSize() {
+		return maxSize;
+	}
+
+	public void setMaxSize(int maxSize) {
+		this.maxSize = maxSize;
 	}
 }

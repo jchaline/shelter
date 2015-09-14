@@ -111,11 +111,11 @@ public class RoomService {
 	 * @return the new merged room
 	 */
 	@Transactional
-	public Room merge(Room left, Room right) {
-		right.setSize(right.getSize() + left.getSize());
-		dao.save(right);
-		dao.delete(left);
-		return right;
+	public Room merge(Room keep, Room delete) {
+		keep.setSize(keep.getSize() + delete.getSize());
+		keep.getCells().addAll(delete.getCells());
+		dao.save(keep);
+		return keep;
 	}
 	
 	@Transactional
@@ -125,16 +125,18 @@ public class RoomService {
 		
 		Optional<Set<Integer>> canAddRoom = canAddRoom(type.getId(), floor.getId(), cell);
 		canAddRoom.ifPresent(value -> {
-			Room room = new Room(type, value);
-			floor.getRooms().add(room);
-			dao.save(room);
+			Room newRoom = new Room(type, value);
 			
 			Room right = dao.findOneByFloorAndCell(floor.getId(), cell + 1);
 			Room left = dao.findOneByFloorAndCell(floor.getId(), cell - 1);
-			if (isMergeable(room, right)) {
-				merge(room, right);
-			} else if (isMergeable(room, left)) {
-				merge(left, room);
+			if (isMergeable(newRoom, right)) {
+				merge(right, newRoom);
+			} else if (isMergeable(newRoom, left)) {
+				merge(left, newRoom);
+			} else {
+				//if not mergeable, persist the new room
+				floor.getRooms().add(newRoom);
+				dao.save(newRoom);
 			}
 		});
 		
@@ -142,7 +144,10 @@ public class RoomService {
 	}
 
 	private boolean isMergeable(Room newRoom, Room oldRoom) {
-		return oldRoom.getRoomType().equals(newRoom.getRoomType()) && oldRoom.getLevel() == newRoom.getLevel();
+		return newRoom != null && oldRoom != null 
+				&& oldRoom.getRoomType().equals(newRoom.getRoomType())
+				&& oldRoom.getLevel() == newRoom.getLevel()
+				&& newRoom.getSize() + oldRoom.getSize() <= oldRoom.getRoomType().getMaxSize();
 	}
 
 	public Room find(long id) {
