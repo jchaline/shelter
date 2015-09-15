@@ -56,6 +56,10 @@
 						<i class="glyphicon glyphicon-refresh"></i>
 		    			<span class="hidden-xs">refresh game</span>
 		    		</button>
+		    		<button class="btn btn-xs btn-primary" data-ng-click="updateDwellers()">
+						<i class="glyphicon glyphicon-refresh"></i>
+		    			<span class="hidden-xs">refresh dwellers</span>
+		    		</button>
 		    	</span>
 				<h3>Shelter view</h3>
 				<div data-ng-view="shelterView" id="game">
@@ -97,6 +101,23 @@
 							</button>
 						</span>
 					</div>
+					<hr>
+					<div>
+						<table id="dwellerTable" class="table table-striped table-hover">
+							<thead>
+								<tr><th>Name</th><th>Firstname</th><th>Room</th><th>Level</th><th>Male</th></tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="dweller in dwellers">
+									<td>{{ dweller.name }}</td>
+									<td>{{ dweller.firstname }}</td>
+									<td>{{ dweller.room.roomType.name }}</td>
+									<td>{{ dweller.level }}</td>
+									<td>{{ dweller.male }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -113,6 +134,10 @@
 					shelterService.getData("/game/list").then(thenDoUpdateGame)
 					$scope.showDisplayRoom = false
 					$scope.showConstructRoom = false
+				}
+
+				$scope.updateDwellers = function() {
+					shelterService.getData("/dweller/list").then(thenDoUpdateDwellers)
 				}
 				
 				$scope.actionRoom = function(floor, room) {
@@ -155,6 +180,8 @@
 					$scope.floors = floors
 				}
 				
+				// add "empty room" between real room,
+				// use to interact with floor and construct room
 				function fillEmptySpace(floors) {
 					var keys = Object.keys(floors)
 					for (var key in keys) {
@@ -176,10 +203,17 @@
 					return floors
 				}
 				
+				// update the dwellers list
+				function thenDoUpdateDwellers(data) {
+					$scope.dwellers = data
+				}
+				
+				// function use to order room in floor
 				$scope.roomOrder = function(room){
 				    return room.cells[0];
 				}
 
+				// call when app is loaded
 				angular.element(document).ready(function () {
 					$scope.updateGame()
 			    });

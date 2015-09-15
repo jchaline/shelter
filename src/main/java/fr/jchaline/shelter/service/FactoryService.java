@@ -70,6 +70,10 @@ public class FactoryService {
 	@Autowired
 	private DwellerService dwellerService;
 	
+	@Autowired
+	private SpecialService specialService;
+	
+	
 	private static final int NB_FLOOR = 4;
 	
 	/**
@@ -89,6 +93,19 @@ public class FactoryService {
 		//add rooms (split in about 3~4 floors)
 		realCreateRooms(game);
 		
+		realCreateDwellers(game);
+		
+	}
+
+	private void realCreateDwellers(Game game) {
+		Dweller simon = new Dweller(true, "Adebisi", "Simon", specialService.randForDweller(7));
+		simon.setLevel(2);
+		Dweller harley = new Dweller(true, "Quinn", "Harley", specialService.randForDweller(4));
+		harley.setLevel(3);
+		Dweller john = new Dweller(true, "Rambo", "John", specialService.randForDweller(3));
+		Arrays.asList( simon, harley, john ).stream()
+			.forEach(game.getShelter().getDwellers()::add);
+		LOGGER.info("Dweller generate over.");
 	}
 
 	private void realCreateRooms(Game game) {

@@ -45,8 +45,9 @@ public class DwellerService {
 	 * swap assignment if room is full
 	 * @param idDweller The dweller id
 	 * @param idRoom The room id
+	 * @return the Dweller assigned
 	 */
-	public void assign(long idDweller, long idRoom) {
+	public Dweller assign(long idDweller, long idRoom) {
 		Room room = roomDao.getOne(idRoom);
 		Dweller dweller = dao.getOne(idDweller);
 		List<Dweller> assignToRoom = findAssignToRoom(idRoom);
@@ -63,7 +64,7 @@ public class DwellerService {
 			});
 		}
 		dweller.setRoom(room);
-		dao.save(dweller);
+		return dao.save(dweller);
 	}
 	
 	public List<Dweller> findAssignToRoom(long idRoom) {

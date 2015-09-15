@@ -49,18 +49,19 @@ public class RoomService {
 	 * @return
 	 */
 	public Optional<Set<Integer>> canAddRoom(long idType, long idFloor, int cell) {
-		if(isCellEmpty(idFloor, cell)){
+		if (isCellEmpty(idFloor, cell)) {
+			
+			Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, cell);
+
 			//first, it is an elevator ?
 			if (roomTypeDao.findByName(Constant.ELEVATOR).getId().equals(idType)) {
-				Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, cell);
 				if(hasElevatorVertical(idFloor, cell) || okHorizontal.isPresent()) {
 					return Optional.of(Stream.of(cell).collect(Collectors.toSet()));
 				}
 			}
 			//else, another room adjoins left/right ?
 			else {
-				Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, cell);
-				if(isCellEmpty(idFloor, cell) && okHorizontal.isPresent()){
+				if (isCellEmpty(idFloor, cell) && okHorizontal.isPresent()) {
 					return okHorizontal;
 				}
 			}
@@ -163,6 +164,7 @@ public class RoomService {
 		Room room = dao.findOne(id);
 		room.setLevel(room.getLevel() + 1);
 		dao.save(room);
+		//TODO : merge if possible
 		return room;
 	}
 	

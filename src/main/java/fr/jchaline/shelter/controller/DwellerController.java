@@ -29,4 +29,8 @@ public class DwellerController {
 		return service.paginate(pageNumber, offset);
 	}
 	
+	@RequestMapping("/assign/{id}/{idRoom}")
+	public Dweller assign(@PathVariable long id, @PathVariable long idRoom) {
+		return service.assign(id, idRoom);
+	}
 }
