@@ -102,6 +102,7 @@ public class FactoryService {
 		simon.setLevel(2);
 		Dweller harley = new Dweller(true, "Quinn", "Harley", specialService.randForDweller(4));
 		harley.setLevel(3);
+		harley.setMale(false);
 		Dweller john = new Dweller(true, "Rambo", "John", specialService.randForDweller(3));
 		Arrays.asList( simon, harley, john ).stream()
 			.forEach(game.getShelter().getDwellers()::add);
