@@ -100,9 +100,12 @@
 					</div>
 					<hr>
 					<div>
-						<table datatable="ng" id="dwellerTable" class="table table-striped table-hover">
+						<table data-datatable="ng" data-ng-if="dwellers" id="dwellerTable" class="table table-striped table-hover">
 							<thead>
-								<tr><th>Name</th><th>Firstname</th><th>Room</th><th>Level</th><th>Male</th></tr>
+								<tr>
+									<th>Name</th><th>Firstname</th><th>Room</th><th>Level</th><th>Male</th>
+									<th>S</th><th>P</th><th>E</th><th>C</th><th>I</th><th>A</th><th>L</th>
+								</tr>
 							</thead>
 							<tbody>
 								<tr data-ng-repeat="dweller in dwellers">
@@ -110,7 +113,14 @@
 									<td>{{ dweller.firstname }}</td>
 									<td>{{ dweller.room.roomType.name }}</td>
 									<td>{{ dweller.level }}</td>
-									<td><span ng-if="dweller.male">&#9794;</span><span ng-if="!dweller.male">&#9792;</span></td>
+									<td><span data-ng-if="dweller.male">&#9794;</span><span ng-if="!dweller.male">&#9792;</span></td>
+									<td>{{ dweller.special.values.S }}</td>
+									<td>{{ dweller.special.values.P }}</td>
+									<td>{{ dweller.special.values.E }}</td>
+									<td>{{ dweller.special.values.C }}</td>
+									<td>{{ dweller.special.values.I }}</td>
+									<td>{{ dweller.special.values.A }}</td>
+									<td>{{ dweller.special.values.L }}</td>
 								</tr>
 							</tbody>
 						</table>

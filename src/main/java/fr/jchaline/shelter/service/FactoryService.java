@@ -93,6 +93,7 @@ public class FactoryService {
 		//add rooms (split in about 3~4 floors)
 		realCreateRooms(game);
 		
+		//add dwellers
 		realCreateDwellers(game);
 		
 	}
@@ -100,11 +101,34 @@ public class FactoryService {
 	private void realCreateDwellers(Game game) {
 		Dweller simon = new Dweller(true, "Adebisi", "Simon", specialService.randForDweller(7));
 		simon.setLevel(2);
-		Dweller harley = new Dweller(true, "Quinn", "Harley", specialService.randForDweller(4));
+		Dweller harley = new Dweller(false, "Quinn", "Harley", specialService.randForDweller(4));
 		harley.setLevel(3);
-		harley.setMale(false);
-		Dweller john = new Dweller(true, "Rambo", "John", specialService.randForDweller(3));
-		Arrays.asList( simon, harley, john ).stream()
+		Arrays.asList( simon, harley,
+				new Dweller(true, "Roronoa", "Zoro", specialService.randForDweller(3)),
+				new Dweller(true, "Locke", "John", specialService.randForDweller(3)),
+				new Dweller(true, "Troy", "Christian", specialService.randForDweller(3)),
+				new Dweller(true, "Simpson", "Abraham", specialService.randForDweller(3)),
+				new Dweller(true, "Lannister", "Tyrion", specialService.randForDweller(3)),
+				new Dweller(true, "Stinson", "Barney", specialService.randForDweller(3)),
+				new Dweller(true, "Phillip", "Fry", specialService.randForDweller(3)),
+				new Dweller(true, "Bullock", "Harvey", specialService.randForDweller(3)),
+				new Dweller(true, "Wilson", "James", specialService.randForDweller(3)),
+				new Dweller(true, "Pope", "John", specialService.randForDweller(3)),
+				new Dweller(false, "Nico", "Robin", specialService.randForDweller(3)),
+				new Dweller(false, "McNamara", "Julia", specialService.randForDweller(3)),
+				new Dweller(false, "Stark", "Arya", specialService.randForDweller(3)),
+				new Dweller(false, "Kwon", "Sun", specialService.randForDweller(3)),
+				new Dweller(false, "Scherbatsky", "Robin", specialService.randForDweller(3)),
+				new Dweller(false, "Van Houten", "Luann", specialService.randForDweller(3)),
+				new Dweller(false, "Kyle", "Selina", specialService.randForDweller(3)),
+				new Dweller(false, "Turanga", "Leela", specialService.randForDweller(3)),
+				new Dweller(false, "Luna", "Carmen", specialService.randForDweller(3)),
+				new Dweller(false, "Dunham", "Olivia", specialService.randForDweller(3)),
+				new Dweller(false, "Cudy", "Lisa", specialService.randForDweller(3)),
+				new Dweller(true, "Pinkman", "Jesse", specialService.randForDweller(3)),
+				new Dweller(false, "Ecureil", "Sandy", specialService.randForDweller(3)),
+				new Dweller(true, "Rambo", "John", specialService.randForDweller(3))
+				).stream()
 			.forEach(game.getShelter().getDwellers()::add);
 		LOGGER.info("Dweller generate over.");
 	}
