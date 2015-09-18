@@ -5,6 +5,7 @@ tech :
  - spring security, default user in dev mode. Used to find the user's shelter
  - DBUnit (see http://blog.netapsys.fr/realiser-ses-tests-dintegration-avec-spring-test-dbunit/)
  - metrics
+ - mock angular service for rest call
  
 game : 
  - display resources (http get) and increase with js. Compute and update the new values if necessary (build, sell, all actions from player)
