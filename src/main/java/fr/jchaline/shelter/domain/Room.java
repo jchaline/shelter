@@ -13,6 +13,8 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table
 public class Room extends AbstractEntity {
@@ -31,7 +33,11 @@ public class Room extends AbstractEntity {
 	@Min(1)
 	private int level;
 	
-	public Room(){
+	@JsonBackReference
+	@ManyToOne
+	private Floor floor;
+	
+	public Room() {
 		
 	}
 	
@@ -73,6 +79,14 @@ public class Room extends AbstractEntity {
 
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+	public Floor getFloor() {
+		return floor;
+	}
+
+	public void setFloor(Floor floor) {
+		this.floor = floor;
 	}
 
 }

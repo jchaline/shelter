@@ -16,8 +16,12 @@ public class GameService {
 	@Autowired
 	private GameDao dao;
 	
-	public List<Game> list(){
+	public List<Game> list() {
 		return dao.findAll();
+	}
+	
+	public Game get() {
+		return dao.findAll().get(0);
 	}
 
 }

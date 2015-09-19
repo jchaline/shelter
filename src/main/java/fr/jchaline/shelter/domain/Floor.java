@@ -10,6 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 /**
  * Contains 
  * @author jChaline
@@ -25,7 +27,8 @@ public class Floor extends AbstractEntity {
 	@Column(nullable=false)
 	private int size;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JsonManagedReference
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="floor")
 	private Set<Room> rooms = new HashSet<Room>();
 	
 	public Floor(){

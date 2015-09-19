@@ -2,6 +2,7 @@ package fr.jchaline.shelter.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -127,6 +128,7 @@ public class RoomService {
 		Optional<Set<Integer>> canAddRoom = canAddRoom(type.getId(), floor.getId(), cell);
 		canAddRoom.ifPresent(value -> {
 			Room newRoom = new Room(type, value);
+			newRoom.setFloor(floor);
 			
 			Room right = dao.findOneByFloorAndCell(floor.getId(), cell + 1);
 			Room left = dao.findOneByFloorAndCell(floor.getId(), cell - 1);
@@ -165,9 +167,9 @@ public class RoomService {
 		room.setLevel(room.getLevel() + 1);
 		dao.save(room);
 		
-		Optional<Integer> min = room.getCells().stream().min(Integer::min);
-		Optional<Integer> max = room.getCells().stream().min(Integer::max);
-		List<Room> findNeighbors = dao.findNeighbors(id, min.get() - 1, max.get() + 1);
+		OptionalInt min = room.getCells().stream().mapToInt(i -> i).min();
+		OptionalInt max = room.getCells().stream().mapToInt(i -> i).max();
+		List<Room> findNeighbors = dao.findNeighbors(id, min.getAsInt() - 1, max.getAsInt() + 1);
 		
 		//stream of the room mergeables
 		Optional<Room> mergeable = findNeighbors.stream()
@@ -175,7 +177,7 @@ public class RoomService {
 				.sorted((r1, r2) -> Integer.compare(r1.getSize(), r2.getSize())).findFirst();
 		
 		//TODO : merge if possible
-		//mergeable.ifPresent(r -> {merge(room, r); dao.delete(r);});
+		mergeable.ifPresent(r -> {merge(room, r);r.getFloor().getRooms().remove(r); dao.delete(r);});
 		return room;
 	}
 	

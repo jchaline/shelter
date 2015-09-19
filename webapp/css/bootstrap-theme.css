@@ -1,5 +1,21 @@
 body { padding-top: 70px; }
 
-.bg-grey{
+.bg-silver {
 	background-color: silver;
+}
+
+.bg-elevator {
+	background-color: gold;
+}
+
+.bg-power {
+	background-color: red;
+}
+
+.bg-water {
+	background-color: dodgerblue;
+}
+
+.bg-food {
+	background-color: limegreen;
 }

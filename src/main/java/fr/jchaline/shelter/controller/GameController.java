@@ -21,5 +21,10 @@ public class GameController {
 	public List<Game> list() {
 		return service.list();
 	}
+	
+	@RequestMapping("/get")
+	public Game get() {
+		return service.get();
+	}
 
 }

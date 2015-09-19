@@ -145,15 +145,15 @@ public class FactoryService {
 			Floor floor = new Floor(number, Constant.FLOOR_SIZE);
 			floors.put(number, floorDao.save(floor));
 			
-			Room f0Elevator = new Room(elevator, Stream.of(0).collect(Collectors.toSet()));
-			Room f0Power = new Room(power, Stream.of(1, 2).collect(Collectors.toSet()));
-			Room f0Water = new Room(water, Stream.of(3, 4).collect(Collectors.toSet()));
-			Room f0Food = new Room(food, Stream.of(5, 6).collect(Collectors.toSet()));
-			floor.getRooms().add(f0Elevator);
-			floor.getRooms().add(f0Power);
-			floor.getRooms().add(f0Water);
-			floor.getRooms().add(f0Food);
-			floor.getRooms().forEach(roomDao::save);
+			Arrays.asList(new Room(elevator, Stream.of(0).collect(Collectors.toSet())),
+							new Room(power, Stream.of(1, 2).collect(Collectors.toSet())),
+							new Room(water, Stream.of(3, 4).collect(Collectors.toSet())),
+							new Room(food, Stream.of(5, 6).collect(Collectors.toSet())))
+				.forEach(r -> {
+					floor.getRooms().add(r);
+					r.setFloor(floor);
+					roomDao.save(r);
+				});
 			floorDao.save(floor);
 		}
 		gameDao.save(game);
