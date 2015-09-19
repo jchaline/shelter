@@ -164,7 +164,18 @@ public class RoomService {
 		Room room = dao.findOne(id);
 		room.setLevel(room.getLevel() + 1);
 		dao.save(room);
+		
+		Optional<Integer> min = room.getCells().stream().min(Integer::min);
+		Optional<Integer> max = room.getCells().stream().min(Integer::max);
+		List<Room> findNeighbors = dao.findNeighbors(id, min.get() - 1, max.get() + 1);
+		
+		//stream of the room mergeables
+		Optional<Room> mergeable = findNeighbors.stream()
+				.filter(p -> isMergeable(room, p))
+				.sorted((r1, r2) -> Integer.compare(r1.getSize(), r2.getSize())).findFirst();
+		
 		//TODO : merge if possible
+		//mergeable.ifPresent(r -> {merge(room, r); dao.delete(r);});
 		return room;
 	}
 	

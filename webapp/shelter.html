@@ -58,12 +58,12 @@
 		    			<span class="hidden-xs">refresh dwellers</span>
 		    		</button>
 		    	</span>
-				<h3>Shelter view</h3>
-				<div data-ng-view="shelterView" id="game">
+				<h3>Shelter view</h3>*
+				<div class="bg-grey" data-ng-view="shelterView" id="game">
 					<span class="text-center">{{ money }} $, {{food}}/{{foodRequired}} food, {{water}}/{{waterRequired}} water</span>
 					<div data-ng-repeat="floor in floors | orderBy: number">
 						<span data-ng-repeat="room in floor.rooms | orderBy:roomOrder">
-							<span drop="room.id" title="{{ room.roomType.name }}" data-ng-click="actionRoom(floor, room)" id="room{{ room.id }}">
+							<span class="{{ bgColor(room.roomType.name) }}" drop="room.id" title="{{ room.roomType.name }}" data-ng-click="actionRoom(floor, room)" id="room{{ room.id }}">
 								[{{ room.roomType.name | firstLetter }}, {{ room.size }} {{ room.cells }}. ({{ room.roomType.special }})]
 							</span>
 						</span>
@@ -144,11 +144,16 @@
 		app.controller(
 			"shelterController",
 			function( $scope, $rootScope, shelterService ) {
+				var bgColor = {elevator:'bg-warning', power:'bg-danger', water:'bg-info', food:'bg-success'};
 				
 				$scope.updateGame = function() {
 					shelterService.getData("/game/list").then(thenDoUpdateGame)
 					$scope.showDisplayRoom = false
 					$scope.showConstructRoom = false
+				}
+				
+				$scope.bgColor = function(type) {
+					return bgColor[type.toLowerCase()]
 				}
 
 				$scope.updateDwellers = function() {
