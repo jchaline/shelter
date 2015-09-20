@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.jchaline.shelter.config.Constant;
+import fr.jchaline.shelter.dao.DwellerDao;
 import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.RoomDao;
 import fr.jchaline.shelter.dao.RoomTypeDao;
+import fr.jchaline.shelter.domain.Dweller;
 import fr.jchaline.shelter.domain.Floor;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
@@ -29,6 +31,9 @@ public class RoomService {
 	
 	@Autowired
 	private FloorDao floorDao;
+
+	@Autowired
+	private DwellerDao dwellerDao;
 
 	@Autowired
 	private RoomDao dao;
@@ -51,7 +56,7 @@ public class RoomService {
 	 */
 	public Optional<Set<Integer>> canAddRoom(long idType, long idFloor, int cell) {
 		if (isCellEmpty(idFloor, cell)) {
-			
+		
 			Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, cell);
 
 			//first, it is an elevator ?
@@ -181,4 +186,11 @@ public class RoomService {
 		return room;
 	}
 	
+	@Transactional
+	public Room assign(long id, long idDweller) {
+		Room room = dao.findOne(id);
+		Dweller dweller = dwellerDao.findOne(idDweller);
+		dweller.setRoom(room);
+		return room;
+	}
 }

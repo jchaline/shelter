@@ -38,16 +38,20 @@ public class RoomController {
 	public Room find(@PathVariable long id) {
 		return service.find(id);
 	}
-	
+
 	@RequestMapping(value = "/construct", method = RequestMethod.POST)
 	public Floor construct(@RequestBody @Valid Construct construct) {
 		return service.construct(construct.getFloor(), construct.getCell(), construct.getType());
 	}
-	
+
 	@RequestMapping(value = "/upgrade/{id}", method = RequestMethod.POST)
 	public Room upgrade(@PathVariable long id) {
 		return service.upgrade(id);
 	}
-	
+
+	@RequestMapping(value = "/{id}/assign/{idDweller}", method = RequestMethod.POST)
+	public Room assign(@PathVariable long id, @PathVariable long idDweller) {
+		return service.assign(id, idDweller);
+	}
 	
 }

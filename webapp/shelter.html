@@ -63,7 +63,8 @@
 					<span class="text-center">{{ money }} $, {{food}} food, {{water}} water</span>
 					<div data-ng-repeat="floor in floors | orderBy: number">
 						<span data-ng-repeat="room in floor.rooms | orderBy:roomOrder">
-							<span class="bg-{{ room.roomType.name }}" drop="room.id" title="{{ room.roomType.name }}" data-ng-click="actionRoom(floor, room)" id="room{{ room.id }}">
+							<span id="room{{room.id}}" class="bg-{{ room.roomType.name }}" title="{{ room.roomType.name }}" 
+								data-ng-click="actionRoom(floor, room)" drop="{{room.id}}">
 								[{{ room.roomType.name | firstLetter }}, {{ room.size }} {{ room.cells }}. ({{ room.roomType.special }})]
 							</span>
 						</span>
@@ -109,7 +110,12 @@
 							</thead>
 							<tbody>
 								<tr data-ng-repeat="dweller in dwellers">
-									<td><span drag="dweller.id" class="glyphicon glyphicon-user"></span> {{ dweller.name }}</td>
+									<td>
+										<span	id="dweller{{dweller.id}}" data-dweller="{{dweller.id}}" 
+												class="glyphicon glyphicon-user" drag="{{dweller.id}}">
+										</span>
+										 {{ dweller.name }}
+									</td>
 									<td>{{ dweller.firstname }}</td>
 									<td>{{ dweller.room.roomType.name }}</td>
 									<td>{{ dweller.level }}</td>
@@ -133,6 +139,8 @@
 	<script type="text/javascript" src="js/angular-datatables.min.js"></script>
 	<script type="text/javascript" src="js/angular-datatables.columnfilter.min.js"></script>
 
-	<script type="text/javascript" src="js/shelter.js"></script>
+	<script type="text/javascript" src="js/shelter/shelter-controller.js"></script>
+	<script type="text/javascript" src="js/shelter/shelter-directive.js"></script>
+	<script type="text/javascript" src="js/shelter/shelter-service.js"></script>
 </body>
 </html>
