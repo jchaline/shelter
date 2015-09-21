@@ -1,6 +1,6 @@
 app.service("shelterService", function( $http, $q ) {
 	
-	var baseUrl = "http://localhost:9080"
+	var baseUrl = 'http://localhost:9080'
 
 	// public API
 	return({
