@@ -3,6 +3,8 @@ package fr.jchaline.shelter.service;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,16 +62,20 @@ public class ShelterService {
 		return shelter;
 	}
 
-	private long computeMoney(Shelter shelter, long time) {
-		return 4500 * time;
+	private long computeMoney(Shelter shelter, long seconds) {
+		
+		Stream<Integer> map = shelter.getFloors().values().parallelStream()
+		.map(floor -> floor.getRooms().parallelStream().collect( Collectors.summingInt( RoomService::earnPerSecond ) ));
+		
+		return 4500 * seconds;
 	}
 
-	private long computeWater(Shelter shelter, long time) {
-		return 10500 * time;
+	private long computeWater(Shelter shelter, long seconds) {
+		return 10500 * seconds;
 	}
 
-	private long computeFood(Shelter shelter, long time) {
-		return 75000 * time;
+	private long computeFood(Shelter shelter, long seconds) {
+		return 75000 * seconds;
 	}
 
 }

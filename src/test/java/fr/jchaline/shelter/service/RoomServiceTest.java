@@ -39,6 +39,22 @@ public class RoomServiceTest {
 	private RoomService service = new RoomService();
 	
 	@Test
+	public void earnPerSecond() {
+		RoomType type = new RoomType("power", 2, SpecialEnum.S, 0, 6);
+		Room room2 = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
+		Room room4 = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
+		Room room6 = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
+		
+		int earnR2 = RoomService.earnPerSecond(room2);
+		int earnR4 = RoomService.earnPerSecond(room4);
+		int earnR6 = RoomService.earnPerSecond(room6);
+		
+		Assert.assertTrue(earnR2*2 < earnR4);
+		Assert.assertTrue(earnR2*3 < earnR6);
+		Assert.assertTrue(earnR4*6 < earnR6*4);
+	}
+	
+	@Test
 	public void canAddRoom() {
 		long idType = 1l;
 		long idFloor = 2l;

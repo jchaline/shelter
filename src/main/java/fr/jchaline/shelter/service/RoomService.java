@@ -215,4 +215,13 @@ public class RoomService {
 		
 		return room;
 	}
+
+	/**
+	 * Compute the amount of resources earn per second
+	 * @param room
+	 * @return
+	 */
+	public static int earnPerSecond(Room room) {
+		return room.getLevel() * room.getSize() * 100;
+	}
 }

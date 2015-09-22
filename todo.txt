@@ -1,4 +1,6 @@
 tech :
+ - /!\ enum for room type
+ - /!\ enum for resource type
  - integration test 
  - map with all shelter (graph representation ? currently using https://github.com/jgrapht/jgrapht)
  - generation map : create map with selters, buildings, school, market, ...

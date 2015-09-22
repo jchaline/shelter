@@ -34,11 +34,11 @@ public class RoomType extends AbstractEntity {
 	@Max(Constant.ROOM_MAX_SIZE)
 	private int maxSize;
 	
-	public RoomType(){
+	public RoomType() {
 		
 	}
 	
-	public RoomType(String name, int size, SpecialEnum special, int cost, int maxSize){
+	public RoomType(String name, int size, SpecialEnum special, int cost, int maxSize) {
 		this.setName(name);
 		this.setSize(size);
 		this.setSpecial(special);
