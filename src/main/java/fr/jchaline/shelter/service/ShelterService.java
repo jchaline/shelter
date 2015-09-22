@@ -28,7 +28,7 @@ public class ShelterService {
 	}
 	
 	@Transactional
-	@Scheduled(fixedDelay=5000)
+	@Scheduled(fixedDelay=10000)
 	public void computeAll() {
 		LOGGER.debug("Run computeAll for Shelters");
 		dao.findAll().parallelStream().forEach(it -> {
@@ -61,15 +61,15 @@ public class ShelterService {
 	}
 
 	private long computeMoney(Shelter shelter, long time) {
-		return 3 * time;
+		return 4500 * time;
 	}
 
 	private long computeWater(Shelter shelter, long time) {
-		return 7 * time;
+		return 10500 * time;
 	}
 
 	private long computeFood(Shelter shelter, long time) {
-		return 5 * time;
+		return 75000 * time;
 	}
 
 }

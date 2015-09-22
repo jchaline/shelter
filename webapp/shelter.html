@@ -62,7 +62,7 @@
 			    	</span>
 				</h3>
 				<div class="bg-silver" data-ng-view="shelterView" id="game">
-					<span class="text-center">{{ money }} $, {{food}} food, {{water}} water</span>
+					<span class="text-center">{{money | formatResources}} $, {{food | formatResources}} food, {{water | formatResources}} water</span>
 					<div data-ng-repeat="floor in floors | orderBy: number">
 						<span data-ng-repeat="room in floor.rooms | orderBy:roomOrder">
 							<span id="room{{room.id}}" class="bg-{{ room.roomType.name }}" title="{{ room.roomType.name }}" 
