@@ -2,9 +2,10 @@ package fr.jchaline.shelter.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,33 +50,31 @@ public class ShelterService {
 		LocalDateTime now = LocalDateTime.now();
 		
 		long seconds = lastCompute.until( now, ChronoUnit.SECONDS);
+		long coeff = computeCoeff(shelter);
+		long res = coeff * seconds;
 		
-		long food = computeFood(shelter, seconds);
-		long water = computeWater(shelter, seconds);
-		long money = computeMoney(shelter, seconds);
-
-		shelter.setFood(shelter.getFood() + food);
-		shelter.setWater(shelter.getWater() + water);
-		shelter.setMoney(shelter.getMoney() + money);
+		shelter.setFood(shelter.getFood() + res);
+		shelter.setWater(shelter.getWater() + res);
+		shelter.setMoney(shelter.getMoney() + res);
 		shelter.setLastCompute(now);
 		dao.save(shelter);
 		return shelter;
 	}
 
-	private long computeMoney(Shelter shelter, long seconds) {
-		
-		Stream<Integer> map = shelter.getFloors().values().parallelStream()
-		.map(floor -> floor.getRooms().parallelStream().collect( Collectors.summingInt( RoomService::earnPerSecond ) ));
-		
-		return 4500 * seconds;
+	public long computeCoeff(Shelter shelter) {
+		return shelter.getFloors().values().parallelStream()
+				.mapToInt(floor -> floor.getRooms().parallelStream().collect( Collectors.summingInt( RoomService::earnPerSecond ) ))
+				.sum();
 	}
 
-	private long computeWater(Shelter shelter, long seconds) {
-		return 10500 * seconds;
-	}
-
-	private long computeFood(Shelter shelter, long seconds) {
-		return 75000 * seconds;
+	public Map<String, Long> getCoeff(long id) {
+		Map<String, Long> res = new HashMap<String,Long>();
+		Shelter shelter = dao.findOne(id);
+		long coeff = computeCoeff(shelter);
+		res.put("water", coeff);
+		res.put("power", coeff);
+		res.put("food", coeff);
+		return res;
 	}
 
 }

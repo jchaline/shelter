@@ -9,7 +9,7 @@ import javax.validation.constraints.Min;
 import org.hibernate.validator.constraints.NotBlank;
 
 import fr.jchaline.shelter.config.Constant;
-import fr.jchaline.shelter.utils.SpecialEnum;
+import fr.jchaline.shelter.enums.SpecialEnum;
 
 @Entity
 @Table

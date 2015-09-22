@@ -20,7 +20,7 @@ import fr.jchaline.shelter.domain.Dweller;
 import fr.jchaline.shelter.domain.Floor;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
-import fr.jchaline.shelter.utils.SpecialEnum;
+import fr.jchaline.shelter.enums.SpecialEnum;
 
 /**
  * @author jeremy

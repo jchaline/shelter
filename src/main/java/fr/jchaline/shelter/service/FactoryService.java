@@ -30,7 +30,7 @@ import fr.jchaline.shelter.domain.RoomType;
 import fr.jchaline.shelter.domain.Shelter;
 import fr.jchaline.shelter.domain.Suit;
 import fr.jchaline.shelter.domain.Weapon;
-import fr.jchaline.shelter.utils.SpecialEnum;
+import fr.jchaline.shelter.enums.SpecialEnum;
 
 /**
  * TODO : generate test data in dev mode only

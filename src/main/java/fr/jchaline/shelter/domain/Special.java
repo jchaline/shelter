@@ -14,7 +14,7 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyEnumerated;
 import javax.persistence.Table;
 
-import fr.jchaline.shelter.utils.SpecialEnum;
+import fr.jchaline.shelter.enums.SpecialEnum;
 
 @Entity
 @Table
