@@ -8,6 +8,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 
@@ -36,6 +37,10 @@ public class Room extends AbstractEntity {
 	@JsonBackReference
 	@ManyToOne
 	private Floor floor;
+	
+	@JsonBackReference
+	@OneToMany(mappedBy="room")
+	private Set<Dweller> dwellers = new HashSet<Dweller>();
 	
 	public Room() {
 		
@@ -87,6 +92,14 @@ public class Room extends AbstractEntity {
 
 	public void setFloor(Floor floor) {
 		this.floor = floor;
+	}
+
+	public Set<Dweller> getDwellers() {
+		return dwellers;
+	}
+
+	public void setDwellers(Set<Dweller> dwellers) {
+		this.dwellers = dwellers;
 	}
 
 }

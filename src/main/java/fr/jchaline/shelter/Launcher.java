@@ -16,6 +16,5 @@ public class Launcher {
 		
 		factory.initData();
 		factory.realCreateData();
-		
 	}
 }

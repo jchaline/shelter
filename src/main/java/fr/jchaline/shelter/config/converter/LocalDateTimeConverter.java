@@ -21,11 +21,11 @@ public class LocalDateTimeConverter  implements AttributeConverter<LocalDateTime
 	}
 	
 	public static Date toDate(LocalDateTime ldt) {
-		return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+		return ldt != null ? Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant()) : null;
 	}
 	
 	public static LocalDateTime toLocalDateTime(Date date) {
-		return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+		return date != null ? LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()) : null;
 	}
 
 }

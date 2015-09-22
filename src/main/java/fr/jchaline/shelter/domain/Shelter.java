@@ -1,5 +1,6 @@
 package fr.jchaline.shelter.domain;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,15 +32,18 @@ public class Shelter extends AbstractEntity {
 	
 	@Column(nullable = false)
 	@Min(0)
-	private int money;
+	private long money;
 	
 	@Column(nullable = false)
 	@Min(0)
-	private int water;
+	private long water;
 
 	@Column(nullable = false)
 	@Min(0)
-	private int food;
+	private long food;
+	
+	@Column(nullable = false)
+	private LocalDateTime lastCompute = LocalDateTime.now();
 
 	public Shelter(){
 		
@@ -61,27 +65,35 @@ public class Shelter extends AbstractEntity {
 		this.dwellers = dwellers;
 	}
 
-	public int getMoney() {
+	public long getMoney() {
 		return money;
 	}
 
-	public void setMoney(int money) {
+	public void setMoney(long money) {
 		this.money = money;
 	}
 
-	public int getWater() {
+	public long getWater() {
 		return water;
 	}
 
-	public void setWater(int water) {
+	public void setWater(long water) {
 		this.water = water;
 	}
 
-	public int getFood() {
+	public long getFood() {
 		return food;
 	}
 
-	public void setFood(int food) {
+	public void setFood(long food) {
 		this.food = food;
+	}
+
+	public LocalDateTime getLastCompute() {
+		return lastCompute;
+	}
+
+	public void setLastCompute(LocalDateTime lastCompute) {
+		this.lastCompute = lastCompute;
 	}
 }

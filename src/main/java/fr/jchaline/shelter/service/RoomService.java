@@ -20,6 +20,7 @@ import fr.jchaline.shelter.domain.Dweller;
 import fr.jchaline.shelter.domain.Floor;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
+import fr.jchaline.shelter.utils.SpecialEnum;
 
 /**
  * @author jeremy
@@ -181,7 +182,6 @@ public class RoomService {
 				.filter(p -> isMergeable(room, p))
 				.sorted((r1, r2) -> Integer.compare(r1.getSize(), r2.getSize())).findFirst();
 		
-		//TODO : merge if possible
 		mergeable.ifPresent(r -> {merge(room, r);r.getFloor().getRooms().remove(r); dao.delete(r);});
 		return room;
 	}
@@ -190,7 +190,29 @@ public class RoomService {
 	public Room assign(long id, long idDweller) {
 		Room room = dao.findOne(id);
 		Dweller dweller = dwellerDao.findOne(idDweller);
+		
+		//if room full, exchange one dweller with current
+		if( room.getDwellers().size() >= room.getSize() * 2 ) {
+			
+			//find the dweller with lowest SPECIAL link with room type
+			SpecialEnum special = room.getRoomType().getSpecial();
+			room.getDwellers().stream()
+				.sorted((d1, d2) -> {
+					return Integer.compare(d1.getSpecial().getValue(special), d2.getSpecial().getValue(special));
+				})
+				.findFirst()
+				.ifPresent(lowest -> {
+					lowest.getRoom().getDwellers().remove(lowest);
+					lowest.setRoom(dweller.getRoom());
+					if (lowest.getRoom() != null) {
+						lowest.getRoom().getDwellers().add(lowest);
+					}
+			});
+		}
+		
 		dweller.setRoom(room);
+		room.getDwellers().add(dweller);
+		
 		return room;
 	}
 }

@@ -13,6 +13,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table
 public class Dweller extends AbstractEntity {
@@ -42,6 +44,7 @@ public class Dweller extends AbstractEntity {
 	@OneToOne
 	private Weapon weapon;
 	
+	@JsonManagedReference
 	@OneToOne
 	private Room room;
 	
