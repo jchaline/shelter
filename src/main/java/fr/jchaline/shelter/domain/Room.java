@@ -48,7 +48,7 @@ public class Room extends AbstractEntity {
 	
 	public Room(RoomType type, Set<Integer> cells) {
 		this.setRoomType(type);
-		this.setSize(type.getSize());
+		this.setSize(cells.size());
 		this.setCells(cells);
 		this.setLevel(1);
 	}

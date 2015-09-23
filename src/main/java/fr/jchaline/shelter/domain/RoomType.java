@@ -8,7 +8,7 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import fr.jchaline.shelter.config.Constant;
+import fr.jchaline.shelter.config.ShelterConstants;
 import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.enums.SpecialEnum;
 
@@ -32,7 +32,7 @@ public class RoomType extends AbstractEntity {
 	
 	@Column(nullable = false)
 	@Min(1)
-	@Max(Constant.ROOM_MAX_SIZE)
+	@Max(ShelterConstants.ROOM_MAX_SIZE)
 	private int maxSize;
 	
 	@Column

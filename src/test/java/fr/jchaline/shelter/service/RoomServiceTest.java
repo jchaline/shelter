@@ -3,6 +3,9 @@ package fr.jchaline.shelter.service;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,9 +21,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.RoomDao;
 import fr.jchaline.shelter.dao.RoomTypeDao;
+import fr.jchaline.shelter.domain.Dweller;
 import fr.jchaline.shelter.domain.Floor;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
+import fr.jchaline.shelter.domain.Special;
 import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.enums.SpecialEnum;
 
@@ -41,14 +46,19 @@ public class RoomServiceTest {
 	
 	@Test
 	public void earnPerSecond() {
+		List<Dweller> dwellers = Arrays.asList(new Dweller(true, "John", "David", new Special(Arrays.asList(1, 2, 3, 1, 2, 3, 1))));
 		RoomType type = new RoomType("power", ResourceEnum.POWER, 2, SpecialEnum.S, 0, 6);
 		Room room2 = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
-		Room room4 = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
-		Room room6 = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
+		Room room4 = new Room(type, Stream.of(1, 2, 3, 4).collect(Collectors.toSet()));
+		Room room6 = new Room(type, Stream.of(1, 2, 3, 4, 5, 6).collect(Collectors.toSet()));
 		
-		int earnR2 = RoomService.earnPerSecond(room2);
-		int earnR4 = RoomService.earnPerSecond(room4);
-		int earnR6 = RoomService.earnPerSecond(room6);
+		room2.setDwellers(new HashSet<Dweller>(dwellers));
+		room4.setDwellers(new HashSet<Dweller>(dwellers));
+		room6.setDwellers(new HashSet<Dweller>(dwellers));
+		
+		int earnR2 = service.earnPerSecond(room2);
+		int earnR4 = service.earnPerSecond(room4);
+		int earnR6 = service.earnPerSecond(room6);
 		
 		Assert.assertTrue(earnR2*2 < earnR4);
 		Assert.assertTrue(earnR2*3 < earnR6);

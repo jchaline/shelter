@@ -12,6 +12,7 @@ tech :
  - display map with all shelter (graph representation ? currently using https://github.com/jgrapht/jgrapht)
  
 game : 
+ - improve notion of "room size" => cells uses & dwellers capacity...
  - water & food use to "create" and train dwellers
  - money/water/food use to build room
  - power use by room

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.jchaline.shelter.config.Constant;
+import fr.jchaline.shelter.config.ShelterConstants;
 import fr.jchaline.shelter.dao.DwellerDao;
 import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.RoomDao;
@@ -30,6 +30,10 @@ import fr.jchaline.shelter.enums.SpecialEnum;
 @Transactional(readOnly = true)
 public class RoomService {
 	
+	private static final int LAMBDA_AMOUNT_RESOURCES_EARN = 100;
+	private static final double COEFF_ROOM_SIZE = 2.2;
+	private static final double COEFF_ROOM_LEVEL = 1.3;
+
 	@Autowired
 	private FloorDao floorDao;
 
@@ -61,7 +65,7 @@ public class RoomService {
 			Optional<Set<Integer>> okHorizontal = isOkHorizontal(idType, idFloor, cell);
 
 			//first, it is an elevator ?
-			if (roomTypeDao.findByName(Constant.ELEVATOR).getId().equals(idType)) {
+			if (roomTypeDao.findByName(ShelterConstants.ELEVATOR).getId().equals(idType)) {
 				if(hasElevatorVertical(idFloor, cell) || okHorizontal.isPresent()) {
 					return Optional.of(Stream.of(cell).collect(Collectors.toSet()));
 				}
@@ -109,7 +113,7 @@ public class RoomService {
 		Floor upstair = floorDao.findByNumber(floor.getNumber() - 1);
 		Room roomUp = upstair != null ? dao.findOneByFloorAndCell(upstair.getId(), cell) : null;
 		Room roomDown = downstair != null ? dao.findOneByFloorAndCell(downstair.getId(), cell) : null;
-		return roomUp != null && Constant.ELEVATOR.equals(roomUp.getRoomType().getName()) || roomDown != null && Constant.ELEVATOR.equals(roomDown.getRoomType().getName());
+		return roomUp != null && ShelterConstants.ELEVATOR.equals(roomUp.getRoomType().getName()) || roomDown != null && ShelterConstants.ELEVATOR.equals(roomDown.getRoomType().getName());
 	}
 	
 	/**
@@ -221,8 +225,20 @@ public class RoomService {
 	 * @param room
 	 * @return
 	 */
-	public static int earnPerSecond(Room room) {
-		//TODO : add percent efficient with dwellers presents and SPECIAL matching. 1 to 100 % (0 to max dwellers with 10 to room's SPECIAL)
-		return (int) Math.floor((Math.pow(1.3, room.getLevel()) * Math.pow(2.5, room.getSize()) * 100));
+	public int earnPerSecond(Room room) {
+		int earn = 0;
+		if (!room.getDwellers().isEmpty()) {
+			SpecialEnum specialForRoom = room.getRoomType().getSpecial();
+			int specialsOfDwellers = room.getDwellers()
+					.parallelStream()
+					.mapToInt(d -> d.getSpecial().getValue(specialForRoom))
+					.sum();
+			
+			//todo : improve this, it must be better to have 2 dwellers with 5 than one with 10
+			double coeff = specialsOfDwellers * 1.0 / (room.getSize() * ShelterConstants.SPECIAL_MAX);
+			
+			earn = (int) Math.floor(Math.pow(COEFF_ROOM_LEVEL, room.getLevel()) * Math.pow(COEFF_ROOM_SIZE, room.getSize()) * LAMBDA_AMOUNT_RESOURCES_EARN * coeff);
+		}
+		return earn;
 	}
 }

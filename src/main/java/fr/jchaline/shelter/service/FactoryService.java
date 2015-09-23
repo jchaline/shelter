@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.jchaline.shelter.config.Constant;
+import fr.jchaline.shelter.config.ShelterConstants;
 import fr.jchaline.shelter.dao.DwellerDao;
 import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.GameDao;
@@ -135,15 +135,15 @@ public class FactoryService {
 	}
 
 	private void realCreateRooms(Game game) {
-		RoomType elevator = roomTypeDao.findByName(Constant.ELEVATOR);
-		RoomType power = roomTypeDao.findByName(Constant.POWER);
-		RoomType water = roomTypeDao.findByName(Constant.WATER);
-		RoomType food = roomTypeDao.findByName(Constant.FOOD);
+		RoomType elevator = roomTypeDao.findByName(ShelterConstants.ELEVATOR);
+		RoomType power = roomTypeDao.findByName(ShelterConstants.POWER);
+		RoomType water = roomTypeDao.findByName(ShelterConstants.WATER);
+		RoomType food = roomTypeDao.findByName(ShelterConstants.FOOD);
 
 		int nbFloors = 4;
 		Map<Integer, Floor> floors = game.getShelter().getFloors();
 		for (int number = 0; number < nbFloors; number++) {
-			Floor floor = new Floor(number, Constant.FLOOR_SIZE);
+			Floor floor = new Floor(number, ShelterConstants.FLOOR_SIZE);
 			floors.put(number, floorDao.save(floor));
 			
 			Arrays.asList(new Room(elevator, Stream.of(0).collect(Collectors.toSet())),
@@ -182,17 +182,17 @@ public class FactoryService {
 
 	private void testGenerateFloor(Game game, int nbFloor) {
 		for (int number=0; number<nbFloor; number++) {
-			game.getShelter().getFloors().put(number, floorDao.save(new Floor(number, Constant.FLOOR_SIZE)));
+			game.getShelter().getFloors().put(number, floorDao.save(new Floor(number, ShelterConstants.FLOOR_SIZE)));
 		};
 		gameDao.save(game);
 	}
 	
 	private void initRoomType() {
 		if(roomTypeDao.count() == 0){
-			Stream.of(	new RoomType(Constant.ELEVATOR, null, 1, null, 150, 1),
-						new RoomType(Constant.FOOD, ResourceEnum.FOOD, 2, SpecialEnum.A, 100, 6),
-						new RoomType(Constant.WATER, ResourceEnum.WATER, 2, SpecialEnum.P, 100, 6),
-						new RoomType(Constant.POWER, ResourceEnum.POWER, 2, SpecialEnum.S, 90, 6))
+			Stream.of(	new RoomType(ShelterConstants.ELEVATOR, null, 1, null, 150, 1),
+						new RoomType(ShelterConstants.FOOD, ResourceEnum.FOOD, 2, SpecialEnum.A, 100, 6),
+						new RoomType(ShelterConstants.WATER, ResourceEnum.WATER, 2, SpecialEnum.P, 100, 6),
+						new RoomType(ShelterConstants.POWER, ResourceEnum.POWER, 2, SpecialEnum.S, 90, 6))
 			.forEach(roomTypeDao::save);
 		}
 	}

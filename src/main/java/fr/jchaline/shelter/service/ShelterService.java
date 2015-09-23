@@ -29,6 +29,9 @@ public class ShelterService {
 	@Autowired
 	private ShelterDao dao;
 	
+	@Autowired
+	private RoomService roomService;
+	
 	public List<Shelter> list() {
 		return dao.findAll();
 	}
@@ -67,7 +70,7 @@ public class ShelterService {
 				.mapToInt(floor -> floor.getRooms()
 							.parallelStream()
 							.filter(r -> resource.equals(r.getRoomType().getResource()))
-							.collect( Collectors.summingInt( RoomService::earnPerSecond ))
+							.collect( Collectors.summingInt( roomService::earnPerSecond ))
 				)
 				.sum() + MINIMUM_AMOUNT_RESOURCE_EARN;
 	}

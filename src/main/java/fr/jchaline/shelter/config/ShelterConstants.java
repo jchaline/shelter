@@ -1,6 +1,6 @@
 package fr.jchaline.shelter.config;
 
-public class Constant {
+public class ShelterConstants {
 	
 	/**
 	 * Space for rooms per floor
@@ -16,5 +16,7 @@ public class Constant {
 	public static final String WATER = "water";
 	public static final String FOOD = "food";
 	public static final String ELEVATOR = "elevator";
+	
+	public static final int SPECIAL_MAX = 10;
 	
 }
