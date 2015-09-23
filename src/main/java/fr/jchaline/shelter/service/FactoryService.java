@@ -30,6 +30,7 @@ import fr.jchaline.shelter.domain.RoomType;
 import fr.jchaline.shelter.domain.Shelter;
 import fr.jchaline.shelter.domain.Suit;
 import fr.jchaline.shelter.domain.Weapon;
+import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.enums.SpecialEnum;
 
 /**
@@ -188,10 +189,10 @@ public class FactoryService {
 	
 	private void initRoomType() {
 		if(roomTypeDao.count() == 0){
-			Stream.of(	new RoomType(Constant.ELEVATOR, 1, null, 150, 1),
-						new RoomType(Constant.FOOD, 2, SpecialEnum.A, 100, 6),
-						new RoomType(Constant.WATER, 2, SpecialEnum.P, 100, 6),
-						new RoomType(Constant.POWER, 2, SpecialEnum.S, 90, 6))
+			Stream.of(	new RoomType(Constant.ELEVATOR, null, 1, null, 150, 1),
+						new RoomType(Constant.FOOD, ResourceEnum.FOOD, 2, SpecialEnum.A, 100, 6),
+						new RoomType(Constant.WATER, ResourceEnum.WATER, 2, SpecialEnum.P, 100, 6),
+						new RoomType(Constant.POWER, ResourceEnum.POWER, 2, SpecialEnum.S, 90, 6))
 			.forEach(roomTypeDao::save);
 		}
 	}

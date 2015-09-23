@@ -16,11 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.jchaline.shelter.dao.ShelterDao;
 import fr.jchaline.shelter.domain.Shelter;
+import fr.jchaline.shelter.enums.ResourceEnum;
 
 @Transactional(readOnly = true)
 @Service
 public class ShelterService {
 	
+	private static final int MINIMUM_AMOUNT_RESOURCE_EARN = 1;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShelterService.class);
 	
 	@Autowired
@@ -50,31 +53,38 @@ public class ShelterService {
 		LocalDateTime now = LocalDateTime.now();
 		
 		long seconds = lastCompute.until( now, ChronoUnit.SECONDS);
-		long coeff = computeCoeff(shelter);
-		long res = coeff * seconds;
 		
-		shelter.setFood(shelter.getFood() + res);
-		shelter.setWater(shelter.getWater() + res);
-		shelter.setMoney(shelter.getMoney() + res);
+		shelter.setFood(shelter.getFood() + seconds * computeCoeff(shelter, ResourceEnum.FOOD));
+		shelter.setWater(shelter.getWater() + seconds * computeCoeff(shelter, ResourceEnum.WATER));
+		shelter.setMoney(shelter.getMoney() + seconds * computeCoeff(shelter, ResourceEnum.MONEY));
 		shelter.setLastCompute(now);
 		dao.save(shelter);
 		return shelter;
 	}
 
-	public long computeCoeff(Shelter shelter) {
+	public long computeCoeff(Shelter shelter, ResourceEnum resource) {
 		return shelter.getFloors().values().parallelStream()
-				.mapToInt(floor -> floor.getRooms().parallelStream().collect( Collectors.summingInt( RoomService::earnPerSecond ) ))
-				.sum();
+				.mapToInt(floor -> floor.getRooms()
+							.parallelStream()
+							.filter(r -> resource.equals(r.getRoomType().getResource()))
+							.collect( Collectors.summingInt( RoomService::earnPerSecond ))
+				)
+				.sum() + MINIMUM_AMOUNT_RESOURCE_EARN;
 	}
 
 	public Map<String, Long> getCoeff(long id) {
 		Map<String, Long> res = new HashMap<String,Long>();
 		Shelter shelter = dao.findOne(id);
-		long coeff = computeCoeff(shelter);
-		res.put("water", coeff);
-		res.put("power", coeff);
-		res.put("food", coeff);
+		res.put("water", computeCoeff(shelter, ResourceEnum.WATER));
+		res.put("money", computeCoeff(shelter, ResourceEnum.MONEY));
+		res.put("food", computeCoeff(shelter, ResourceEnum.FOOD));
+		res.put("power", computeCoeff(shelter, ResourceEnum.POWER));
+		res.put("powerRequired", computePowerRequired(shelter));
 		return res;
+	}
+
+	private long computePowerRequired(Shelter shelter) {
+		return 100l;
 	}
 
 }

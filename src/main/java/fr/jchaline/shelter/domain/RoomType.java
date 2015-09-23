@@ -9,6 +9,7 @@ import javax.validation.constraints.Min;
 import org.hibernate.validator.constraints.NotBlank;
 
 import fr.jchaline.shelter.config.Constant;
+import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.enums.SpecialEnum;
 
 @Entity
@@ -34,16 +35,20 @@ public class RoomType extends AbstractEntity {
 	@Max(Constant.ROOM_MAX_SIZE)
 	private int maxSize;
 	
+	@Column
+	private ResourceEnum resource;
+	
 	public RoomType() {
 		
 	}
 	
-	public RoomType(String name, int size, SpecialEnum special, int cost, int maxSize) {
+	public RoomType(String name, ResourceEnum resource, int size, SpecialEnum special, int cost, int maxSize) {
 		this.setName(name);
 		this.setSize(size);
 		this.setSpecial(special);
 		this.setCost(cost);
 		this.setMaxSize(maxSize);
+		this.setResource(resource);
 	}
 
 	public String getName() {
@@ -84,5 +89,13 @@ public class RoomType extends AbstractEntity {
 
 	public void setMaxSize(int maxSize) {
 		this.maxSize = maxSize;
+	}
+
+	public ResourceEnum getResource() {
+		return resource;
+	}
+
+	public void setResource(ResourceEnum resource) {
+		this.resource = resource;
 	}
 }

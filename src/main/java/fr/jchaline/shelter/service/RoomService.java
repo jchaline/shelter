@@ -222,6 +222,7 @@ public class RoomService {
 	 * @return
 	 */
 	public static int earnPerSecond(Room room) {
-		return room.getLevel() * room.getSize() * 100;
+		//TODO : add percent efficient with dwellers presents and SPECIAL matching. 1 to 100 % (0 to max dwellers with 10 to room's SPECIAL)
+		return (int) Math.floor((Math.pow(1.3, room.getLevel()) * Math.pow(2.5, room.getSize()) * 100));
 	}
 }

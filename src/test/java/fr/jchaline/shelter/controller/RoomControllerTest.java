@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import fr.jchaline.shelter.config.WebConfig;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
+import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.service.RoomService;
 
 
@@ -56,7 +57,7 @@ public class RoomControllerTest {
 
 	@Test
 	public void upgrade() throws Exception {
-		Room room = new Room(new RoomType("Water", 2, null, 100, 6), Stream.of(1, 2).collect(Collectors.toSet()));
+		Room room = new Room(new RoomType("Water", ResourceEnum.WATER, 2, null, 100, 6), Stream.of(1, 2).collect(Collectors.toSet()));
 		when( service.upgrade(1l)).thenReturn(room);
 		
 		String contentExpected = "{id:null, size:2, cells:[1, 2], level:1, roomType:{id:null, name:Water, size:2, cost:100, special:null, maxSize:6}}";

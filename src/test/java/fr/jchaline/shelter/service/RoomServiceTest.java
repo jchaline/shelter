@@ -21,6 +21,7 @@ import fr.jchaline.shelter.dao.RoomTypeDao;
 import fr.jchaline.shelter.domain.Floor;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
+import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.enums.SpecialEnum;
 
 @RunWith( MockitoJUnitRunner.class )
@@ -40,7 +41,7 @@ public class RoomServiceTest {
 	
 	@Test
 	public void earnPerSecond() {
-		RoomType type = new RoomType("power", 2, SpecialEnum.S, 0, 6);
+		RoomType type = new RoomType("power", ResourceEnum.POWER, 2, SpecialEnum.S, 0, 6);
 		Room room2 = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
 		Room room4 = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
 		Room room6 = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
@@ -58,7 +59,7 @@ public class RoomServiceTest {
 	public void canAddRoom() {
 		long idType = 1l;
 		long idFloor = 2l;
-		RoomType type = new RoomType("power", 2, SpecialEnum.S, 0, 6);
+		RoomType type = new RoomType("power", ResourceEnum.POWER, 2, SpecialEnum.S, 0, 6);
 		type.setId(idType);
 		when( roomTypeDao.findByName(any(String.class))).thenReturn( type );
 		
@@ -79,7 +80,7 @@ public class RoomServiceTest {
 	
 	@Test
 	public void merge() {
-		RoomType type = new RoomType("power", 2, SpecialEnum.S, 0, 6);
+		RoomType type = new RoomType("power", ResourceEnum.POWER, 2, SpecialEnum.S, 0, 6);
 		Room right = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
 		Room left = new Room(type, Stream.of(3, 4).collect(Collectors.toSet()));
 		when( dao.save(left) ).thenReturn( left );

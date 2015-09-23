@@ -32,15 +32,15 @@ public class Shelter extends AbstractEntity {
 	
 	@Column(nullable = false)
 	@Min(0)
-	private long money;
+	private long money = 500;
 	
 	@Column(nullable = false)
 	@Min(0)
-	private long water;
+	private long water = 200;
 
 	@Column(nullable = false)
 	@Min(0)
-	private long food;
+	private long food = 200;
 	
 	@Column(nullable = false)
 	private LocalDateTime lastCompute = LocalDateTime.now();
