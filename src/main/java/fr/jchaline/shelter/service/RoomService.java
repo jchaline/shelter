@@ -196,7 +196,7 @@ public class RoomService {
 		Dweller dweller = dwellerDao.findOne(idDweller);
 		
 		//if room full, exchange one dweller with current
-		if( room.getDwellers().size() >= room.getSize() * 2 ) {
+		if( room.getDwellers().size() >= room.getSize() ) {
 			
 			//find the dweller with lowest SPECIAL link with room type
 			SpecialEnum special = room.getRoomType().getSpecial();

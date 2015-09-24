@@ -19,4 +19,7 @@ public class ShelterConstants {
 	
 	public static final int SPECIAL_MAX = 10;
 	
+	public static final int STREET_PER_CITY = 10;
+	public static final int BUILDING_PER_STREET = 10;
+	
 }

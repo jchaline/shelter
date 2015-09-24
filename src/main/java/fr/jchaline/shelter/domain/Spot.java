@@ -2,26 +2,27 @@ package fr.jchaline.shelter.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Table
-@Inheritance(strategy = InheritanceType.JOINED)
-public class Building extends AbstractEntity {
+public class Spot extends AbstractEntity {
 	
-	@Column(unique = true, nullable = false)
+	@Column(nullable = false)
 	@NotBlank
 	private String name;
 	
-	public Building(String name) {
+	@Column(nullable = false)
+	private int number;
+	
+	public Spot(String name) {
+		this();
 		this.setName(name);
 	}
 
-	public Building() {
+	public Spot() {
 		
 	}
 
@@ -31,6 +32,14 @@ public class Building extends AbstractEntity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
 	}
 
 }

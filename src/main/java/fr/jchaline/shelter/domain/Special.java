@@ -27,6 +27,7 @@ public class Special extends AbstractEntity {
 	private Map<SpecialEnum, Integer> values;
 
 	public Special(List<Integer> special) {
+		this();
 		int i = 0;
 		values = new HashMap<SpecialEnum, Integer>();
 		values.put(SpecialEnum.S, special.get(i++));

@@ -57,9 +57,13 @@ public class ShelterService {
 		
 		long seconds = lastCompute.until( now, ChronoUnit.SECONDS);
 		
-		shelter.setFood(shelter.getFood() + seconds * computeCoeff(shelter, ResourceEnum.FOOD));
-		shelter.setWater(shelter.getWater() + seconds * computeCoeff(shelter, ResourceEnum.WATER));
-		shelter.setMoney(shelter.getMoney() + seconds * computeCoeff(shelter, ResourceEnum.MONEY));
+		long food = computeCoeff(shelter, ResourceEnum.FOOD);
+		long water = computeCoeff(shelter, ResourceEnum.WATER);
+		long money = computeCoeff(shelter, ResourceEnum.MONEY);
+		
+		shelter.setFood(shelter.getFood() + seconds * food);
+		shelter.setWater(shelter.getWater() + seconds * water);
+		shelter.setMoney(shelter.getMoney() + seconds * money);
 		shelter.setLastCompute(now);
 		dao.save(shelter);
 		return shelter;

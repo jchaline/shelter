@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.jchaline.shelter.config.ShelterConstants;
-import fr.jchaline.shelter.dao.BuildingDao;
 import fr.jchaline.shelter.dao.DwellerDao;
 import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.GameDao;
@@ -23,7 +22,7 @@ import fr.jchaline.shelter.dao.RoomTypeDao;
 import fr.jchaline.shelter.dao.SuitDao;
 import fr.jchaline.shelter.dao.WeaponDao;
 import fr.jchaline.shelter.dao.WorldDao;
-import fr.jchaline.shelter.domain.Building;
+import fr.jchaline.shelter.domain.Spot;
 import fr.jchaline.shelter.domain.City;
 import fr.jchaline.shelter.domain.Dweller;
 import fr.jchaline.shelter.domain.Floor;
@@ -77,9 +76,6 @@ public class FactoryService {
 	private WorldDao worldDao;
 	
 	@Autowired
-	private BuildingDao buildingDao;
-	
-	@Autowired
 	private DwellerService dwellerService;
 	
 	@Autowired
@@ -97,10 +93,10 @@ public class FactoryService {
 	}
 	
 	private void initWorld() {
-		Building b1 = new Building("Ecole");
-		buildingDao.save(b1);
-		
 		City nantes = new City("Nantes");
+		nantes.add(new Spot("School"), 5, 5);
+		nantes.add(new Spot("Market"), 3, 4);
+		nantes.add(new Spot("Tower"), 3, 4);
 		
 		World w = new World();
 		w.getCities().add(nantes);
@@ -113,6 +109,11 @@ public class FactoryService {
 	public void realCreateData() {
 		//create a game with the player's shelter
 		Game game = generateGame();
+		
+		World world = worldDao.findAll().get(0);
+		world.getCities().stream().findFirst().ifPresent(c -> {
+			//c.add(game.getShelter(), 1, 1);
+		});
 		
 		//add rooms (split in about 3~4 floors)
 		realCreateRooms(game);
