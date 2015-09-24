@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.jchaline.shelter.config.ShelterConstants;
+import fr.jchaline.shelter.dao.BuildingDao;
 import fr.jchaline.shelter.dao.DwellerDao;
 import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.GameDao;
@@ -21,6 +22,9 @@ import fr.jchaline.shelter.dao.RoomDao;
 import fr.jchaline.shelter.dao.RoomTypeDao;
 import fr.jchaline.shelter.dao.SuitDao;
 import fr.jchaline.shelter.dao.WeaponDao;
+import fr.jchaline.shelter.dao.WorldDao;
+import fr.jchaline.shelter.domain.Building;
+import fr.jchaline.shelter.domain.City;
 import fr.jchaline.shelter.domain.Dweller;
 import fr.jchaline.shelter.domain.Floor;
 import fr.jchaline.shelter.domain.Game;
@@ -30,6 +34,7 @@ import fr.jchaline.shelter.domain.RoomType;
 import fr.jchaline.shelter.domain.Shelter;
 import fr.jchaline.shelter.domain.Suit;
 import fr.jchaline.shelter.domain.Weapon;
+import fr.jchaline.shelter.domain.World;
 import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.enums.SpecialEnum;
 
@@ -69,6 +74,12 @@ public class FactoryService {
 	private FloorDao floorDao;
 	
 	@Autowired
+	private WorldDao worldDao;
+	
+	@Autowired
+	private BuildingDao buildingDao;
+	
+	@Autowired
 	private DwellerService dwellerService;
 	
 	@Autowired
@@ -82,8 +93,20 @@ public class FactoryService {
 	 */
 	public void initData() {
 		initRoomType();
+		initWorld();
 	}
 	
+	private void initWorld() {
+		Building b1 = new Building("Ecole");
+		buildingDao.save(b1);
+		
+		City nantes = new City("Nantes");
+		
+		World w = new World();
+		w.getCities().add(nantes);
+		worldDao.save(w);
+	}
+
 	/**
 	 * Create data for a real game
 	 */
@@ -96,7 +119,6 @@ public class FactoryService {
 		
 		//add dwellers
 		realCreateDwellers(game);
-		
 	}
 
 	private void realCreateDwellers(Game game) {

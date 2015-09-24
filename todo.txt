@@ -1,13 +1,13 @@
 Ordered by priority
 
 tech :
- - add to cloudbees, jenkins & sonar
- - integration test 
- - generation map : create map with selters, buildings, school, market, ...
+ - generation map : create map (x/y) with selters, buildings, school, market, ...
  - mock angular service for rest call
  - spring security, default user in dev mode. Used to find the user's shelter
  - throw functionnals exceptions (buy room without enough money, ...) and manage display with angular
  - DBUnit (see http://blog.netapsys.fr/realiser-ses-tests-dintegration-avec-spring-test-dbunit/)
+ - create VM, add jenkins & sonar
+ - integration test 
  - metrics
  - display map with all shelter (graph representation ? currently using https://github.com/jgrapht/jgrapht)
  
