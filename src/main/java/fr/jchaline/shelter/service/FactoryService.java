@@ -93,13 +93,18 @@ public class FactoryService {
 	}
 	
 	private void initWorld() {
-		City nantes = new City("Nantes");
-		nantes.add(new Spot("School"), 5, 5);
-		nantes.add(new Spot("Market"), 3, 4);
-		nantes.add(new Spot("Tower"), 3, 4);
-		
 		World w = new World();
-		w.getCities().add(nantes);
+		
+		Arrays.asList("Nantes", "Paris", "Metz", "Lyon", "Montpellier", "Barcelone", "Madrid", "Valence", "Seville", "Porto", "Lisonne", "Londre", "Manchester", "Glasgow", "Dublin", "Bruxelles", "Munich", "Berlin", "Moscou", "Pekin", "Tokyo", "Sydney", "New-York", "Los Angeles", "Washington", "Miami", "Seattle", "Rio", "Buenos Aires", "Pretoria", "Yaoundé", "Abuja", "Abidjan", "Dakar", "Rabat", "Alger", "Tunis", "Le Caire", "Bombay", "Seoul")
+			.parallelStream()
+			.map(s -> new City(s))
+			.forEach( c -> {
+				c.add(new Spot("School"), 5, 5);
+				c.add(new Spot("Market"), 3, 4);
+				c.add(new Spot("Tower"), 3, 4);
+				w.getCities().add(c);
+			});
+			
 		worldDao.save(w);
 	}
 
