@@ -8,10 +8,10 @@ Function.prototype.compose = function(g) {
 
 var app = angular.module( "shelterModule", ['datatables', 'ngResource'] )
 		
-app.controller("shelterController", function( $scope, $rootScope, $interval, shelterService ) {
+app.controller("shelterController", function( $scope, $rootScope, $interval, httpService ) {
 
 	$scope.updateDwellers = function() {
-		shelterService.getData("/dweller/list").then(function(data){
+		httpService.getData("/dweller/list").then(function(data){
 			$scope.dwellers = data
 		})
 	}
@@ -21,12 +21,12 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, she
 		$scope.showConstructRoom = false
 		if(room.id > 0){
 			$scope.showDisplayRoom = true
-			shelterService.getData("/room/"+room.id).then(function(data){
+			httpService.getData("/room/"+room.id).then(function(data){
 				$scope.displayedRoom = data
 			})
 		} else {
 			$scope.showConstructRoom = true
-			shelterService.getData("/room/types").then(function(data){
+			httpService.getData("/room/types").then(function(data){
 				$scope.roomtype = data
 				$scope.constructFloor = floor.number
 				$scope.constructCell = room.cells[0]
@@ -35,7 +35,7 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, she
 	}
 
 	$scope.upgradeRoom = function(room) {
-		shelterService.postData("/room/upgrade/"+room.id, {}).then(function(data){
+		httpService.postData("/room/upgrade/"+room.id, {}).then(function(data){
 			$scope.updateGame()
 			$scope.showDisplayRoom = false
 			$scope.showConstructRoom = false
@@ -43,19 +43,13 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, she
 	}
 
 	$scope.construct = function(floor, cell, type) {
-		shelterService.postData("/room/construct", {floor:floor, cell:cell, type:type}).then(function(data){
+		httpService.postData("/room/construct", {floor:floor, cell:cell, type:type}).then(function(data){
 			$scope.updateGame()
 		})
 	}
 
-	$scope.updateWorld = function() {
-		shelterService.getData("/world/get").then(function(data){
-			$scope.world = data
-		})
-	}
-
 	$scope.updateGame = function() {
-		shelterService.getData("/game/get").then(function(game){
+		httpService.getData("/game/get").then(function(game){
 			var floors = game.shelter.floors
 			fillEmptySpace(floors)
 			$scope.floors = floors
@@ -89,7 +83,7 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, she
 	}
 
 	$rootScope.$on('dropEvent', function(evt, dweller, room) {
-		shelterService.postData("/room/" + room + "/assign/" + dweller, {}).then(function(data){
+		httpService.postData("/room/" + room + "/assign/" + dweller, {}).then(function(data){
 			$scope.updateDwellers()
 		})
     });
@@ -102,13 +96,11 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, she
 	// call when app is loaded
 	angular.element(document).ready(function () {
 		$scope.updateGame()
-		$scope.updateWorld()
 		$scope.updateDwellers()
 
 		//update view with 5s interval
 		$interval(function(){
 			$scope.updateGame()
-			$scope.updateWorld()
 		}, 5000);
     });
 })

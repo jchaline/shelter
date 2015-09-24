@@ -68,25 +68,29 @@
 
 	<script type="text/javascript" src="js/jquery-1.11.3.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/jquery.dataTables-1.10.9.min.js"></script>
-    <script type="text/javascript" src="js/jquery.dataTables.columnFilter-1.5.6.js"></script>
 	<script type="text/javascript" src="js/angular.min.js"></script>
-	<script type="text/javascript" src="js/angular-resource.js"></script>
-	<script type="text/javascript" src="js/angular-datatables.min.js"></script>
-	<script type="text/javascript" src="js/angular-datatables.columnfilter.min.js"></script>
 	
 	<script>
-		var app = angular.module( 'worldModule', ['datatables', 'ngResource'] )
-		app.controller('worldController', function( $scope, $interval, worldService ) {
+		var app = angular.module( 'worldModule', [] )
+		
+		app.controller('worldController', function( $scope, $interval, httpService ) {
 			
-		}
-		
-		app.service("worldService", function( $http, $q ) {
-			return({
-			})
-		}
-		
-	</script>
+			$scope.updateWorld = function() {
+				httpService.getData("/world/get").then(function(data){
+					$scope.world = data
+				})
+			}
+			
+			angular.element(document).ready(function () {
+				$scope.updateWorld()
 
+				//update view with 5s interval
+				$interval(function(){
+					$scope.updateWorld()
+				}, 5000);
+		    });
+		})
+	</script>
+	<script type="text/javascript" src="js/shelter/http-service.js"></script>
 </body>
 </html>
