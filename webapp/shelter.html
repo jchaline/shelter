@@ -29,9 +29,9 @@
 				<h3>
 					Shelter view
 					<span class="pull-right">
-			    		<button class="btn btn-xs btn-primary" data-ng-click="updateGame()">
+			    		<button class="btn btn-xs btn-primary" data-ng-click="updateShelter()">
 							<i class="glyphicon glyphicon-refresh"></i>
-			    			<span class="hidden-xs">refresh game</span>
+			    			<span class="hidden-xs">refresh Shelter</span>
 			    		</button>
 			    		<button class="btn btn-xs btn-primary" data-ng-click="updateDwellers()">
 							<i class="glyphicon glyphicon-refresh"></i>
@@ -39,7 +39,7 @@
 			    		</button>
 			    	</span>
 				</h3>
-				<div class="bg-silver" data-ng-view="shelterView" id="game">
+				<div class="bg-silver" data-ng-view="shelterView" id="shelter">
 					<span class="text-center">{{money | formatResources}} $, {{food | formatResources}} food, {{water | formatResources}} water. Power : {{ power }} / {{ powerRequired }}</span>
 					<div data-ng-repeat="floor in floors | orderBy: number">
 						<span data-ng-repeat="room in floor.rooms | orderBy:roomOrder">

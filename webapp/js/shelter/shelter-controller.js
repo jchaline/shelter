@@ -36,7 +36,7 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 
 	$scope.upgradeRoom = function(room) {
 		httpService.postData("/room/upgrade/"+room.id, {}).then(function(data){
-			$scope.updateGame()
+			$scope.updateShelter()
 			$scope.showDisplayRoom = false
 			$scope.showConstructRoom = false
 		})
@@ -44,18 +44,18 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 
 	$scope.construct = function(floor, cell, type) {
 		httpService.postData("/room/construct", {floor:floor, cell:cell, type:type}).then(function(data){
-			$scope.updateGame()
+			$scope.updateShelter()
 		})
 	}
 
-	$scope.updateGame = function() {
-		httpService.getData("/game/get").then(function(game){
-			var floors = game.shelter.floors
+	$scope.updateShelter = function() {
+		httpService.getData("/player/get").then(function(player){
+			var floors = player.shelter.floors
 			fillEmptySpace(floors)
 			$scope.floors = floors
-			$scope.money = game.shelter.money
-			$scope.food = game.shelter.food
-			$scope.water = game.shelter.water
+			$scope.money = player.shelter.money
+			$scope.food = player.shelter.food
+			$scope.water = player.shelter.water
 		})
 	}
 
@@ -95,12 +95,12 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 
 	// call when app is loaded
 	angular.element(document).ready(function () {
-		$scope.updateGame()
+		$scope.updateShelter()
 		$scope.updateDwellers()
 
 		//update view with 5s interval
 		$interval(function(){
-			$scope.updateGame()
+			$scope.updateShelter()
 		}, 5000);
     });
 })

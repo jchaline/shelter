@@ -13,7 +13,12 @@ final public class AlgoUtils {
 		return collec.get(new Random().nextInt(collec.size()));
 	}
 
-	public static <E> E randRem(Collection<E> collec) {
+	public static <E> E randPick(List<E> collec) {
+		int nextInt = new Random().nextInt(collec.size());
+		return collec.remove(nextInt);
+	}
+	
+	public static <E> E randPick(Collection<E> collec) {
 		int nextInt = new Random().nextInt(collec.size());
 		E remove = collec.stream().collect(Collectors.toList()).remove(nextInt);
 		collec.remove(remove);

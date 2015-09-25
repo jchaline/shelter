@@ -6,21 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.jchaline.shelter.dao.GameDao;
-import fr.jchaline.shelter.domain.Game;
+import fr.jchaline.shelter.dao.PlayerDao;
+import fr.jchaline.shelter.domain.Player;
 
 @Transactional(readOnly = true)
 @Service
-public class GameService {
+public class PlayerService {
 	
 	@Autowired
-	private GameDao dao;
+	private PlayerDao dao;
 	
-	public List<Game> list() {
+	public List<Player> list() {
 		return dao.findAll();
 	}
 	
-	public Game get() {
+	public Player get() {
 		return dao.findAll().get(0);
 	}
 

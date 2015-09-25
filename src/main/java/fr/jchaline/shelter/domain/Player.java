@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table
-public class Game extends AbstractEntity {
+public class Player extends AbstractEntity {
 	
 	@Column(nullable = false, unique = true)
 	private String name;
@@ -16,12 +16,12 @@ public class Game extends AbstractEntity {
 	@OneToOne(cascade = CascadeType.ALL)
 	private Shelter shelter;
 	
-	public Game(){
+	public Player(){
 		
 	}
 
-	public Game(String name){
-		this.setName("generated");
+	public Player(String name){
+		this.setName(name);
 	}
 
 	public String getName() {

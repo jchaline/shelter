@@ -17,6 +17,7 @@ public class WorldController {
 	
 	@RequestMapping("/get")
 	public World get() {
+		//TODO : remove spot unknow for current user
 		return dao.findAll().stream().findFirst().get();
 	}
 }

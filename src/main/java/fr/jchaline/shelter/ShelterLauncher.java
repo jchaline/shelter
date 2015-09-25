@@ -15,6 +15,6 @@ public class ShelterLauncher {
 		FactoryService factory = ctx.getBean(FactoryService.class);
 		
 		factory.initData();
-		factory.realCreateData();
+		factory.createData();
 	}
 }

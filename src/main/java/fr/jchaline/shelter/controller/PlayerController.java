@@ -7,23 +7,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.jchaline.shelter.domain.Game;
-import fr.jchaline.shelter.service.GameService;
+import fr.jchaline.shelter.domain.Player;
+import fr.jchaline.shelter.service.PlayerService;
 
 @RestController
-@RequestMapping(value = "/game", method = RequestMethod.GET)
-public class GameController {
+@RequestMapping(value = "/player", method = RequestMethod.GET)
+public class PlayerController {
 	
 	@Autowired
-	private GameService service;
+	private PlayerService service;
 	
 	@RequestMapping("/list")
-	public List<Game> list() {
+	public List<Player> list() {
 		return service.list();
 	}
 	
 	@RequestMapping("/get")
-	public Game get() {
+	public Player get() {
 		return service.get();
 	}
 
