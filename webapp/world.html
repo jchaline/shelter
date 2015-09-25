@@ -8,7 +8,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/bootstrap-theme.css">
-	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css">
 </head>
 
 <body role="document" >
@@ -37,9 +36,21 @@
 				</h3>
 				<div class="bg-silver" data-ng-view="worldView" id="game">
 					<div>
-						World : {{world}}
+						<span data-ng-click="updateCity(city)" data-ng-repeat="city in cities | orderBy: 'name'">{{city.name}} &nbsp;</span>
 					</div>
 				</div>
+				<hr>
+				<div data-ng-if="city">
+					<h4>City view</h4>
+					<div>
+						<table class="table table-striped table-hover">
+							<tr data-ng-repeat="street in city.streets | orderBy: number">
+								<td data-ng-repeat="spot in street.spots | orderBy: number">{{spot.number}}:{{spot.name}}</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				
 			</div>
 		</div>
 	</div>
@@ -54,9 +65,37 @@
 		app.controller('worldController', function( $scope, $interval, httpService ) {
 			
 			$scope.updateWorld = function() {
-				httpService.getData("/world/get").then(function(data){
-					$scope.world = data
+				httpService.getData("/world/get").then(function(world){
+					$scope.cities = world.cities
 				})
+			}
+			
+			$scope.updateCity = function(city) {
+				fillEmptySpot(city.streets)
+				$scope.city = city
+			}
+			
+			// add "empty spot" between reals spot,
+			// use to interact with street
+			function fillEmptySpot(streets) {
+				var keys = Object.keys(streets)
+				keys.forEach(function(key) {
+					var street = streets[key]
+					var spotList = Array.apply(null, {length: 10}).map(Number.call, Number)
+					var used = Object.keys(street.spots).map(function(v,i){
+						return street.spots[v].number
+					})
+					spotList.forEach(function(e) {
+						var isAddSpot = $.inArray(e, used) == - 1
+						if(isAddSpot) {
+							console.log(isAddSpot)
+							var emptySpot = {id:-1, number:e, name:'vide'}
+							console.log(emptySpot)
+							street.spots[e] = emptySpot
+						}
+					})
+				})
+				return streets
 			}
 			
 			angular.element(document).ready(function () {
