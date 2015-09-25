@@ -5,19 +5,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.jchaline.shelter.dao.WorldDao;
 import fr.jchaline.shelter.domain.World;
+import fr.jchaline.shelter.service.WorldService;
 
 @RestController
 @RequestMapping(value = "/world", method = RequestMethod.GET)
 public class WorldController {
 	
 	@Autowired
-	private WorldDao dao;
+	private WorldService service;
 	
 	@RequestMapping("/get")
 	public World get() {
-		//TODO : remove spot unknow for current user
-		return dao.findAll().stream().findFirst().get();
+		return service.get();
 	}
 }

@@ -10,6 +10,7 @@ tech :
  - integration test 
  - metrics
  - display map with all shelter (graph representation ? currently using https://github.com/jgrapht/jgrapht)
+ - run test with jenkins & selenium, record jvm JMX data ? (proc, memory, network)
  
 game : 
  - real map with link between cities, graph
@@ -20,3 +21,5 @@ game :
  - power use by room
  - display resources (http get) and increase with js. Compute and update the new values if necessary (build, sell, all actions from player)
  - send dwellers discovering the world and other shelters (update player's map ?)
+ - keep the date for each exploration and display it ?
+ - improve perf ... example : get citis list instead of world object, and get each city one by one
