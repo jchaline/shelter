@@ -18,7 +18,7 @@ public class Street extends AbstractEntity {
 	private int number;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	@MapKey
+	@MapKey(name = "number")
 	private Map<Integer, Spot> spots = new HashMap<Integer,Spot>();
 	
 	public Street(int number) {

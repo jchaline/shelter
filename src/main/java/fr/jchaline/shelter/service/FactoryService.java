@@ -3,6 +3,7 @@ package fr.jchaline.shelter.service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +23,6 @@ import fr.jchaline.shelter.dao.RoomTypeDao;
 import fr.jchaline.shelter.dao.SuitDao;
 import fr.jchaline.shelter.dao.WeaponDao;
 import fr.jchaline.shelter.dao.WorldDao;
-import fr.jchaline.shelter.domain.Spot;
 import fr.jchaline.shelter.domain.City;
 import fr.jchaline.shelter.domain.Dweller;
 import fr.jchaline.shelter.domain.Floor;
@@ -31,11 +31,13 @@ import fr.jchaline.shelter.domain.Item;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
 import fr.jchaline.shelter.domain.Shelter;
+import fr.jchaline.shelter.domain.Spot;
 import fr.jchaline.shelter.domain.Suit;
 import fr.jchaline.shelter.domain.Weapon;
 import fr.jchaline.shelter.domain.World;
 import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.enums.SpecialEnum;
+import fr.jchaline.shelter.utils.AlgoUtils;
 
 /**
  * TODO : generate test data in dev mode only
@@ -99,9 +101,16 @@ public class FactoryService {
 			.parallelStream()
 			.map(s -> new City(s))
 			.forEach( c -> {
-				c.add(new Spot("School"), 5, 5);
-				c.add(new Spot("Market"), 3, 4);
-				c.add(new Spot("Tower"), 3, 4);
+				//for each street
+				Stream.iterate(1, n  ->  n  + 1).limit(10).forEach(idx -> {
+					
+					//each spot number 
+					Set<Integer> numbers = Stream.iterate(1, n  ->  n  + 1).limit(10).collect(Collectors.toSet());
+					
+					c.add(new Spot("School"), idx, AlgoUtils.randRem(numbers));
+					c.add(new Spot("Market"), idx, AlgoUtils.randRem(numbers));
+					c.add(new Spot("Tower"), idx, AlgoUtils.randRem(numbers));
+				});
 				w.getCities().add(c);
 			});
 			

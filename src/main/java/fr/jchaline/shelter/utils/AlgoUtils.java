@@ -1,6 +1,7 @@
 package fr.jchaline.shelter.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -10,6 +11,13 @@ final public class AlgoUtils {
 	
 	public static <E> E rand(List<E> collec){
 		return collec.get(new Random().nextInt(collec.size()));
+	}
+
+	public static <E> E randRem(Collection<E> collec) {
+		int nextInt = new Random().nextInt(collec.size());
+		E remove = collec.stream().collect(Collectors.toList()).remove(nextInt);
+		collec.remove(remove);
+		return remove;
 	}
 	
 	/**

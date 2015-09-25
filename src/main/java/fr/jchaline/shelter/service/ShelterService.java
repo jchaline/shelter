@@ -37,7 +37,7 @@ public class ShelterService {
 	}
 	
 	@Transactional
-	@Scheduled(fixedDelay=10000)
+	@Scheduled(fixedDelay=60000)
 	public void computeAll() {
 		LOGGER.debug("Run computeAll for Shelters");
 		dao.findAll().parallelStream().forEach(it -> {

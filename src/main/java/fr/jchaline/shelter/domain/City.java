@@ -35,7 +35,7 @@ public class City extends AbstractEntity {
 	
 	public void add(Spot spot, int street, int number) {
 		//TODO : assert arguments
-		if (!getStreets().containsKey(streets)) {
+		if (!getStreets().containsKey(street)) {
 			getStreets().put(street, new Street(street));
 		}
 		getStreets().get(street).add(number, spot);

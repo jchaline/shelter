@@ -41,7 +41,7 @@
 				</div>
 				<hr>
 				<div data-ng-if="city">
-					<h4>City view</h4>
+					<h4>{{city.name}} view</h4>
 					<div>
 						<table class="table table-striped table-hover">
 							<tr data-ng-repeat="street in city.streets | orderBy: number">
@@ -81,16 +81,13 @@
 				var keys = Object.keys(streets)
 				keys.forEach(function(key) {
 					var street = streets[key]
-					var spotList = Array.apply(null, {length: 10}).map(Number.call, Number)
+					var spotList = Array.apply(null, {length: 10}).map(function(discard, n){ return n + 1 })
 					var used = Object.keys(street.spots).map(function(v,i){
 						return street.spots[v].number
 					})
 					spotList.forEach(function(e) {
-						var isAddSpot = $.inArray(e, used) == - 1
-						if(isAddSpot) {
-							console.log(isAddSpot)
+						if($.inArray(e, used) == - 1) {
 							var emptySpot = {id:-1, number:e, name:'vide'}
-							console.log(emptySpot)
 							street.spots[e] = emptySpot
 						}
 					})
