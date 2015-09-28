@@ -21,7 +21,7 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 		$scope.showConstructRoom = false
 		if(room.id > 0){
 			$scope.showDisplayRoom = true
-			httpService.getData("/room/"+room.id).then(function(data){
+			httpService.getData("/room/" + room.id).then(function(data){
 				$scope.displayedRoom = data
 			})
 		} else {
@@ -100,7 +100,7 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 
 		//update view with 5s interval
 		$interval(function(){
-			$scope.updateShelter()
+			//$scope.updateShelter()
 		}, 5000);
     });
 })

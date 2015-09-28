@@ -1,7 +1,11 @@
 app.service("httpService", function( $http, $q ) {
 	
-	var baseUrl = 'http://localhost:9080'
-
+//	var auth = 'user:password@'
+	var auth = ''
+	var baseUrl = 'http://'+auth+'localhost:9080'
+	var headers = {'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='}
+//	var headers = {}
+	
 	// public API
 	return({
 		getData: getData,
@@ -9,11 +13,14 @@ app.service("httpService", function( $http, $q ) {
 	})
 	
 	function getData(url) {
-		var request = $http({ method: "GET", url: baseUrl + url, params: {}, data: {} })
+		//Authorization : Basic dXNlcjpwYXNzd29yZA==
+		
+		var request = $http({ method: "GET", url: baseUrl + url, params: {}, data: {}, headers:headers })
 		return( request.then( handleSuccess, handleError ) )
 	}
+	
 	function postData(url, data){
-		var request = $http({ method: "POST", url: baseUrl + url, params: {}, data: data })
+		var request = $http({ method: "POST", url: baseUrl + url, params: {}, data: data, headers:headers })
 		return( request.then( handleSuccess, handleError ) )
 	}
 	
@@ -35,6 +42,7 @@ app.service("httpService", function( $http, $q ) {
 			return( $q.reject( response.data.message ) )
 		}
 	}
+	
 	// Transform the successful response, unwrapping the application data
 	// from the API response payload.
 	function handleSuccess( response ) {

@@ -15,6 +15,8 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import fr.jchaline.shelter.enums.JobEnum;
+
 @Entity
 @Table
 public class Dweller extends AbstractEntity {
@@ -51,6 +53,9 @@ public class Dweller extends AbstractEntity {
 	@OneToOne(cascade = CascadeType.ALL)
 	@NotNull
 	private Special special;
+	
+	@Column(nullable = false)
+	private JobEnum job = JobEnum.NEWBIE;
 	
 	public Dweller(){
 		
@@ -145,6 +150,14 @@ public class Dweller extends AbstractEntity {
 
 	public void setMale(Boolean male) {
 		this.male = male;
+	}
+
+	public JobEnum getJob() {
+		return job;
+	}
+
+	public void setJob(JobEnum job) {
+		this.job = job;
 	}
 
 }

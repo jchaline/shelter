@@ -87,5 +87,17 @@ public class DwellerService {
 		String firstname = AlgoUtils.rand(male ? MALE_FIRSTNAMES : FEMALE_FIRSTNAMES);
 		return new Dweller(male, name, firstname, specialService.randForDweller(4));
 	}
+	
+	public int attack(Dweller dweller) {
+		return 0;
+	}
+
+	public int life(Dweller dweller) {
+		return 0;
+	}
+	
+	public int speed(Dweller dweller) {
+		return 0;
+	}
 
 }
