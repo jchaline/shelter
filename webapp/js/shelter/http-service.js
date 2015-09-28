@@ -3,8 +3,8 @@ app.service("httpService", function( $http, $q ) {
 //	var auth = 'user:password@'
 	var auth = ''
 	var baseUrl = 'http://'+auth+'localhost:9080'
-	var headers = {'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='}
-//	var headers = {}
+//	var headers = {'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='}
+	var headers = {}
 	
 	// public API
 	return({

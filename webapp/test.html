@@ -15,8 +15,9 @@
 		<div class="container">
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="shelter.html">Shelter view</a></li>
+					<li><a href="shelter.html">Shelter view</a></li>
 					<li><a href="world.html">World map</a></li>
+					<li class="active"><a href="test.html">test</a></li>
 				</ul>
 			</div>
 		</div>
@@ -34,7 +35,7 @@
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
 	
 	<script>
-		$.get( "http://user:password@localhost:9080/dweller/list", function( data ) {
+		$.get( "http://localhost:9080/dweller/list", function( data ) {
 			console.log(data)
 		})
 		.done(function(e) {

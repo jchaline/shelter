@@ -28,11 +28,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		@Override
         protected void configure(HttpSecurity http) throws Exception {
             http.csrf().disable()
-                    .antMatcher("/**")
-                    .authorizeRequests()
-                        .anyRequest().hasAnyRole("USER", "API")
-                        .and()
-                    .httpBasic();
+                .antMatcher("/**")
+                .authorizeRequests()
+                    .anyRequest().anonymous()
+                    .and()
+                .httpBasic();
         }
     }
 }
