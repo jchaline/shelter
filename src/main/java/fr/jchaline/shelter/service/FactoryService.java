@@ -17,6 +17,8 @@ import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.PlayerDao;
 import fr.jchaline.shelter.dao.RoomDao;
 import fr.jchaline.shelter.dao.RoomTypeDao;
+import fr.jchaline.shelter.dao.SuitDao;
+import fr.jchaline.shelter.dao.WeaponDao;
 import fr.jchaline.shelter.dao.WorldDao;
 import fr.jchaline.shelter.domain.City;
 import fr.jchaline.shelter.domain.Dweller;
@@ -26,6 +28,8 @@ import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
 import fr.jchaline.shelter.domain.Shelter;
 import fr.jchaline.shelter.domain.Spot;
+import fr.jchaline.shelter.domain.Suit;
+import fr.jchaline.shelter.domain.Weapon;
 import fr.jchaline.shelter.domain.World;
 import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.enums.SpecialEnum;
@@ -60,19 +64,85 @@ public class FactoryService {
 	@Autowired
 	private SpecialService specialService;
 	
+	@Autowired
+	private WeaponDao weaponDao;
+	
+	@Autowired
+	private SuitDao suitDao;
+	
 	/**
 	 * Initialize mandatory data
 	 */
 	public void initData() {
+		LOGGER.info("Start init Data");
 		initRoomType();
 		initWorld();
+		initItems();
+		initBestiary();
+		LOGGER.info("End init Data");
 	}
 	
+	/**
+	 * Initialisation des différentes "créatures" du jeu, humanoïdes ou non
+	 */
+	private void initBestiary() {
+		LOGGER.info("init bestiary");
+		//TODO : generate monsters and bad guys !
+	}
+	
+	/**
+	 * Initialisation des différents type de pièces constructibles
+	 */
+	private void initRoomType() {
+		LOGGER.info("Start init Rooms Type");
+		
+		if(roomTypeDao.count() == 0){
+			Stream.of(	new RoomType(ShelterConstants.ELEVATOR, null, 1, null, 150, 1),
+						new RoomType(ShelterConstants.FOOD, ResourceEnum.FOOD, 2, SpecialEnum.A, 100, 6),
+						new RoomType(ShelterConstants.WATER, ResourceEnum.WATER, 2, SpecialEnum.P, 100, 6),
+						new RoomType(ShelterConstants.POWER, ResourceEnum.POWER, 2, SpecialEnum.S, 90, 6))
+			.forEach(roomTypeDao::save);
+		}
+	}
+
+	/**
+	 * Initialization of the items : weapons & suits, with 3 levels of quality : normal, rare, epic
+	 * Use suffix for quality
+	 * Create legendary item ? specific name, special effect ?
+	 */
+	private void initItems() {
+		//i18n file for weapon name, translate by client, only store i18n key
+		 
+		LOGGER.info("init weapons");
+		Arrays.asList(new Weapon("knife", 4, 0), new Weapon("sword", 7, 0), new Weapon("katana", 10, 0), 
+				new Weapon("gun", 3, 3), new Weapon("riffle", 7, 6), new Weapon("sniper", 10, 10), new Weapon("rocket_launcher", 15, 6))
+		.stream()
+		.forEach(it -> {
+			weaponDao.save(it);
+			weaponDao.save(new Weapon(it.getName() + "_rare", (int) Math.ceil(it.getDamage() * 3), it.getScope()));
+			weaponDao.save(new Weapon(it.getName() + "_epic", (int) Math.ceil(it.getDamage() * 9), it.getScope()));
+		});
+		
+		LOGGER.info("init suits");
+		Arrays.asList(new Suit("suit", 1), new Suit("leather", 5), new Suit("kelvar", 10), new Suit("cortosis", 15))
+		.stream()
+		.forEach(it -> {
+			suitDao.save(it);
+			suitDao.save(new Suit(it.getName() + "_rare", (int) Math.ceil(it.getArmor() * 1.25)));
+			suitDao.save(new Suit(it.getName() + "_epic", (int) Math.ceil(it.getArmor() * 1.5)));
+		});
+	}
+
+	/**
+	 * Initialisation du "Monde physique", création des villes et génération de bâtiments
+	 */
 	private void initWorld() {
+		LOGGER.info("Start init World");
+		
 		World w = new World();
 		
 		Arrays.asList("Nantes", "Paris", "Metz", "Lyon", "Montpellier", "Barcelone", "Madrid", "Valence", "Seville", "Porto", "Lisonne", "Londre", "Manchester", "Glasgow", "Dublin", "Bruxelles", "Munich", "Berlin", "Moscou", "Pekin", "Tokyo", "Sydney", "New-York", "Los Angeles", "Washington", "Miami", "Seattle", "Rio", "Buenos Aires", "Pretoria", "Yaoundé", "Abuja", "Abidjan", "Dakar", "Rabat", "Alger", "Tunis", "Le Caire", "Bombay", "Seoul")
-			.parallelStream()
+			.stream()
 			.map(s -> new City(s))
 			.forEach( c -> {
 				//for each street
@@ -95,8 +165,10 @@ public class FactoryService {
 	 * Create data for a player
 	 */
 	public void createData() {
+		LOGGER.info("create Data");
+		
 		//create a player with the player's shelter
-		Player player = generatePlayer();
+		Player player = generatePlayerAndShelter();
 		
 		//add rooms (split in about 3~4 floors)
 		createRooms(player);
@@ -105,6 +177,10 @@ public class FactoryService {
 		createDwellers(player);
 	}
 
+	/**
+	 * Génération d'une population "type" pour l'abri
+	 * @param player
+	 */
 	private void createDwellers(Player player) {
 		Dweller simon = new Dweller(true, "Adebisi", "Simon", specialService.randForDweller(7));
 		simon.setLevel(2);
@@ -140,6 +216,10 @@ public class FactoryService {
 		LOGGER.info("Dweller generate over.");
 	}
 
+	/**
+	 * Génération de pièces pour un joueur, afin de tester le jeu
+	 * @param player Le joueur pour qui seront générés les pièces
+	 */
 	private void createRooms(Player player) {
 		RoomType elevator = roomTypeDao.findByName(ShelterConstants.ELEVATOR);
 		RoomType power = roomTypeDao.findByName(ShelterConstants.POWER);
@@ -166,21 +246,15 @@ public class FactoryService {
 		playerDao.save(player);
 	}
 
-	public Player generatePlayer(){
-		Player g = new Player("101");
+	/**
+	 * Génération d'un joueur et de son abri 
+	 * @return Le joueur généré
+	 */
+	private Player generatePlayerAndShelter() {
+		Player p = new Player("user");
 		Shelter s = new Shelter();
-		g.setShelter(s);
-		return playerDao.save(g);
-	}
-
-	private void initRoomType() {
-		if(roomTypeDao.count() == 0){
-			Stream.of(	new RoomType(ShelterConstants.ELEVATOR, null, 1, null, 150, 1),
-						new RoomType(ShelterConstants.FOOD, ResourceEnum.FOOD, 2, SpecialEnum.A, 100, 6),
-						new RoomType(ShelterConstants.WATER, ResourceEnum.WATER, 2, SpecialEnum.P, 100, 6),
-						new RoomType(ShelterConstants.POWER, ResourceEnum.POWER, 2, SpecialEnum.S, 90, 6))
-			.forEach(roomTypeDao::save);
-		}
+		p.setShelter(s);
+		return playerDao.save(p);
 	}
 	
 }

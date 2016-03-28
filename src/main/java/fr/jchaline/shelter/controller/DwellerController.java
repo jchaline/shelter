@@ -20,17 +20,18 @@ public class DwellerController {
 	private DwellerService service;
 	
 	@RequestMapping("/list")
-	public List<Dweller> list(){
+	public List<Dweller> list() {
 		return service.list();
 	}
 	
 	@RequestMapping("/paginate/{pageNumber}/{offset}")
-	public Page<Dweller> paginate(@PathVariable int pageNumber, @PathVariable int offset){
+	public Page<Dweller> paginate(@PathVariable int pageNumber, @PathVariable int offset) {
 		return service.paginate(pageNumber, offset);
 	}
 	
-	@RequestMapping("/assign/{id}/{idRoom}")
+	@RequestMapping(value = "/assign/{id}/{idRoom}", method = RequestMethod.POST)
 	public Dweller assign(@PathVariable long id, @PathVariable long idRoom) {
 		return service.assign(id, idRoom);
 	}
+
 }

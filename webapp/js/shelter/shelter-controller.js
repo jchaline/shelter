@@ -53,7 +53,7 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 			var floors = player.shelter.floors
 			fillEmptySpace(floors)
 			$scope.floors = floors
-			$scope.money = player.shelter.money
+			$scope.money = player.money
 			$scope.food = player.shelter.food
 			$scope.water = player.shelter.water
 		})
@@ -100,7 +100,7 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 
 		//update view with 5s interval
 		$interval(function(){
-			//$scope.updateShelter()
+			$scope.updateShelter()
 		}, 5000);
     });
 })

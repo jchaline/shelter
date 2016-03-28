@@ -1,5 +1,9 @@
 server:
   port: 9080
+  
+event:
+ frequency:
+  minutes: 1
 
 spring:
  profiles: default

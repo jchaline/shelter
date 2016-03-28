@@ -57,7 +57,7 @@ public class Dweller extends AbstractEntity {
 	@Column(nullable = false)
 	private JobEnum job = JobEnum.NEWBIE;
 	
-	public Dweller(){
+	public Dweller() {
 		
 	}
 

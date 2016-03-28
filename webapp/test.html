@@ -33,17 +33,21 @@
 
 	<script type="text/javascript" src="js/jquery-1.11.3.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/angular.min.js"></script>
 	
 	<script>
-		$.get( "http://localhost:9080/dweller/list", function( data ) {
-			console.log(data)
+		var app = angular.module( 'worldModule', [] )
+		
+		app.controller('worldController', function( $scope, $interval, $http) {
+			
+			var headers = {'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='}
+			var url = 'http://localhost/shelter-srv/dweller/list'
+			
+			$http.get(url, {headers: headers})
+				.success(function(data) {console.log("success")})
+				.error(function() {console.log("error")})
+			
 		})
-		.done(function(e) {
-			console.log(e)
-		})
-		.fail(function(e) {
-			console.log(e)
-		});
 	</script>
 </body>
 </html>

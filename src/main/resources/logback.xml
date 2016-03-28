@@ -16,11 +16,15 @@
 			<maxFileSize>3MB</maxFileSize>
 		</triggeringPolicy>
 		<encoder>
-			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+			<pattern>%date %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
 		</encoder>
 	</appender>
 	
 	<logger name="fr.jchaline.shelter" additivity="false" level="TRACE">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="org.springframework.security" additivity="debug" level="ALL">
 		<appender-ref ref="STDOUT" />
 	</logger>
 

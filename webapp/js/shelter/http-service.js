@@ -1,8 +1,8 @@
 app.service("httpService", function( $http, $q ) {
 	
-	var baseUrl = 'http://localhost:9080'
+	var baseUrl = 'http://localhost/shelter-srv'
 	var headers = {'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='}
-	
+
 	// public API
 	return({
 		getData: getData,
@@ -10,8 +10,6 @@ app.service("httpService", function( $http, $q ) {
 	})
 	
 	function getData(url) {
-		//Authorization : Basic dXNlcjpwYXNzd29yZA==
-		
 		var request = $http({ method: "GET", url: baseUrl + url, params: {}, data: {}, headers:headers })
 		return( request.then( handleSuccess, handleError ) )
 	}

@@ -32,10 +32,6 @@ public class Shelter extends AbstractEntity {
 	
 	@Column(nullable = false)
 	@Min(0)
-	private long money = 500;
-	
-	@Column(nullable = false)
-	@Min(0)
 	private long water = 200;
 
 	@Column(nullable = false)
@@ -63,14 +59,6 @@ public class Shelter extends AbstractEntity {
 
 	public void setDwellers(List<Dweller> dwellers) {
 		this.dwellers = dwellers;
-	}
-
-	public long getMoney() {
-		return money;
-	}
-
-	public void setMoney(long money) {
-		this.money = money;
 	}
 
 	public long getWater() {

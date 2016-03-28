@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import fr.jchaline.shelter.domain.Player;
 
 public interface PlayerDao extends JpaRepository<Player, Long> {
+	
+	Player findByName(String name);
 
 }

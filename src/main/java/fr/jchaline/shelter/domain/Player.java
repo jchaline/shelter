@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 
 @Entity
 @Table
@@ -20,6 +21,10 @@ public class Player extends AbstractEntity {
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	private Shelter shelter;
+	
+	@Column(nullable = false)
+	@Min(0)
+	private long money = 500;
 	
 	/**
 	 * List of all street's id discovered by player
@@ -57,6 +62,14 @@ public class Player extends AbstractEntity {
 
 	public void setDiscoveredStreets(Set<Long> discoveredStreets) {
 		this.discoveredStreets = discoveredStreets;
+	}
+
+	public long getMoney() {
+		return money;
+	}
+
+	public void setMoney(long money) {
+		this.money = money;
 	}
 
 }

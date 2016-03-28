@@ -15,13 +15,15 @@ public class Suit extends Item {
 	@Column(nullable = false)
 	private int armor;
 	
-	public Suit(){
+	public Suit() {
 		
 	}
 
-	public Suit(String name, int armor){
+	public Suit(String name, int armor) {
 		this.setName(name);
 		this.setArmor(armor);
+		this.setLevel(armor * 10);
+		this.setLevel(this.getLevel() *  this.getLevel());
 	}
 
 	public int getArmor() {

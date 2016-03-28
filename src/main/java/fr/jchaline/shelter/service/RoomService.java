@@ -132,6 +132,8 @@ public class RoomService {
 	
 	@Transactional
 	public Floor construct(int floorNumber, int cell, String typeName) {
+		//TODO : check if enought money, otherwise, throw fonctionnal exception
+		
 		Floor floor = floorDao.findByNumber(floorNumber);
 		RoomType type = roomTypeDao.findByName(typeName);
 		
@@ -230,7 +232,7 @@ public class RoomService {
 		if (!room.getDwellers().isEmpty()) {
 			SpecialEnum specialForRoom = room.getRoomType().getSpecial();
 			int specialsOfDwellers = room.getDwellers()
-					.parallelStream()
+					.stream()
 					.mapToInt(d -> d.getSpecial().getValue(specialForRoom))
 					.sum();
 			

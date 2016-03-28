@@ -37,10 +37,10 @@ public class ShelterService {
 	}
 	
 	@Transactional
-	@Scheduled(fixedDelay=60000)
+	@Scheduled(fixedDelay=5000)
 	public void computeAll() {
 		LOGGER.debug("Run computeAll for Shelters");
-		dao.findAll().parallelStream().forEach(it -> {
+		dao.findAll().stream().forEach(it -> {
 			computeAll(it);
 		});
 	}
@@ -59,20 +59,24 @@ public class ShelterService {
 		
 		long food = computeCoeff(shelter, ResourceEnum.FOOD);
 		long water = computeCoeff(shelter, ResourceEnum.WATER);
-		long money = computeCoeff(shelter, ResourceEnum.MONEY);
 		
 		shelter.setFood(shelter.getFood() + seconds * food);
 		shelter.setWater(shelter.getWater() + seconds * water);
-		shelter.setMoney(shelter.getMoney() + seconds * money);
 		shelter.setLastCompute(now);
 		dao.save(shelter);
 		return shelter;
 	}
 
+	/**
+	 * TODO : comment this method
+	 * @param shelter
+	 * @param resource
+	 * @return
+	 */
 	public long computeCoeff(Shelter shelter, ResourceEnum resource) {
-		return shelter.getFloors().values().parallelStream()
+		return shelter.getFloors().values().stream()
 				.mapToInt(floor -> floor.getRooms()
-							.parallelStream()
+							.stream()
 							.filter(r -> resource.equals(r.getRoomType().getResource()))
 							.collect( Collectors.summingInt( roomService::earnPerSecond ))
 				)

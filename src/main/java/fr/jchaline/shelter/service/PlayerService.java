@@ -20,8 +20,8 @@ public class PlayerService {
 		return dao.findAll();
 	}
 	
-	public Player get() {
-		return dao.findAll().get(0);
+	public Player get(String name) {
+		return dao.findByName(name);
 	}
 
 }

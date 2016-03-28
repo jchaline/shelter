@@ -1,18 +1,24 @@
 Ordered by priority
 
+it is possible ? :
+ - replace the apache config by configuring the spring boot embeded tomcat ?
+
 tech :
- - generation map : create map (x/y) with selters, buildings, school, market, ...
- - mock angular service for rest call
+ - abstract service with LOGGER & getClass
  - spring security, default user in dev mode. Used to find the user's shelter
+ - generation map : create map (x/y) with selters, buildings, school, market, ...
+ - display map with all shelter (graph representation ? currently using https://github.com/jgrapht/jgrapht)
  - throw functionnals exceptions (buy room without enough money, ...) and manage display with angular
  - DBUnit (see http://blog.netapsys.fr/realiser-ses-tests-dintegration-avec-spring-test-dbunit/)
  - create VM, add jenkins & sonar
  - integration test 
  - metrics
- - display map with all shelter (graph representation ? currently using https://github.com/jgrapht/jgrapht)
+ - mock angular service for rest call
  - run test with jenkins & selenium, record jvm JMX data ? (proc, memory, network)
  
 game : 
+ - send dweller with team : status for exploring, moving, fighting, ...
+ - create missions "type", and percent success / reward with dwellers stats. Mission unlock with exploring (find dwellers, find food, find tech, ...)
  - real map with link between cities, graph
  - building with resources capacity to limit food, water, ...
  - improve notion of "room size" => cells uses & dwellers capacity...
