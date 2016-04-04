@@ -4,29 +4,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.annotations.Polymorphism;
+import org.hibernate.annotations.PolymorphismType;
 
 @Entity
 @Table
-public class City extends AbstractEntity {
+@Polymorphism(type= PolymorphismType.EXPLICIT)
+public class City extends MapCell {
 
-	@Column(unique = true, nullable = false)
-	@NotBlank
-	private String name;
 	
+	//TODO : delete this, put spot (market, school, hospital, ... but not street with number etc ...)
 	@OneToMany(cascade = CascadeType.ALL)
 	@MapKey(name = "number")
 	private Map<Integer, Street> streets = new HashMap<Integer,Street>();
 	
-	public City(String name) {
-		this();
-		this.setName(name);
+	public City(String name, int xAxis, int yAxis) {
+		super(name, xAxis, yAxis);
 	}
 	
 	public City() {
@@ -44,14 +42,6 @@ public class City extends AbstractEntity {
 	public Spot get(int street, int number) {
 		//TODO : assert arguments
 		return getStreets().get(street).get(number);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public Map<Integer,Street> getStreets() {

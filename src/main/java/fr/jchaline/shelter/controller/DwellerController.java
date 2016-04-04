@@ -28,10 +28,5 @@ public class DwellerController {
 	public Page<Dweller> paginate(@PathVariable int pageNumber, @PathVariable int offset) {
 		return service.paginate(pageNumber, offset);
 	}
-	
-	@RequestMapping(value = "/assign/{id}/{idRoom}", method = RequestMethod.POST)
-	public Dweller assign(@PathVariable long id, @PathVariable long idRoom) {
-		return service.assign(id, idRoom);
-	}
 
 }

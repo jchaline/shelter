@@ -15,7 +15,7 @@ import fr.jchaline.shelter.utils.AlgoUtils;
 @Service
 public class SpecialService {
 
-	public Special randForDweller(int bonus) {
+	public Special randForDweller(int bonus) throws Exception {
 		Random r = new Random();
 		List<Integer> nseat = AlgoUtils.nseat(bonus, Arrays.asList(r.nextInt(1000), r.nextInt(1000), r.nextInt(1000), r.nextInt(1000), r.nextInt(1000), r.nextInt(1000), r.nextInt(1000)));
 		List<Integer> special = nseat.stream().map(x -> x+1).collect(Collectors.toList());

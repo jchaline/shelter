@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -49,6 +50,10 @@ public class Dweller extends AbstractEntity {
 	@JsonManagedReference
 	@OneToOne
 	private Room room;
+
+	@JsonManagedReference
+	@ManyToOne
+	private Team team;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@NotNull
@@ -72,6 +77,9 @@ public class Dweller extends AbstractEntity {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		sb.append("(");
+		sb.append(this.getId());
+		sb.append(") ");
 		sb.append(this.getFirstname());
 		sb.append(" ");
 		sb.append(this.getName());
@@ -158,6 +166,14 @@ public class Dweller extends AbstractEntity {
 
 	public void setJob(JobEnum job) {
 		this.job = job;
+	}
+
+	public Team getTeam() {
+		return team;
+	}
+
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 
 }

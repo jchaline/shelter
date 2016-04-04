@@ -1,0 +1,22 @@
+web service permettant d'executer les scénarios suivants, par priorité :
+
+1) avoir la liste des habitants et leur affectation
+
+2) pouvoir envoyer un groupe en exploration
+	a) création d'un groupe (choix des dwellers, retour d'un id, pas de changement dans l'affectation courante)
+	b) envoi d'un groupe en mission (fin de l'affectation courante des gens, et ceux déjà en mission sont désafectés au moment de lancer la mission : synchronized)
+		d'exploration :
+		- au lancement de la mission, instanciation d'une Mission
+		- actualisation des missions en cours toutes les x secondes / minutes 
+			en fonction de la durée déjà écoulé, attribut indexés permettant de retrouver les missions récente/anciennes pour savoir lesquels update, limitant la charge
+		- en fonction du groupe, +/- rapide à avancer, vers un objectif, plus court chemin du graphe "monde" / "ville"
+		- maj de la carte du joueur avec les découvertes
+		- récupération sans combat (si possible ? déterminer une notion d'évitement de combat ...), faible chance de loot mais faible risque de perte
+
+3) consulter la liste des missions en cours
+
+4) envoyer un groupe en combat
+	- type de mission combat sur une zone connue à l'avance
+	- forte chance de loot, d'xp, mais forte chance de perte 
+
+5) envoyer un groupe en recrutement

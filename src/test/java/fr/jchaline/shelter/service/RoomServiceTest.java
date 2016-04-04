@@ -4,7 +4,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -15,9 +14,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import fr.jchaline.shelter.dao.DwellerDao;
 import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.RoomDao;
 import fr.jchaline.shelter.dao.RoomTypeDao;
@@ -41,6 +42,9 @@ public class RoomServiceTest {
 	@Mock
 	private RoomTypeDao roomTypeDao;
 
+	@Mock
+	private DwellerDao dwellerDao;
+
 	@InjectMocks
 	private RoomService service = new RoomService();
 	
@@ -52,9 +56,9 @@ public class RoomServiceTest {
 		Room room4 = new Room(type, Stream.of(1, 2, 3, 4).collect(Collectors.toSet()));
 		Room room6 = new Room(type, Stream.of(1, 2, 3, 4, 5, 6).collect(Collectors.toSet()));
 		
-		room2.setDwellers(new HashSet<Dweller>(dwellers));
-		room4.setDwellers(new HashSet<Dweller>(dwellers));
-		room6.setDwellers(new HashSet<Dweller>(dwellers));
+		room2.setDwellers(dwellers);
+		room4.setDwellers(dwellers);
+		room6.setDwellers(dwellers);
 		
 		int earnR2 = service.earnPerSecond(room2);
 		int earnR4 = service.earnPerSecond(room4);
@@ -97,5 +101,19 @@ public class RoomServiceTest {
 		
 		Room merge = service.merge(left, right);
 		Assert.assertEquals(4, merge.getSize());
+	}
+	
+	@Test
+	public void assign() {
+		
+		RoomType type = new RoomType("power", ResourceEnum.POWER, 2, SpecialEnum.S, 0, 6);
+		
+		Dweller dweller = new Dweller();
+		Room room = new Room(type, Stream.of(1, 2).collect(Collectors.toSet()));
+		
+		when( dwellerDao.findOne(Matchers.any(Long.class)) ).thenReturn( dweller );
+		when( dao.findOne(Matchers.any(Long.class)) ).thenReturn( room );
+		
+		service.assign(2l,  1l);
 	}
 }

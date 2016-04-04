@@ -11,16 +11,8 @@
 </head>
 
 <body role="document" >
+	
 	<nav id="navbar" class="navbar navbar-inverse navbar-fixed-top">
-		<div class="container">
-			<div id="navbar" class="navbar-collapse collapse">
-				<ul class="nav navbar-nav">
-					<li><a href="shelter.html">Shelter view</a></li>
-					<li><a href="world.html">World map</a></li>
-					<li class="active"><a href="test.html">test</a></li>
-				</ul>
-			</div>
-		</div>
 	</nav>
 	
 	<div class="container" role="main">
@@ -34,11 +26,13 @@
 	<script type="text/javascript" src="js/jquery-1.11.3.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="js/angular.min.js"></script>
+	<script type="text/javascript" src="js/underscore.js"></script>
+	<script type="text/javascript" src="js/shelter/shelter.js"></script>
 	
 	<script>
 		var app = angular.module( 'worldModule', [] )
 		
-		app.controller('worldController', function( $scope, $interval, $http) {
+		app.controller('worldController', function( $scope, $interval, $http, httpService) {
 			
 			var headers = {'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='}
 			var url = 'http://localhost/shelter-srv/dweller/list'
@@ -47,7 +41,28 @@
 				.success(function(data) {console.log("success")})
 				.error(function() {console.log("error")})
 			
+			$scope.testTeamup = function() {
+				httpService.getData("/dweller/list").then(function(dwellers) {
+					var ids = dwellers.map(function(e){return e.id})
+					
+					var teamup = ids.subRandom()
+					
+					httpService.postData("/team/teamup", {dwellersId: teamup}).then(function(team){
+						httpService.postData("/team/sendDuty/" + team.id + "/1").then(function(teamDuty){
+							console.log(teamDuty)
+						})
+					})
+				})
+			}
+			
+			$scope.testTeamup()
+			
 		})
+		
+		
 	</script>
+	
+	<script type="text/javascript" src="js/shelter/http-service.js"></script>
+	
 </body>
 </html>

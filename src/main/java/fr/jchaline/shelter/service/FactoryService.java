@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.jchaline.shelter.config.ShelterConstants;
+import fr.jchaline.shelter.dao.DutyDao;
 import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.PlayerDao;
 import fr.jchaline.shelter.dao.RoomDao;
@@ -21,8 +22,10 @@ import fr.jchaline.shelter.dao.SuitDao;
 import fr.jchaline.shelter.dao.WeaponDao;
 import fr.jchaline.shelter.dao.WorldDao;
 import fr.jchaline.shelter.domain.City;
+import fr.jchaline.shelter.domain.Duty;
 import fr.jchaline.shelter.domain.Dweller;
 import fr.jchaline.shelter.domain.Floor;
+import fr.jchaline.shelter.domain.MapCell;
 import fr.jchaline.shelter.domain.Player;
 import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
@@ -44,6 +47,9 @@ import fr.jchaline.shelter.utils.AlgoUtils;
 @Transactional
 public class FactoryService {
 	
+	private static final List<String> CITIES_LIST = Arrays.asList("Nantes", "Paris", "Metz", "Lyon", "Montpellier", "Barcelone", "Madrid", "Valence", "Seville", "Porto", "Lisonne", "Londre", "Manchester", "Glasgow", "Dublin", "Bruxelles", "Munich", "Berlin", "Moscou", "Pekin", "Tokyo", "Sydney", "New-York", "Los Angeles", "Washington", "Miami", "Seattle", "Rio", "Buenos Aires", "Pretoria", "Yaoundé", "Abuja", "Abidjan", "Dakar", "Rabat", "Alger", "Tunis", "Le Caire", "Bombay", "Seoul");
+	private static final List<String> CITIES_LIST_DEV = Arrays.asList("Nantes", "Barcelone", "Londre", "Munich", "Moscou", "Pekin", "Tokyo", "Sydney", "Buenos Aires", "Dakar");
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(FactoryService.class);
 	
 	@Autowired
@@ -54,6 +60,9 @@ public class FactoryService {
 	
 	@Autowired
 	private PlayerDao playerDao;
+	
+	@Autowired
+	private DutyDao dutyDao;
 	
 	@Autowired
 	private FloorDao floorDao;
@@ -79,9 +88,20 @@ public class FactoryService {
 		initWorld();
 		initItems();
 		initBestiary();
+		initDuty();
 		LOGGER.info("End init Data");
 	}
 	
+	/**
+	 * Initialization of different types of duty
+	 */
+	private void initDuty() {
+		Arrays
+			.asList(new Duty(Duty.EXPLORE, "Exploration"), new Duty(Duty.FIGHT, "Combat"), new Duty(Duty.RECRUITMENT, "Recrutement"))
+			.stream()
+			.forEach(dutyDao::save);
+	}
+
 	/**
 	 * Initialisation des différentes "créatures" du jeu, humanoïdes ou non
 	 */
@@ -139,11 +159,20 @@ public class FactoryService {
 	private void initWorld() {
 		LOGGER.info("Start init World");
 		
-		World w = new World();
+		World w = new World(CITIES_LIST_DEV.size() * 2, CITIES_LIST_DEV.size() * 2);
 		
-		Arrays.asList("Nantes", "Paris", "Metz", "Lyon", "Montpellier", "Barcelone", "Madrid", "Valence", "Seville", "Porto", "Lisonne", "Londre", "Manchester", "Glasgow", "Dublin", "Bruxelles", "Munich", "Berlin", "Moscou", "Pekin", "Tokyo", "Sydney", "New-York", "Los Angeles", "Washington", "Miami", "Seattle", "Rio", "Buenos Aires", "Pretoria", "Yaoundé", "Abuja", "Abidjan", "Dakar", "Rabat", "Alger", "Tunis", "Le Caire", "Bombay", "Seoul")
+		for (int x = 0; x < w.getWidth(); x++) {
+			for (int y = 0; y < w.getHeight(); y++) {
+				w.setCell(x, y, new MapCell(x + "_" + y, x, y));
+			}
+		}
+		
+		List<Integer> xAxisPick = Stream.iterate(0, n  ->  n  + 1).limit(w.getWidth()).collect(Collectors.toList());
+		List<Integer> yAxisPick = Stream.iterate(0, n  ->  n  + 1).limit(w.getHeight()).collect(Collectors.toList());
+		
+		CITIES_LIST_DEV
 			.stream()
-			.map(s -> new City(s))
+			.map(s -> new City(s, AlgoUtils.randPick(xAxisPick), AlgoUtils.randPick(yAxisPick)))
 			.forEach( c -> {
 				//for each street
 				Stream.iterate(1, n  ->  n  + 1).limit(10).forEach(idx -> {
@@ -151,10 +180,12 @@ public class FactoryService {
 					//each spot number 
 					List<Integer> numbers = Stream.iterate(1, n  ->  n  + 1).limit(10).collect(Collectors.toList());
 					
-					c.add(new Spot("School"), idx, AlgoUtils.randPick(numbers));
-					c.add(new Spot("Market"), idx, AlgoUtils.randPick(numbers));
-					c.add(new Spot("Tower"), idx, AlgoUtils.randPick(numbers));
+					Arrays.asList("School", "Market", "Tower").forEach( s -> {
+						c.add(new Spot(s), idx, AlgoUtils.randPick(numbers));
+					});
 				});
+				
+				w.setCell(c.getXaxis(), c.getYaxis(), c);
 				w.getCities().add(c);
 			});
 			
@@ -163,9 +194,10 @@ public class FactoryService {
 
 	/**
 	 * Create data for a player
+	 * @throws Exception 
 	 */
-	public void createData() {
-		LOGGER.info("create Data");
+	public void createData() throws Exception {
+		LOGGER.info("begin create Data");
 		
 		//create a player with the player's shelter
 		Player player = generatePlayerAndShelter();
@@ -175,13 +207,15 @@ public class FactoryService {
 		
 		//add dwellers
 		createDwellers(player);
+		LOGGER.info("end create Data");
 	}
 
 	/**
 	 * Génération d'une population "type" pour l'abri
 	 * @param player
+	 * @throws Exception 
 	 */
-	private void createDwellers(Player player) {
+	private void createDwellers(Player player) throws Exception {
 		Dweller simon = new Dweller(true, "Adebisi", "Simon", specialService.randForDweller(7));
 		simon.setLevel(2);
 		Dweller harley = new Dweller(false, "Quinn", "Harley", specialService.randForDweller(4));

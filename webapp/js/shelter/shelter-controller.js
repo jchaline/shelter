@@ -62,8 +62,7 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 	// add "empty room" between reals rooms,
 	// use to interact with floor and construct room
 	function fillEmptySpace(floors) {
-		var keys = Object.keys(floors)
-		for (var key in keys) {
+		Object.keys(floors).forEach(function(key){
 			var floor = floors[key]
 			var cellList = Array.apply(null, {length: floor.size}).map(Number.call, Number)
 			var used = floor.rooms.map(function(v, i) {
@@ -78,7 +77,7 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 					floor.rooms.push(emptySpace)
 				}
 			})
-		}
+		})
 		return floors
 	}
 

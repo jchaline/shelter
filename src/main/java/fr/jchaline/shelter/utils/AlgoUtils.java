@@ -1,7 +1,6 @@
 package fr.jchaline.shelter.utils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -18,13 +17,6 @@ final public class AlgoUtils {
 		return collec.remove(nextInt);
 	}
 	
-	public static <E> E randPick(Collection<E> collec) {
-		int nextInt = new Random().nextInt(collec.size());
-		E remove = collec.stream().collect(Collectors.toList()).remove(nextInt);
-		collec.remove(remove);
-		return remove;
-	}
-	
 	/**
 	 * Créer une représentation proportionnelle  : à partir d'une liste de valeurs "absolues",
 	 * déterminer le pourcentage (entier) représentatif de chaque élément de la liste,
@@ -33,8 +25,9 @@ final public class AlgoUtils {
 	 * @param nseats Le nombre de places disponibles
 	 * @param valeurs Les valeurs absolues
 	 * @return La liste des valeurs relatives.
+	 * @throws Exception en cas d'erreur lors de la répartition
 	 */
-	public static List<Integer> nseat(final int nseats, final List<Integer> valeurs) {
+	public static List<Integer> nseat(final int nseats, final List<Integer> valeurs) throws Exception {
 		int somme = valeurs.stream().reduce(0, (a,b) -> {return a+b;});
 		//si la somme est égal à 0, les pourcentages sont définis à 0 donc on 
 		if (somme == 0) return valeurs;
@@ -79,8 +72,8 @@ final public class AlgoUtils {
 			}
 		}
 		
-		//Ce cas ne doit pas se produire
-		return valeurs;
+		//TODO : trouver une solution pour ne plus avoir ce cas, et ainsi virer la gestion de l'exception dans la pile d'appels ...
+		throw new Exception("Error while process nseat");
 	}
 	
 //TODO : python version, implement with java and compare

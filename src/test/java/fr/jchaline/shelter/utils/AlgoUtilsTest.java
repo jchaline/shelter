@@ -13,7 +13,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class AlgoUtilsTest {
 	
 	@Test
-	public void nseat() {
+	public void nseat() throws Exception {
 		List<Integer> input = Arrays.asList(100, 50, 100, 50, 100, 50, 100);
 		List<Integer> output = Arrays.asList(2, 1, 2, 1, 2, 1, 2);
 		

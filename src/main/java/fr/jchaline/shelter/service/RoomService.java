@@ -193,8 +193,8 @@ public class RoomService {
 	}
 	
 	@Transactional
-	public Room assign(long id, long idDweller) {
-		Room room = dao.findOne(id);
+	public Room assign(long idRoom, long idDweller) {
+		Room room = dao.findOne(idRoom);
 		Dweller dweller = dwellerDao.findOne(idDweller);
 		
 		//if room full, exchange one dweller with current

@@ -4,11 +4,14 @@ it is possible ? :
  - replace the apache config by configuring the spring boot embeded tomcat ?
 
 tech :
+ - set to list if possible
  - abstract service with LOGGER & getClass
  - spring security, default user in dev mode. Used to find the user's shelter
+ - attach domains to player (team, dweller, ...) if neccesasry
  - generation map : create map (x/y) with selters, buildings, school, market, ...
  - display map with all shelter (graph representation ? currently using https://github.com/jgrapht/jgrapht)
  - throw functionnals exceptions (buy room without enough money, ...) and manage display with angular
+ - i18n messages
  - DBUnit (see http://blog.netapsys.fr/realiser-ses-tests-dintegration-avec-spring-test-dbunit/)
  - create VM, add jenkins & sonar
  - integration test 
@@ -29,3 +32,8 @@ game :
  - send dwellers discovering the world and other shelters (update player's map ?)
  - keep the date for each exploration and display it ?
  - improve perf ... example : get citis list instead of world object, and get each city one by one
+ 
+blog : 
+ - mockito any()
+ - findOne vs getOne
+ - eclipse replace regex <bean:write name="([a-zA-Z]+)" property="([a-zA-Z]+)" *\/> => \${$1.$2}

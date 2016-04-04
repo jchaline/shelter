@@ -1,6 +1,8 @@
 package fr.jchaline.shelter.domain;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -40,7 +42,7 @@ public class Room extends AbstractEntity {
 	
 	@JsonBackReference
 	@OneToMany(mappedBy="room")
-	private Set<Dweller> dwellers = new HashSet<Dweller>();
+	private List<Dweller> dwellers = new ArrayList<Dweller>();
 	
 	public Room() {
 		
@@ -94,11 +96,11 @@ public class Room extends AbstractEntity {
 		this.floor = floor;
 	}
 
-	public Set<Dweller> getDwellers() {
+	public List<Dweller> getDwellers() {
 		return dwellers;
 	}
 
-	public void setDwellers(Set<Dweller> dwellers) {
+	public void setDwellers(List<Dweller> dwellers) {
 		this.dwellers = dwellers;
 	}
 
