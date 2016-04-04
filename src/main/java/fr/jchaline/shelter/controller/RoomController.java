@@ -19,7 +19,7 @@ import fr.jchaline.shelter.service.RoomService;
 
 @RestController
 @RequestMapping(value = "/room", method = RequestMethod.GET)
-public class RoomController {
+public class RoomController extends AbstractShelterController {
 	
 	@Autowired
 	private RoomService service;

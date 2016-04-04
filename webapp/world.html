@@ -83,11 +83,11 @@
 			$scope.updateWorld = function() {
 				httpService.getData("/world/get").then(function(world){
 					$scope.world = world
-					$scope.cities = world.cities
 					
 					$scope.worldMap = updateMapWithWorld($scope.world, $scope.worldMap)
 					
 					drawMap($scope.worldMap)
+					//TODO : get team to display
 				})
 			}
 			

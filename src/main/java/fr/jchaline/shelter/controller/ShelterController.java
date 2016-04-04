@@ -14,7 +14,7 @@ import fr.jchaline.shelter.service.ShelterService;
 
 @RestController
 @RequestMapping(value = "/shelter", method = RequestMethod.GET)
-public class ShelterController {
+public class ShelterController extends AbstractShelterController {
 	
 	@Autowired
 	private ShelterService service;

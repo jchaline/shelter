@@ -17,7 +17,7 @@ import fr.jchaline.shelter.service.TeamService;
 
 @RestController
 @RequestMapping(value = "/team", method = RequestMethod.GET)
-public class TeamController {
+public class TeamController extends AbstractShelterController {
 	
 	@Autowired
 	private TeamService service;

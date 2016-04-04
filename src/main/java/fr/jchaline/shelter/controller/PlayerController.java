@@ -15,7 +15,7 @@ import fr.jchaline.shelter.service.PlayerService;
 
 @RestController
 @RequestMapping(value = "/player", method = RequestMethod.GET)
-public class PlayerController {
+public class PlayerController extends AbstractShelterController {
 	
 	@Autowired
 	private PlayerService service;
