@@ -33,11 +33,7 @@ public class TeamController extends AbstractShelterController {
 	 */
 	@RequestMapping(value = "/teamup", method = RequestMethod.POST)
 	public Team teamUp(@RequestBody @Valid TeamUp team) {
-		try{
-			return service.teamUp(team);
-		} catch (Exception e){
-			throw e;
-		}
+		return service.teamUp(team);
 	}
 	
 	@RequestMapping(value = "sendDuty/{teamId}/{dutyId}", method = RequestMethod.POST)

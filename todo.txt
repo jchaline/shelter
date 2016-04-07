@@ -37,3 +37,4 @@ blog :
  - mockito any()
  - findOne vs getOne
  - eclipse replace regex <bean:write name="([a-zA-Z]+)" property="([a-zA-Z]+)" *\/> => \${$1.$2}
+ - tableur génération de text

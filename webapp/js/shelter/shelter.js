@@ -26,6 +26,3 @@ Array.prototype.shuffle = function () {
 		this.push(this.splice(Math.random() * i | 0, 1)[0]);
 	return this;
 };
-
-
-$( "#navbar" ).load( "navbar.html" );

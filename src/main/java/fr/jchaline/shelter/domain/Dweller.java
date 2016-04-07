@@ -62,6 +62,9 @@ public class Dweller extends AbstractEntity {
 	@Column(nullable = false)
 	private JobEnum job = JobEnum.NEWBIE;
 	
+	@OneToOne
+	private MapCell mapCell;
+	
 	public Dweller() {
 		
 	}
@@ -174,6 +177,14 @@ public class Dweller extends AbstractEntity {
 
 	public void setTeam(Team team) {
 		this.team = team;
+	}
+
+	public MapCell getMapCell() {
+		return mapCell;
+	}
+
+	public void setMapCell(MapCell mapCell) {
+		this.mapCell = mapCell;
 	}
 
 }

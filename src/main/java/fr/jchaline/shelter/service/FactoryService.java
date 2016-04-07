@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.jchaline.shelter.config.ShelterConstants;
 import fr.jchaline.shelter.dao.DutyDao;
 import fr.jchaline.shelter.dao.FloorDao;
+import fr.jchaline.shelter.dao.MapCellDao;
 import fr.jchaline.shelter.dao.PlayerDao;
 import fr.jchaline.shelter.dao.RoomDao;
 import fr.jchaline.shelter.dao.RoomTypeDao;
@@ -47,7 +48,7 @@ import fr.jchaline.shelter.utils.AlgoUtils;
 @Transactional
 public class FactoryService {
 	
-	private static final List<String> CITIES_LIST = Arrays.asList("Nantes", "Paris", "Metz", "Lyon", "Montpellier", "Barcelone", "Madrid", "Valence", "Seville", "Porto", "Lisonne", "Londre", "Manchester", "Glasgow", "Dublin", "Bruxelles", "Munich", "Berlin", "Moscou", "Pekin", "Tokyo", "Sydney", "New-York", "Los Angeles", "Washington", "Miami", "Seattle", "Rio", "Buenos Aires", "Pretoria", "Yaoundé", "Abuja", "Abidjan", "Dakar", "Rabat", "Alger", "Tunis", "Le Caire", "Bombay", "Seoul");
+	//private static final List<String> CITIES_LIST = Arrays.asList("Nantes", "Paris", "Metz", "Lyon", "Montpellier", "Barcelone", "Madrid", "Valence", "Seville", "Porto", "Lisonne", "Londre", "Manchester", "Glasgow", "Dublin", "Bruxelles", "Munich", "Berlin", "Moscou", "Pekin", "Tokyo", "Sydney", "New-York", "Los Angeles", "Washington", "Miami", "Seattle", "Rio", "Buenos Aires", "Pretoria", "Yaoundé", "Abuja", "Abidjan", "Dakar", "Rabat", "Alger", "Tunis", "Le Caire", "Bombay", "Seoul");
 	private static final List<String> CITIES_LIST_DEV = Arrays.asList("Nantes", "Barcelone", "Londre", "Munich", "Moscou", "Pekin", "Tokyo", "Sydney", "Buenos Aires", "Dakar");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FactoryService.class);
@@ -78,6 +79,9 @@ public class FactoryService {
 	
 	@Autowired
 	private SuitDao suitDao;
+	
+	@Autowired
+	private MapCellDao mapCellDao;
 	
 	/**
 	 * Initialize mandatory data
@@ -216,6 +220,7 @@ public class FactoryService {
 	 * @throws Exception 
 	 */
 	private void createDwellers(Player player) throws Exception {
+		List<MapCell> cellCities = mapCellDao.findAll().stream().filter(c -> CITIES_LIST_DEV.contains(c.getName())).collect(Collectors.toList());
 		Dweller simon = new Dweller(true, "Adebisi", "Simon", specialService.randForDweller(7));
 		simon.setLevel(2);
 		Dweller harley = new Dweller(false, "Quinn", "Harley", specialService.randForDweller(4));
@@ -246,7 +251,10 @@ public class FactoryService {
 				new Dweller(false, "Ecureil", "Sandy", specialService.randForDweller(3)),
 				new Dweller(true, "Rambo", "John", specialService.randForDweller(3))
 				).stream()
-			.forEach(player.getShelter().getDwellers()::add);
+			.forEach(d -> {
+				d.setMapCell(AlgoUtils.rand(cellCities));
+				player.getShelter().getDwellers().add(d);
+			});
 		LOGGER.info("Dweller generate over.");
 	}
 

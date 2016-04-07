@@ -60,6 +60,26 @@ public class TeamService {
 
 	@Transactional(readOnly = false)
 	@Scheduled(fixedDelay = 2*60*1000)
+	public void updateRecruitment() {
+		LOGGER.debug("update recruitment for all team");
+		
+		//find team and compute event
+		teamDao.findByDuty(dutyDao.findByName(Duty.RECRUITMENT)).stream().forEach(it -> {
+			computeRecruitment(it);
+		});
+	}
+
+	private void computeRecruitment(Team team) {
+		LocalDateTime now = LocalDateTime.now();
+		//first, move to the target cell. The farthest you will go, the luckiest you will be
+		
+		//when arrive, search to recruit
+		
+		//check if event should happen
+	}
+
+	@Transactional(readOnly = false)
+	@Scheduled(fixedDelay = 2*60*1000)
 	public void updateFight() {
 		LOGGER.debug("update fighting for all team");
 		
@@ -126,11 +146,22 @@ public class TeamService {
 		Team t = new Team();
 		List<Dweller> teammates = team.getDwellersId().stream()
 										.map(dwellerDao::findOne)
-										.filter(x -> x.getTeam() == null)
+										.filter(x -> x.getTeam() == null || x.getTeam().getDuty() == null)
 										.collect(Collectors.toList());
 		t.setDwellers(teammates);
 		teamDao.save(t);
 		teammates.forEach(d -> {
+			
+			//if dweller has alreay a team, remove from it
+			if (d.getTeam() != null) {
+				d.getTeam().getDwellers().remove(d);
+				teamDao.save(d.getTeam());
+				
+				//delete team if empty
+				if (d.getTeam().getDwellers().size() == 0) {
+					teamDao.delete(d.getTeam());
+				}
+			}
 			d.setTeam(t);
 			dwellerDao.save(d);	
 		});

@@ -6,13 +6,29 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/bootstrap-theme.css">
 	<link rel="stylesheet" href="css/world-map.css">
+	
+	<script type="text/javascript" src="js/jquery-1.11.3.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/angular.min.js"></script>
+	<script type="text/javascript" src="js/lodash.js"></script>
+	<script type="text/javascript" src="js/shelter/shelter.js"></script>
 </head>
 
 <body role="document" >
 	<nav id="navbar" class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="index.html">Shelter view</a></li>
+					<li><a href="world.html">World map</a></li>
+					<li><a href="test.html">test</a></li>
+				</ul>
+			</div>
+		</div>
 	</nav>
 	
 	<div class="container" role="main">
@@ -59,19 +75,19 @@
 						</div>
 					</div>
 					<div id="world-info">
-						{{city.name}}
+						<strong>{{city.name}}</strong>
+						<div data-ng-repeat="dweller in cityDwellers | orderBy: name">
+							<input type="checkbox" name="dweller" value="{{dweller.id}}" >&nbsp;{{dweller.name}} {{dweller.firstname}}</input>
+						</div>
+						<button data-ng-if="cityDwellers" class="btn btn-xs btn-success valign" data-ng-click="teamup()">
+							<i class="glyphicon glyphicon-road"></i>
+						</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<script type="text/javascript" src="js/jquery-1.11.3.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="js/angular.min.js"></script>
-	<script type="text/javascript" src="js/lodash.core.min.js"></script>
-	<script type="text/javascript" src="js/shelter/shelter.js"></script>
-	
 	<script>
 		var app = angular.module( 'worldModule', [] )
 		
@@ -81,13 +97,29 @@
 			
 			//update the world map with server data
 			$scope.updateWorld = function() {
-				httpService.getData("/world/get").then(function(world){
+				httpService.getData("/world/get").then(function(world) {
 					$scope.world = world
 					
 					$scope.worldMap = updateMapWithWorld($scope.world, $scope.worldMap)
 					
 					drawMap($scope.worldMap)
-					//TODO : get team to display
+					
+					$scope.updateDwellers()
+				})
+			}
+			
+			$scope.teamup = function() {
+				var teamup = $('[name="dweller"]:checked').map(function(){return this.value}).get()
+				
+				httpService.postData("/team/teamup", {dwellersId: _.values(teamup)}).then(function(team) {
+					console.log(team)
+				})
+			}
+			
+			$scope.updateDwellers = function() {
+				httpService.getData("/dweller/list").then(function(dwellers) {
+					$scope.dwellers = dwellers
+					drawDwellers($scope.dwellers)
 				})
 			}
 			
@@ -95,12 +127,14 @@
 			$scope.moveMap = function(vx, vy) {
 				updateCenter($scope.worldMap, vx, vy)
 				drawMap($scope.worldMap)
+				drawDwellers($scope.dwellers)
 			}
 			
 			//add empty spot to city and display it
 			$scope.updateCity = function(cityId) {
-				httpService.getData("/world/cell/" + cityId).then(function(city){
+				httpService.getData("/world/cell/" + cityId).then(function(city) {
 					$scope.city = city
+					$scope.cityDwellers = _.filter($scope.dwellers, function(o) { return o.mapCell.id==cityId; });
 				})
 			}
 			
@@ -118,15 +152,19 @@
 				//transform the object into array
 				Object.keys(world.map).forEach(function(key) {
 					var cell = world.map[key]
-					
-					if (map.cells[cell.xaxis] == undefined) {
-						map.cells[cell.xaxis] = []
-					}
-					
+					map.cells[cell.xaxis] = map.cells[cell.xaxis] || []
 					map.cells[cell.xaxis][cell.yaxis] = cell
 				})
 				
 				return map
+			}
+			
+			// display dwellers position on the map
+			function drawDwellers(dwellers) {
+				dwellers.forEach(function(d) {
+					var cellId = d.mapCell.id
+					$('[data-cell-id="' + cellId + '"]').html('<span class="glyphicon glyphicon-user"></span>')
+				})
 			}
 			
 			// display the map
@@ -150,10 +188,9 @@
 				for (y = 0; y < nbCeilHeight; y++) {
 					for (x = 0; x < nbCeilWidth; x++) {
 						//détermination des identifiants des cellules affichés
-						var xUpdate = $($(worldMap.cells).get((x + xLeft) % nbCeilWidth)).get((y + yUp) % nbCeilHeight).xaxis
-						var yUpdate = $($(worldMap.cells).get((x + xLeft) % nbCeilWidth)).get((y + yUp) % nbCeilHeight).yaxis
-						var id = xUpdate + '_' + yUpdate
-						$('#world-map').append('<div id="' + id + '" class="cell empty"></div>')
+						var cell = $($(worldMap.cells).get((x + xLeft) % nbCeilWidth)).get((y + yUp) % nbCeilHeight)
+						var id = cell.xaxis + '_' + cell.yaxis
+						$('#world-map').append('<div id="' + id + '" class="cell empty" data-cell-id="' + cell.id + '"></div>')
 					}
 				}
 

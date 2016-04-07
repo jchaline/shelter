@@ -8,13 +8,23 @@ import java.util.stream.Collectors;
 
 final public class AlgoUtils {
 	
-	public static <E> E rand(List<E> collec){
-		return collec.get(new Random().nextInt(collec.size()));
+	/**
+	 * Get random element from list
+	 * @param list The list to get random element
+	 * @return The element
+	 */
+	public static <E> E rand(List<E> list) {
+		return list.get(new Random().nextInt(list.size()));
 	}
 
-	public static <E> E randPick(List<E> collec) {
-		int nextInt = new Random().nextInt(collec.size());
-		return collec.remove(nextInt);
+	/**
+	 * Remove and get random element from list
+	 * @param list The list to pick random element
+	 * @return The element
+	 */
+	public static <E> E randPick(List<E> list) {
+		int nextInt = new Random().nextInt(list.size());
+		return list.remove(nextInt);
 	}
 	
 	/**

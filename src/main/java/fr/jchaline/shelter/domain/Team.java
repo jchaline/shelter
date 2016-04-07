@@ -1,7 +1,6 @@
 package fr.jchaline.shelter.domain;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -9,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -19,7 +19,7 @@ public class Team extends AbstractEntity {
 	
 	@JsonBackReference
 	@OneToMany
-	private List<Dweller> dwellers = new ArrayList<Dweller>();
+	private List<Dweller> dwellers;
 	
 	@Column
 	private LocalDateTime lastEvent;
@@ -29,6 +29,12 @@ public class Team extends AbstractEntity {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	private Duty duty;
+	
+	/**
+	 * Cell target for the team send on duty
+	 */
+	@OneToOne
+	private MapCell target;
 	
 	public Team() {
 		begin = LocalDateTime.now();
@@ -65,6 +71,14 @@ public class Team extends AbstractEntity {
 
 	public void setDuty(Duty duty) {
 		this.duty = duty;
+	}
+
+	public MapCell getTarget() {
+		return target;
+	}
+
+	public void setTarget(MapCell target) {
+		this.target = target;
 	}
 
 }
