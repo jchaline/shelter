@@ -22,4 +22,11 @@ public class ShelterConstants {
 	public static final int STREET_PER_CITY = 10;
 	public static final int BUILDING_PER_STREET = 10;
 	
+	
+	//TODO : move to config file
+	public static final int SHELTER_COMPUTE_ALL = 2*60*1000;
+	public static final int TEAM_EXPLORE = 2*60*1000;
+	public static final int TEAM_RECRUITMENT = 2*60*1000;
+	public static final int TEAM_FIGHT = 2*60*1000;
+	
 }

@@ -8,16 +8,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table
 public class Team extends AbstractEntity {
 	
-	@JsonBackReference
+	@JsonManagedReference
 	@OneToMany
 	private List<Dweller> dwellers;
 	
@@ -33,8 +32,14 @@ public class Team extends AbstractEntity {
 	/**
 	 * Cell target for the team send on duty
 	 */
-	@OneToOne
+	@ManyToOne
 	private MapCell target;
+
+	/**
+	 * Current Cell of the team
+	 */
+	@ManyToOne(optional = false)
+	private MapCell current;
 	
 	public Team() {
 		begin = LocalDateTime.now();
@@ -79,6 +84,14 @@ public class Team extends AbstractEntity {
 
 	public void setTarget(MapCell target) {
 		this.target = target;
+	}
+
+	public MapCell getCurrent() {
+		return current;
+	}
+
+	public void setCurrent(MapCell current) {
+		this.current = current;
 	}
 
 }

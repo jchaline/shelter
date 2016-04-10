@@ -1,5 +1,7 @@
 package fr.jchaline.shelter.domain;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -12,6 +14,9 @@ public abstract class AbstractEntity {
 	@GeneratedValue
 	@Column(unique = true, nullable = false)
 	private Long id;
+	
+	@Column
+	private LocalDateTime dateCreate = LocalDateTime.now();
 
 	public Long getId() {
 		return id;
@@ -19,5 +24,13 @@ public abstract class AbstractEntity {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public LocalDateTime getDateCreate() {
+		return dateCreate;
+	}
+
+	public void setDateCreate(LocalDateTime date) {
+		this.dateCreate = date;
 	}
 }

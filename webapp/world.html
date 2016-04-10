@@ -50,38 +50,64 @@
 				</div>
 				<hr>
 				<div id="world-view">
-					<div id="world-map-container">
-						<div id="world-map-top">
-							<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(0, -1)">
-								<i class="glyphicon glyphicon-arrow-up"></i>
-							</button>
+					<div class="row">
+						<div id="world-map-container">
+							<div id="world-map-top">
+								<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(0, -1)">
+									<i class="glyphicon glyphicon-arrow-up"></i>
+								</button>
+							</div>
+							<div id="world-map-left">
+								<button class="btn btn-xs btn-success" data-ng-click="moveMap(-1, 0)">
+									<i class="glyphicon glyphicon-arrow-left"></i>
+								</button>
+							</div>
+							<div id="world-map">
+							</div>
+							<div id="world-map-right">
+								<button class="btn btn-xs btn-success" data-ng-click="moveMap(1, 0)">
+									<i class="glyphicon glyphicon-arrow-right"></i>
+								</button>
+							</div>
+							<div id="world-map-bottom">
+								<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(0, 1)">
+									<i class="glyphicon glyphicon-arrow-down"></i>
+								</button>
+							</div>
 						</div>
-						<div id="world-map-left">
-							<button class="btn btn-xs btn-success" data-ng-click="moveMap(-1, 0)">
-								<i class="glyphicon glyphicon-arrow-left"></i>
-							</button>
-						</div>
-						<div id="world-map">
-						</div>
-						<div id="world-map-right">
-							<button class="btn btn-xs btn-success" data-ng-click="moveMap(1, 0)">
-								<i class="glyphicon glyphicon-arrow-right"></i>
-							</button>
-						</div>
-						<div id="world-map-bottom">
-							<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(0, 1)">
-								<i class="glyphicon glyphicon-arrow-down"></i>
-							</button>
+						<div id="world-info" class="container">
+							<div class="row">
+								<div class="col-md-12">
+									<strong>{{city.name}}</strong>
+								</div>
+							</div>
+							<div class="row" data-ng-if="cityDwellers.length > 0">
+								<div class="col-md-12">
+									<hr>
+									<strong>Dwellers</strong>
+									<div data-ng-repeat="dweller in cityDwellers | orderBy: name">
+										<input type="checkbox" name="dweller" value="{{dweller.id}}" >&nbsp;{{dweller.name}} {{dweller.firstname}}</input>
+									</div>
+									<button class="btn btn-xs btn-success valign" data-ng-click="teamup()">
+										<i class="glyphicon glyphicon-road"></i>
+									</button>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<hr>
+									<strong>Teams</strong>
+									<div data-ng-repeat="team in teams">
+										<span drag="{{team.id}}" class="glyphicon glyphicon-user">&nbsp;{{team.id}}:{{team.current.name}}</span>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-					<div id="world-info">
-						<strong>{{city.name}}</strong>
-						<div data-ng-repeat="dweller in cityDwellers | orderBy: name">
-							<input type="checkbox" name="dweller" value="{{dweller.id}}" >&nbsp;{{dweller.name}} {{dweller.firstname}}</input>
+					<div class="row">
+						<div data-ng-if="messages.number > 0" data-ng-repeat="message in messages.content">
+							{{message}}
 						</div>
-						<button data-ng-if="cityDwellers" class="btn btn-xs btn-success valign" data-ng-click="teamup()">
-							<i class="glyphicon glyphicon-road"></i>
-						</button>
 					</div>
 				</div>
 			</div>
@@ -90,11 +116,15 @@
 
 	<script>
 		var app = angular.module( 'worldModule', [] )
-		
+
 		app.run(function ($rootScope) { $rootScope._ = _; });
-		
-		app.controller('worldController', function( $scope, $interval, httpService ) {
-			
+
+		app.controller('worldController', function( $scope, $rootScope, $interval, httpService ) {
+
+			$rootScope.$on('dropEvent', function(evt, team, cell) {
+				console.log(evt)
+		    });
+
 			//update the world map with server data
 			$scope.updateWorld = function() {
 				httpService.getData("/world/get").then(function(world) {
@@ -105,31 +135,44 @@
 					drawMap($scope.worldMap)
 					
 					$scope.updateDwellers()
+					$scope.updateTeams()
 				})
 			}
-			
+
 			$scope.teamup = function() {
 				var teamup = $('[name="dweller"]:checked').map(function(){return this.value}).get()
 				
 				httpService.postData("/team/teamup", {dwellersId: _.values(teamup)}).then(function(team) {
-					console.log(team)
+					$scope.updateTeams()
 				})
 			}
-			
+
 			$scope.updateDwellers = function() {
 				httpService.getData("/dweller/list").then(function(dwellers) {
 					$scope.dwellers = dwellers
 					drawDwellers($scope.dwellers)
 				})
 			}
-			
+
+			$scope.updateTeams = function() {
+				httpService.getData("/team/list").then(function(teams) {
+					$scope.teams = teams
+				})
+			}
+
+			$scope.updateMessages = function() {
+				httpService.getData("/message/last", {page:0, size:10}).then(function(messages) {
+					$scope.messages = messages
+				})
+			}
+
 			//move the displayed map
 			$scope.moveMap = function(vx, vy) {
 				updateCenter($scope.worldMap, vx, vy)
 				drawMap($scope.worldMap)
 				drawDwellers($scope.dwellers)
 			}
-			
+
 			//add empty spot to city and display it
 			$scope.updateCity = function(cityId) {
 				httpService.getData("/world/cell/" + cityId).then(function(city) {
@@ -137,7 +180,7 @@
 					$scope.cityDwellers = _.filter($scope.dwellers, function(o) { return o.mapCell.id==cityId; });
 				})
 			}
-			
+
 			//update map center view
 			function updateCenter(map, vx, vy) {
 				map.center.x = map.center.x + vx
@@ -158,7 +201,7 @@
 				
 				return map
 			}
-			
+
 			// display dwellers position on the map
 			function drawDwellers(dwellers) {
 				dwellers.forEach(function(d) {
@@ -190,7 +233,8 @@
 						//détermination des identifiants des cellules affichés
 						var cell = $($(worldMap.cells).get((x + xLeft) % nbCeilWidth)).get((y + yUp) % nbCeilHeight)
 						var id = cell.xaxis + '_' + cell.yaxis
-						$('#world-map').append('<div id="' + id + '" class="cell empty" data-cell-id="' + cell.id + '"></div>')
+						var div = '<div drop="' + cell.id + '" id="' + id + '" class="cell empty" data-cell-id="' + cell.id + '"></div>'
+						$('#world-map').append(div)
 					}
 				}
 
@@ -231,14 +275,81 @@
 			
 			angular.element(document).ready(function () {
 				$scope.updateWorld()
+				$scope.updateMessages()
 
 				//update view with 5s interval
-				$interval(function(){
+				$interval(function() {
 					$scope.updateWorld()
 				}, 70 * 1000);
+
+				$interval(function() {
+					$scope.updateMessages()
+				}, 50 * 1000);
 		    });
 		})
+		
+		app.directive("drag", ["$rootScope", function($rootScope) {
+
+			function dragStart(evt, element) {
+				evt.originalEvent.dataTransfer.setData("id", evt.target.id)
+				evt.originalEvent.dataTransfer.effectAllowed = 'move'
+			}
+			  
+			function dragEnd(evt, element) {}
+			  
+			return {
+				restrict: 'A',
+				link: function(scope, element, attrs) {
+					attrs.$set('draggable', 'true')
+					scope.dragData = attrs["drag"]
+					element.bind('dragstart', function(evt) {
+						$rootScope.draggedElement = scope.dragData
+						dragStart(evt, element)
+					})
+		
+					element.bind('dragend', function(evt) {
+						dragEnd(evt, element)
+					})
+				}
+			}
+		}])
+		
+		app.directive("drop", ['$rootScope', function($rootScope) {
+
+			function dragEnter(evt, element) {
+				evt.preventDefault();
+			}
+
+			function dragLeave(evt, element) { }
+
+			function dragOver(evt) {
+				evt.preventDefault();
+			}
+
+			function drop(evt, element) {
+				evt.preventDefault();
+			}
+			
+			return {
+				restrict: 'A',
+				link: function(scope, element, attrs) {
+					element.bind('dragenter', function(evt) {
+						dragEnter(evt, element)
+					})
+					element.bind('dragleave', function(evt) {
+						dragLeave(evt, element)
+					})
+					element.bind('dragover', dragOver)
+					element.bind('drop', function(evt) {
+						scope.dropData = attrs["drop"];
+						drop(evt, element)
+						$rootScope.$broadcast('dropEvent', $rootScope.draggedElement, scope.dropData)
+					})
+			    }
+			}
+		}])
 	</script>
+	
 	<script type="text/javascript" src="js/shelter/http-service.js"></script>
 </body>
 </html>

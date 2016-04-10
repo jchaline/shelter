@@ -2,6 +2,7 @@ package fr.jchaline.shelter.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.jchaline.shelter.config.ShelterConstants;
 import fr.jchaline.shelter.dao.DutyDao;
 import fr.jchaline.shelter.dao.DwellerDao;
 import fr.jchaline.shelter.dao.ItemDao;
@@ -45,7 +47,7 @@ public class TeamService {
 	private ItemDao itemDao;
 	
 	@Transactional(readOnly = false)
-	@Scheduled(fixedDelay = 2*60*1000)
+	@Scheduled(fixedDelay = ShelterConstants.TEAM_EXPLORE)
 	public void updateExploring() {
 		LOGGER.debug("update exploring for all team");
 		
@@ -59,7 +61,7 @@ public class TeamService {
 	}
 
 	@Transactional(readOnly = false)
-	@Scheduled(fixedDelay = 2*60*1000)
+	@Scheduled(fixedDelay = ShelterConstants.TEAM_RECRUITMENT)
 	public void updateRecruitment() {
 		LOGGER.debug("update recruitment for all team");
 		
@@ -70,7 +72,7 @@ public class TeamService {
 	}
 
 	private void computeRecruitment(Team team) {
-		LocalDateTime now = LocalDateTime.now();
+		//LocalDateTime now = LocalDateTime.now();
 		//first, move to the target cell. The farthest you will go, the luckiest you will be
 		
 		//when arrive, search to recruit
@@ -79,7 +81,7 @@ public class TeamService {
 	}
 
 	@Transactional(readOnly = false)
-	@Scheduled(fixedDelay = 2*60*1000)
+	@Scheduled(fixedDelay = ShelterConstants.TEAM_FIGHT)
 	public void updateFight() {
 		LOGGER.debug("update fighting for all team");
 		
@@ -142,14 +144,21 @@ public class TeamService {
 	 * @return the Team
 	 */
 	@Transactional(readOnly = false)
-	public synchronized Team teamUp(TeamUp team) {
-		Team t = new Team();
-		List<Dweller> teammates = team.getDwellersId().stream()
+	public synchronized Team teamUp(TeamUp teamup) {
+		Team team = new Team();
+		List<Dweller> teammates = teamup.getDwellersId().stream()
 										.map(dwellerDao::findOne)
 										.filter(x -> x.getTeam() == null || x.getTeam().getDuty() == null)
 										.collect(Collectors.toList());
-		t.setDwellers(teammates);
-		teamDao.save(t);
+		Optional<Dweller> firstTeammate = teammates.stream().findFirst();
+		if (firstTeammate.isPresent()) {
+			team.setCurrent(firstTeammate.get().getMapCell());
+		} else {
+			throw new BusinessException("Impossible to make team with no dwellers !");
+		}
+		
+		team.setDwellers(teammates);
+		teamDao.save(team);
 		teammates.forEach(d -> {
 			
 			//if dweller has alreay a team, remove from it
@@ -162,11 +171,11 @@ public class TeamService {
 					teamDao.delete(d.getTeam());
 				}
 			}
-			d.setTeam(t);
+			d.setTeam(team);
 			dwellerDao.save(d);	
 		});
 		
-		return teamDao.save(t);
+		return teamDao.save(team);
 	}
 
 	/**

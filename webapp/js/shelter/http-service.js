@@ -9,8 +9,8 @@ app.service("httpService", function( $http, $q ) {
 		postData: postData
 	})
 	
-	function getData(url) {
-		var request = $http({ method: "GET", url: baseUrl + url, params: {}, data: {}, headers:headers })
+	function getData(url, data ) {
+		var request = $http({ method: "GET", url: baseUrl + url, params: data, data: {}, headers:headers })
 		return( request.then( handleSuccess, handleError ) )
 	}
 	

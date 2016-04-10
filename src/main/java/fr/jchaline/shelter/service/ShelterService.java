@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.jchaline.shelter.config.ShelterConstants;
 import fr.jchaline.shelter.dao.ShelterDao;
 import fr.jchaline.shelter.domain.Shelter;
 import fr.jchaline.shelter.enums.ResourceEnum;
@@ -37,7 +38,7 @@ public class ShelterService {
 	}
 	
 	@Transactional
-	@Scheduled(fixedDelay = 2*60*1000)
+	@Scheduled(fixedDelay = ShelterConstants.SHELTER_COMPUTE_ALL)
 	public void computeAll() {
 		LOGGER.debug("Run computeAll for Shelters");
 		dao.findAll().stream().forEach(it -> {

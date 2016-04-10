@@ -26,3 +26,14 @@ Array.prototype.shuffle = function () {
 		this.push(this.splice(Math.random() * i | 0, 1)[0]);
 	return this;
 };
+
+//Add composition. see http://scott.sauyet.com/Javascript/Talk/Compose/2013-05-22/#slide-15
+Function.prototype.compose = function(g) {
+	var fn = this;
+	return function() {
+		return fn.call(this, g.apply(this, arguments));
+	};
+};
+
+
+

@@ -1,11 +1,3 @@
-//Add composition. see http://scott.sauyet.com/Javascript/Talk/Compose/2013-05-22/#slide-15
-Function.prototype.compose = function(g) {
-	var fn = this;
-	return function() {
-		return fn.call(this, g.apply(this, arguments));
-	};
-};
-
 var app = angular.module( "shelterModule", ['datatables', 'ngResource'] )
 		
 app.controller("shelterController", function( $scope, $rootScope, $interval, httpService ) {

@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import fr.jchaline.shelter.enums.JobEnum;
@@ -48,10 +49,10 @@ public class Dweller extends AbstractEntity {
 	private Weapon weapon;
 	
 	@JsonManagedReference
-	@OneToOne
+	@ManyToOne
 	private Room room;
 
-	@JsonManagedReference
+	@JsonBackReference
 	@ManyToOne
 	private Team team;
 	
@@ -62,7 +63,7 @@ public class Dweller extends AbstractEntity {
 	@Column(nullable = false)
 	private JobEnum job = JobEnum.NEWBIE;
 	
-	@OneToOne
+	@ManyToOne(optional = false)
 	private MapCell mapCell;
 	
 	public Dweller() {
