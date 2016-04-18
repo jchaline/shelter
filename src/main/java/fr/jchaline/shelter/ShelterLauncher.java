@@ -9,7 +9,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import fr.jchaline.shelter.service.FactoryService;
 
 @SpringBootApplication
-
 public class ShelterLauncher {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShelterLauncher.class);

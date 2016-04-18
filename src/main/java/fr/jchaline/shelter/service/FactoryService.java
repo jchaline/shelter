@@ -1,11 +1,13 @@
 package fr.jchaline.shelter.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import fr.jchaline.shelter.dao.RoomTypeDao;
 import fr.jchaline.shelter.dao.SuitDao;
 import fr.jchaline.shelter.dao.WeaponDao;
 import fr.jchaline.shelter.dao.WorldDao;
+import fr.jchaline.shelter.domain.CellOccupant;
 import fr.jchaline.shelter.domain.City;
 import fr.jchaline.shelter.domain.Duty;
 import fr.jchaline.shelter.domain.Dweller;
@@ -35,6 +38,7 @@ import fr.jchaline.shelter.domain.Spot;
 import fr.jchaline.shelter.domain.Suit;
 import fr.jchaline.shelter.domain.Weapon;
 import fr.jchaline.shelter.domain.World;
+import fr.jchaline.shelter.enums.CellEnum;
 import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.enums.SpecialEnum;
 import fr.jchaline.shelter.utils.AlgoUtils;
@@ -82,6 +86,9 @@ public class FactoryService {
 	
 	@Autowired
 	private MapCellDao mapCellDao;
+
+	@Autowired
+	private MapService mapService;
 	
 	/**
 	 * Initialize mandatory data
@@ -101,7 +108,7 @@ public class FactoryService {
 	 */
 	private void initDuty() {
 		Arrays
-			.asList(new Duty(Duty.EXPLORE, "Exploration"), new Duty(Duty.FIGHT, "Combat"), new Duty(Duty.RECRUITMENT, "Recrutement"))
+			.asList(new Duty(Duty.EXPLORE, "Exploration", true), new Duty(Duty.FIGHT, "Combat", true), new Duty(Duty.RECRUITMENT, "Recrutement", true), new Duty(Duty.RETURN, "Retour", false))
 			.stream()
 			.forEach(dutyDao::save);
 	}
@@ -160,7 +167,7 @@ public class FactoryService {
 	/**
 	 * Initialisation du "Monde physique", création des villes et génération de bâtiments
 	 */
-	private void initWorld() {
+	private World initWorld() {
 		LOGGER.info("Start init World");
 		
 		World w = new World(CITIES_LIST_DEV.size() * 2, CITIES_LIST_DEV.size() * 2);
@@ -173,27 +180,46 @@ public class FactoryService {
 		
 		List<Integer> xAxisPick = Stream.iterate(0, n  ->  n  + 1).limit(w.getWidth()).collect(Collectors.toList());
 		List<Integer> yAxisPick = Stream.iterate(0, n  ->  n  + 1).limit(w.getHeight()).collect(Collectors.toList());
+
+		List<Pair<Integer, Integer>> listPos = new ArrayList<>();
+		xAxisPick.forEach(x -> {
+			yAxisPick.forEach(y -> {
+				listPos.add(Pair.of(x, y));
+			});
+		});
 		
 		CITIES_LIST_DEV
 			.stream()
-			.map(s -> new City(s, AlgoUtils.randPick(xAxisPick), AlgoUtils.randPick(yAxisPick)))
+			.map(s -> new City(s))
 			.forEach( c -> {
-				//for each street
-				Stream.iterate(1, n  ->  n  + 1).limit(10).forEach(idx -> {
-					
-					//each spot number 
-					List<Integer> numbers = Stream.iterate(1, n  ->  n  + 1).limit(10).collect(Collectors.toList());
-					
-					Arrays.asList("School", "Market", "Tower").forEach( s -> {
-						c.add(new Spot(s), idx, AlgoUtils.randPick(numbers));
-					});
-				});
 				
-				w.setCell(c.getXaxis(), c.getYaxis(), c);
+				Arrays.asList("School", "Market", "Tower").forEach( s -> {
+					c.addSpot(new Spot(s));
+				});
+				Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
+				w.getCell(pos.getLeft(), pos.getRight()).setOccupant(c);;
 				w.getCities().add(c);
 			});
-			
-		worldDao.save(w);
+		
+		int percentRock = 10;
+		int percentWater = 30;
+		
+		for (int i = 0; i < w.getHeight() * w.getHeight() * percentRock / 100; i++) {
+			Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
+			CellOccupant rock = new CellOccupant("rock" + i, CellEnum.ROCK);
+			w.getCell(pos.getLeft(), pos.getRight()).setOccupant(rock);
+		}
+
+		for (int i = 0; i < w.getHeight() * w.getHeight() * percentWater / 100; i++) {
+			Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
+			CellOccupant water = new CellOccupant("water" + i, CellEnum.WATER);
+			w.getCell(pos.getLeft(), pos.getRight()).setOccupant(water);
+		}
+		
+		//create edges between vertex
+		w.setEdges(mapService.createEdges(w));
+		
+		return worldDao.save(w);
 	}
 
 	/**
@@ -220,7 +246,7 @@ public class FactoryService {
 	 * @throws Exception 
 	 */
 	private void createDwellers(Player player) throws Exception {
-		List<MapCell> cellCities = mapCellDao.findAll().stream().filter(c -> CITIES_LIST_DEV.contains(c.getName())).collect(Collectors.toList());
+		List<MapCell> cellCities = mapCellDao.findAll().stream().filter(c -> c.getOccupant() != null && CellEnum.CITY.equals(c.getOccupant().getType())).collect(Collectors.toList());
 		Dweller simon = new Dweller(true, "Adebisi", "Simon", specialService.randForDweller(7));
 		simon.setLevel(2);
 		Dweller harley = new Dweller(false, "Quinn", "Harley", specialService.randForDweller(4));

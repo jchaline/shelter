@@ -15,7 +15,7 @@ app.service("httpService", function( $http, $q ) {
 	}
 	
 	function postData(url, data){
-		var request = $http({ method: "POST", url: baseUrl + url, params: {}, data: data, headers:headers })
+		var request = $http({ method: "POST", url: baseUrl + url, params: data, data: data, headers:headers })
 		return( request.then( handleSuccess, handleError ) )
 	}
 	

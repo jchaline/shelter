@@ -14,6 +14,7 @@ public class Duty extends AbstractEntity {
 	public static final String EXPLORE = "explore";
 	public static final String FIGHT = "fight";
 	public static final String RECRUITMENT = "recruitment";
+	public static final String RETURN = "return";
 	
 	@Column(nullable = false, unique = true)
 	private String name;
@@ -21,13 +22,20 @@ public class Duty extends AbstractEntity {
 	@Column(nullable = false)
 	private String label;
 	
+	/**
+	 * True for player's actions, false for other purpose
+	 */
+	@Column(nullable = false)
+	private boolean action = false;
+	
 	public Duty() {
 		
 	}
 
-	public Duty(String name, String label){
+	public Duty(String name, String label, boolean action) {
 		this.setName(name);
 		this.setLabel(label);
+		this.setAction(action);
 	}
 
 	public String getName() {
@@ -44,6 +52,14 @@ public class Duty extends AbstractEntity {
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	public boolean isAction() {
+		return action;
+	}
+
+	public void setAction(boolean action) {
+		this.action = action;
 	}
 
 }

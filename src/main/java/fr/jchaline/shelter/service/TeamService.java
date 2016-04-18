@@ -1,8 +1,10 @@
 package fr.jchaline.shelter.service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -18,10 +20,13 @@ import fr.jchaline.shelter.config.ShelterConstants;
 import fr.jchaline.shelter.dao.DutyDao;
 import fr.jchaline.shelter.dao.DwellerDao;
 import fr.jchaline.shelter.dao.ItemDao;
+import fr.jchaline.shelter.dao.MapCellDao;
 import fr.jchaline.shelter.dao.TeamDao;
 import fr.jchaline.shelter.domain.Duty;
 import fr.jchaline.shelter.domain.Dweller;
+import fr.jchaline.shelter.domain.MapCell;
 import fr.jchaline.shelter.domain.Team;
+import fr.jchaline.shelter.enums.SpecialEnum;
 import fr.jchaline.shelter.exception.BusinessException;
 import fr.jchaline.shelter.json.TeamUp;
 
@@ -46,6 +51,15 @@ public class TeamService {
 	@Autowired
 	private ItemDao itemDao;
 	
+	@Autowired
+	private MapService mapService;
+
+	@Autowired
+	private WorldService worldService;
+	
+	@Autowired
+	private MapCellDao mapCellDao;
+	
 	@Transactional(readOnly = false)
 	@Scheduled(fixedDelay = ShelterConstants.TEAM_EXPLORE)
 	public void updateExploring() {
@@ -53,11 +67,49 @@ public class TeamService {
 		
 		//find team and compute event
 		teamDao.findByDuty(dutyDao.findByName(Duty.EXPLORE)).stream().forEach(it -> {
-			
 			computeExplore(it);
-			
-			//TODO : update discoveredStreets for the player !
 		});
+	}
+	
+	@Transactional(readOnly = false)
+	@Scheduled(fixedDelay = ShelterConstants.TEAM_EXPLORE)
+	public void updateReturn() {
+		LOGGER.debug("update return for all team");
+		
+		//find team and compute event
+		teamDao.findByDuty(dutyDao.findByName(Duty.RETURN)).stream().forEach(it -> {
+			computeExplore(it);
+		});
+	}
+	
+	/**
+	 * Move the team to the target cell
+	 * TODO : take in consideration the edge for averageSpeed of the team
+	 * @param team The team to move
+	 * @param target The target cell
+	 */
+	private void tryToMove(Team team, MapCell target) {
+		if (!team.getCurrent().equals(target)) {
+			OptionalDouble averageSpeedOpt = team.getDwellers().stream().map(d -> d.getSpecial().getValue(SpecialEnum.A)).mapToInt(i -> i.intValue()).average();
+			averageSpeedOpt.ifPresent(speed -> {
+				LocalDateTime now = LocalDateTime.now();
+				double cellFrequency = speed / 10;
+				int nbSecondsInterval = 6;
+				long secondToWait = Math.round(1 / cellFrequency * nbSecondsInterval);
+				
+				double cellToMove = Math.abs(Duration.between(team.getLastMove(), now).getSeconds() / secondToWait);
+				int nbCellToMove = (int) Math.floor(cellToMove);
+				
+				//2:if can move, find path to target
+				if (nbCellToMove > 0) {
+					//3:move team & dwellers
+					List<MapCell> path = mapService.computePath(worldService.get(), team.getCurrent(), target);
+					team.setCurrent(path.get(nbCellToMove - 1));
+					team.setLastMove(now);
+					team.getDwellers().forEach(dweller -> dweller.setMapCell(path.get(nbCellToMove - 1)));
+				}
+			});
+		}
 	}
 
 	@Transactional(readOnly = false)
@@ -101,6 +153,8 @@ public class TeamService {
 	@Transactional(readOnly = false)
 	public void computeExplore(Team team) {
 		LocalDateTime now = LocalDateTime.now();
+		
+		tryToMove(team, team.getTarget());
 		
 		//check if event should happen
 		if (team.getLastEvent().plusMinutes(frequency).isBefore(now)) {
@@ -183,25 +237,49 @@ public class TeamService {
 	 * Send the team to duty
 	 * @param teamId The team id
 	 * @param dutyId The duty id
+	 * @param targetId The target cell id
 	 * @return The Team sent
 	 */
 	@Transactional(readOnly = false)
-	public synchronized Team sendDuty(Long teamId, Long dutyId) {
+	public synchronized Team sendDuty(Long teamId, Long dutyId, Long targetId) {
 		Team team = teamDao.findOne(teamId);
-		if (team.getDuty() == null) {
-			LocalDateTime start = LocalDateTime.now();
-			team.setBegin(start);
-			team.setLastEvent(start);
-			
-			Duty duty = dutyDao.findOne(dutyId);
-			team.setDuty(duty);
-			return teamDao.save(team);
-		} else {
+		if (team.getDuty() != null) {
 			throw new BusinessException("Team already with duty !");
 		}
+		
+		MapCell targetCell = mapCellDao.findOne(targetId);
+		if (targetCell == null) {
+			throw new BusinessException("Target doesn't exist !");
+		}
+		
+		LocalDateTime start = LocalDateTime.now();
+		team.setBegin(start);
+		team.setLastEvent(start);
+		team.setLastMove(start);
+		
+		Duty duty = dutyDao.findOne(dutyId);
+		team.setDuty(duty);
+		team.setTarget(targetCell);
+		team.setOrigin(team.getCurrent());
+		return teamDao.save(team);
 	}
 
 	public List<Team> list() {
 		return teamDao.findAll();
+	}
+
+	/**
+	 * Cancel the current duty for a team
+	 * @param teamId The team id
+	 * @return The team
+	 */
+	@Transactional(readOnly = false)
+	public Team cancelDuty(long teamId) {
+		Duty dutyReturn = dutyDao.findByName(Duty.RETURN);
+		Team team = teamDao.findOne(teamId);
+		team.setDuty(null);
+		team.setDuty(dutyReturn);
+		team.setTarget(team.getOrigin());
+		return team;
 	}
 }

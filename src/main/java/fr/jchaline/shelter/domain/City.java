@@ -1,55 +1,49 @@
 package fr.jchaline.shelter.domain;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Polymorphism;
 import org.hibernate.annotations.PolymorphismType;
 
+import fr.jchaline.shelter.enums.CellEnum;
+
+/**
+ * @author JCHALINE
+ *
+ */
 @Entity
 @Table
 @Polymorphism(type= PolymorphismType.EXPLICIT)
-public class City extends MapCell {
+public class City extends CellOccupant {
 
-	
 	//TODO : delete this, put spot (market, school, hospital, ... but not street with number etc ...)
 	@OneToMany(cascade = CascadeType.ALL)
-	@MapKey(name = "number")
-	private Map<Integer, Street> streets = new HashMap<Integer,Street>();
+	private List<Spot> spots = new ArrayList<Spot>();
 	
-	public City(String name, int xAxis, int yAxis) {
-		super(name, xAxis, yAxis);
+	public City(String name) {
+		super(name, CellEnum.CITY);
 	}
 	
 	public City() {
 		
 	}
-	
-	public void add(Spot spot, int street, int number) {
-		//TODO : assert arguments
-		if (!getStreets().containsKey(street)) {
-			getStreets().put(street, new Street(street));
-		}
-		getStreets().get(street).add(number, spot);
-	}
-	
-	public Spot get(int street, int number) {
-		//TODO : assert arguments
-		return getStreets().get(street).get(number);
+
+	public List<Spot> getSpots() {
+		return spots;
 	}
 
-	public Map<Integer,Street> getStreets() {
-		return streets;
+	public void setSpots(List<Spot> spots) {
+		this.spots = spots;
 	}
 
-	public void setStreets(Map<Integer,Street> streets) {
-		this.streets = streets;
+	public void addSpot(Spot spot) {
+		spots.add(spot);
 	}
 
 }

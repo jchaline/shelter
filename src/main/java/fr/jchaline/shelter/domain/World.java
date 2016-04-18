@@ -1,7 +1,9 @@
 package fr.jchaline.shelter.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,8 +20,14 @@ public class World extends AbstractEntity {
 	@OneToMany(cascade = CascadeType.ALL)
 	private Set<City> cities = new HashSet<City>();
 	
+	/**
+	 * Map : cells are nodes, and map is represented with a directed/weighted graph
+	 */
 	@OneToMany(cascade = CascadeType.ALL)
 	private Map<String, MapCell> map = new HashMap<>();
+	
+	@OneToMany(cascade = CascadeType.ALL)
+	private List<MapEdge> edges = new ArrayList<>();
 	
 	@Column
 	private int width;
@@ -74,6 +82,14 @@ public class World extends AbstractEntity {
 
 	public void setMap(Map<String, MapCell> map) {
 		this.map = map;
+	}
+
+	public List<MapEdge> getEdges() {
+		return edges;
+	}
+
+	public void setEdges(List<MapEdge> edges) {
+		this.edges = edges;
 	}
 
 }

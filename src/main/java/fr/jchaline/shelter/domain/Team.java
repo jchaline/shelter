@@ -20,8 +20,11 @@ public class Team extends AbstractEntity {
 	@OneToMany
 	private List<Dweller> dwellers;
 	
-	@Column
+	@Column(nullable = false)
 	private LocalDateTime lastEvent;
+
+	@Column
+	private LocalDateTime lastMove;
 	
 	@Column(nullable = false)
 	private LocalDateTime begin;
@@ -34,6 +37,12 @@ public class Team extends AbstractEntity {
 	 */
 	@ManyToOne
 	private MapCell target;
+
+	/**
+	 * Cell origin of the team before sent on duty
+	 */
+	@ManyToOne
+	private MapCell origin;
 
 	/**
 	 * Current Cell of the team
@@ -92,6 +101,22 @@ public class Team extends AbstractEntity {
 
 	public void setCurrent(MapCell current) {
 		this.current = current;
+	}
+
+	public MapCell getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(MapCell origin) {
+		this.origin = origin;
+	}
+
+	public LocalDateTime getLastMove() {
+		return lastMove;
+	}
+
+	public void setLastMove(LocalDateTime lastMove) {
+		this.lastMove = lastMove;
 	}
 
 }

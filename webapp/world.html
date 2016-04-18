@@ -16,6 +16,10 @@
 	<script type="text/javascript" src="js/angular.min.js"></script>
 	<script type="text/javascript" src="js/lodash.js"></script>
 	<script type="text/javascript" src="js/shelter/shelter.js"></script>
+	
+	<script type="text/javascript" src="js/shelter/world-controller.js"></script>
+	<script type="text/javascript" src="js/shelter/world-service.js"></script>
+	<script type="text/javascript" src="js/shelter/http-service.js"></script>
 </head>
 
 <body role="document" >
@@ -34,22 +38,7 @@
 	<div class="container" role="main">
 		<div data-ng-controller="worldController" class="row">
 		    <div class="col-xs-12 col-sm-12 col-md-12">
-				<h3>
-					World view
-					<span class="pull-right">
-			    		<button class="btn btn-xs btn-primary" data-ng-click="updateWorld()">
-							<i class="glyphicon glyphicon-refresh"></i>
-			    			<span class="hidden-xs">refresh world</span>
-			    		</button>
-			    	</span>
-				</h3>
-				<div class="bg-silver" data-ng-view="worldView" id="world">
-					<div>
-						<span data-ng-click="updateCity(city)" data-ng-repeat="city in cities | orderBy: 'name'">{{city.name}} &nbsp;</span>
-					</div>
-				</div>
-				<hr>
-				<div id="world-view">
+				<div id="world-view" data-ng-view="worldView">
 					<div class="row">
 						<div id="world-map-container">
 							<div id="world-map-top">
@@ -97,8 +86,33 @@
 								<div class="col-md-12">
 									<hr>
 									<strong>Teams</strong>
-									<div data-ng-repeat="team in teams">
-										<span drag="{{team.id}}" class="glyphicon glyphicon-user">&nbsp;{{team.id}}:{{team.current.name}}</span>
+									<div class="row" data-ng-repeat="team in teams">
+										{{team.id}}:{{team.current.name}} <span data-ng-if="team.target">({{team.duty.name}} => {{team.target.xaxis}},{{team.target.yaxis}})</span>
+										<button class="btn btn-xs valign" data-ng-click="showme=true" data-ng-hide="showme" >
+											<i class="glyphicon glyphicon-plus"></i>
+										</button>
+										<button class="btn btn-xs valign" data-ng-click="showme=false" data-ng-show="showme" >
+											<i class="glyphicon glyphicon-minus"></i>
+										</button>
+										<div data-ng-show="showme">
+											<span data-ng-repeat="dweller in team.dwellers">&nbsp;{{dweller.name}} {{dweller.firstname}}, </span>
+										</div>
+										<div data-ng-if="!team.target">
+											<input id="xaxis_{{team.id}}" name="xaxis" type="text" style="width:30px" value="" placeholder="x" />
+											<input id="yaxis_{{team.id}}" name="yaxis" type="text" style="width:30px" value="" placeholder="y" />
+											<select id="duty_{{team.id}}" name="duty">
+												<option value=""></option>
+												<option data-ng-repeat="duty in duties" value="{{duty.id}}">{{duty.name}}</option>
+											</select>
+											<button class="btn btn-xs btn-success valign" data-ng-click="sendDuty(team.id)">
+												<i class="glyphicon glyphicon-road"></i>
+											</button>
+										</div>
+										<div data-ng-if="team.target && team.duty.action">
+											<button class="btn btn-xs btn-danger valign" data-ng-click="cancelDuty(team.id)">
+												<i class="glyphicon glyphicon-ban-circle"></i>
+											</button>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -113,243 +127,5 @@
 			</div>
 		</div>
 	</div>
-
-	<script>
-		var app = angular.module( 'worldModule', [] )
-
-		app.run(function ($rootScope) { $rootScope._ = _; });
-
-		app.controller('worldController', function( $scope, $rootScope, $interval, httpService ) {
-
-			$rootScope.$on('dropEvent', function(evt, team, cell) {
-				console.log(evt)
-		    });
-
-			//update the world map with server data
-			$scope.updateWorld = function() {
-				httpService.getData("/world/get").then(function(world) {
-					$scope.world = world
-					
-					$scope.worldMap = updateMapWithWorld($scope.world, $scope.worldMap)
-					
-					drawMap($scope.worldMap)
-					
-					$scope.updateDwellers()
-					$scope.updateTeams()
-				})
-			}
-
-			$scope.teamup = function() {
-				var teamup = $('[name="dweller"]:checked').map(function(){return this.value}).get()
-				
-				httpService.postData("/team/teamup", {dwellersId: _.values(teamup)}).then(function(team) {
-					$scope.updateTeams()
-				})
-			}
-
-			$scope.updateDwellers = function() {
-				httpService.getData("/dweller/list").then(function(dwellers) {
-					$scope.dwellers = dwellers
-					drawDwellers($scope.dwellers)
-				})
-			}
-
-			$scope.updateTeams = function() {
-				httpService.getData("/team/list").then(function(teams) {
-					$scope.teams = teams
-				})
-			}
-
-			$scope.updateMessages = function() {
-				httpService.getData("/message/last", {page:0, size:10}).then(function(messages) {
-					$scope.messages = messages
-				})
-			}
-
-			//move the displayed map
-			$scope.moveMap = function(vx, vy) {
-				updateCenter($scope.worldMap, vx, vy)
-				drawMap($scope.worldMap)
-				drawDwellers($scope.dwellers)
-			}
-
-			//add empty spot to city and display it
-			$scope.updateCity = function(cityId) {
-				httpService.getData("/world/cell/" + cityId).then(function(city) {
-					$scope.city = city
-					$scope.cityDwellers = _.filter($scope.dwellers, function(o) { return o.mapCell.id==cityId; });
-				})
-			}
-
-			//update map center view
-			function updateCenter(map, vx, vy) {
-				map.center.x = map.center.x + vx
-				map.center.y = map.center.y + vy
-			}
-			
-			//Update the world Map, with new cells. Keep the center if exist, else, take the map absolute center
-			function updateMapWithWorld(world, worldMap) {
-				
-				var map = {'height':world.height, 'width':world.with, 'cells':[], 'center':worldMap != undefined ? worldMap.center : {'x':Math.round(world.width / 2), 'y':Math.round(world.height / 2)}}
-				
-				//transform the object into array
-				Object.keys(world.map).forEach(function(key) {
-					var cell = world.map[key]
-					map.cells[cell.xaxis] = map.cells[cell.xaxis] || []
-					map.cells[cell.xaxis][cell.yaxis] = cell
-				})
-				
-				return map
-			}
-
-			// display dwellers position on the map
-			function drawDwellers(dwellers) {
-				dwellers.forEach(function(d) {
-					var cellId = d.mapCell.id
-					$('[data-cell-id="' + cellId + '"]').html('<span class="glyphicon glyphicon-user"></span>')
-				})
-			}
-			
-			// display the map
-			function drawMap(worldMap) {
-				$('#world-map').html("")
-				
-				//param/constante
-				var mapHeightPx = 600
-				var mapWidthPx = 600
-				var cellHeightPx = 30 // taille hauteur en px d'une cell
-				var cellWidthPx = 30 // taille largeur en px d'une cell
-
-				var nbCeilHeight = mapHeightPx / cellHeightPx // nombre de cellules à afficher sur la hauteur
-				var nbCeilWidth = mapWidthPx / cellWidthPx // nombre de cellules à afficher sur la largeur
-				
-				//determination des bornes de la map en fonction du point
-				var xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
-				var yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
-				
-				//cellules à afficher
-				for (y = 0; y < nbCeilHeight; y++) {
-					for (x = 0; x < nbCeilWidth; x++) {
-						//détermination des identifiants des cellules affichés
-						var cell = $($(worldMap.cells).get((x + xLeft) % nbCeilWidth)).get((y + yUp) % nbCeilHeight)
-						var id = cell.xaxis + '_' + cell.yaxis
-						var div = '<div drop="' + cell.id + '" id="' + id + '" class="cell empty" data-cell-id="' + cell.id + '"></div>'
-						$('#world-map').append(div)
-					}
-				}
-
-				// add cities to the map
-				worldMap.cells.forEach(function(yaxis) {
-					yaxis.forEach(function(cell) {
-						if (cell.streets != undefined) {
-							var id = cell.xaxis + '_' + cell.yaxis
-							$('#' + id).removeClass().addClass("cell city").on('click', function(){
-								console.log(cell)
-								$scope.updateCity(cell.id)
-							})
-						}
-					})
-				})
-			}
-			
-			// TODO : delete this
-			// add "empty spot" between reals spot,
-			// use to interact with street
-			function fillEmptySpot(streets) {
-				var keys = Object.keys(streets)
-				keys.forEach(function(key) {
-					var street = streets[key]
-					var spotList = Array.apply(null, {length: 10}).map(function(discard, n){ return n + 1 })
-					var used = Object.keys(street.spots).map(function(v,i){
-						return street.spots[v].number
-					})
-					spotList.forEach(function(e) {
-						if($.inArray(e, used) == - 1) {
-							var emptySpot = {id:-1, number:e, name:'vide'}
-							street.spots[e] = emptySpot
-						}
-					})
-				})
-				return streets
-			}
-			
-			angular.element(document).ready(function () {
-				$scope.updateWorld()
-				$scope.updateMessages()
-
-				//update view with 5s interval
-				$interval(function() {
-					$scope.updateWorld()
-				}, 70 * 1000);
-
-				$interval(function() {
-					$scope.updateMessages()
-				}, 50 * 1000);
-		    });
-		})
-		
-		app.directive("drag", ["$rootScope", function($rootScope) {
-
-			function dragStart(evt, element) {
-				evt.originalEvent.dataTransfer.setData("id", evt.target.id)
-				evt.originalEvent.dataTransfer.effectAllowed = 'move'
-			}
-			  
-			function dragEnd(evt, element) {}
-			  
-			return {
-				restrict: 'A',
-				link: function(scope, element, attrs) {
-					attrs.$set('draggable', 'true')
-					scope.dragData = attrs["drag"]
-					element.bind('dragstart', function(evt) {
-						$rootScope.draggedElement = scope.dragData
-						dragStart(evt, element)
-					})
-		
-					element.bind('dragend', function(evt) {
-						dragEnd(evt, element)
-					})
-				}
-			}
-		}])
-		
-		app.directive("drop", ['$rootScope', function($rootScope) {
-
-			function dragEnter(evt, element) {
-				evt.preventDefault();
-			}
-
-			function dragLeave(evt, element) { }
-
-			function dragOver(evt) {
-				evt.preventDefault();
-			}
-
-			function drop(evt, element) {
-				evt.preventDefault();
-			}
-			
-			return {
-				restrict: 'A',
-				link: function(scope, element, attrs) {
-					element.bind('dragenter', function(evt) {
-						dragEnter(evt, element)
-					})
-					element.bind('dragleave', function(evt) {
-						dragLeave(evt, element)
-					})
-					element.bind('dragover', dragOver)
-					element.bind('drop', function(evt) {
-						scope.dropData = attrs["drop"];
-						drop(evt, element)
-						$rootScope.$broadcast('dropEvent', $rootScope.draggedElement, scope.dropData)
-					})
-			    }
-			}
-		}])
-	</script>
-	
-	<script type="text/javascript" src="js/shelter/http-service.js"></script>
 </body>
 </html>

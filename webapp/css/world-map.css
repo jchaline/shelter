@@ -11,6 +11,10 @@
 	float:left;
 }
 
+#teams{
+	position:absolute;
+}
+
 #world-info{
 	position:relative;
 	height:700px;
@@ -64,4 +68,10 @@
 
 .city{
 	background-color:grey;
+}
+.water{
+	background-color:blue;
+}
+.rock{
+	background-color:#996600;
 }
