@@ -15,11 +15,6 @@ import fr.jchaline.shelter.domain.Team;
 import fr.jchaline.shelter.json.TeamUp;
 import fr.jchaline.shelter.service.TeamService;
 
-/**
- * What it is possible to do :
- * - group dwellers to make team if dwellers are on the same cell
- * - sand dwellers to duty via their team (ie send the team)
- */
 @RestController
 @RequestMapping(value = "/team", method = RequestMethod.GET)
 public class TeamController extends AbstractShelterController {
@@ -44,6 +39,11 @@ public class TeamController extends AbstractShelterController {
 	@RequestMapping(value = "/sendDuty", method = RequestMethod.POST)
 	public Team sendDuty(@RequestParam long teamId, @RequestParam long dutyId, @RequestParam long target) {
 		return service.sendDuty(teamId, dutyId, target);
+	}
+
+	@RequestMapping(value = "/disband", method = RequestMethod.POST)
+	public boolean disband(@RequestParam long teamId) {
+		return service.disband(teamId);
 	}
 
 	@RequestMapping(value = "/cancelDuty", method = RequestMethod.POST)

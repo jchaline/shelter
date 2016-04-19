@@ -5,6 +5,10 @@ event:
  frequency:
   minutes: 1
 
+#same port for metrics
+management:
+ port: 9080
+
 spring:
  profiles: default
  application:

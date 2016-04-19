@@ -11,6 +11,11 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			updateTeams()
 		})
 	}
+	$scope.disband = function(teamId) {
+		httpService.postData("/team/disband", {teamId:teamId}).then(function(ok) {
+			updateTeams()
+		})
+	}
 	
 	$scope.sendDuty = function(teamId) {
 		var xaxis = $("#xaxis_" + teamId).val()
@@ -99,10 +104,13 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 		//update view
 		$interval(function() {
 			updateWorld()
-		}, 10 * 1000);
+			httpService.getData("/metrics").then(function(data) {
+				console.log(data)
+			})
+		}, 100 * 1000);
 
 		$interval(function() {
 			updateMessages()
-		}, 20 * 1000);
+		}, 200 * 1000);
     });
 })

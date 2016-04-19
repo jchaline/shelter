@@ -3,7 +3,6 @@ package fr.jchaline.shelter.domain;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -29,7 +28,7 @@ public class Team extends AbstractEntity {
 	@Column(nullable = false)
 	private LocalDateTime begin;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	private Duty duty;
 	
 	/**

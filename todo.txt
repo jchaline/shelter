@@ -1,28 +1,30 @@
 Ordered by priority
 
 tech :
- - abstract service with LOGGER & getClass
- - spring security, default user in dev mode. Used to find the user's shelter
- - attach domains to player (team, dweller, ...) if neccesasry
- - generation map : Add spot to cities
  - throw functionnals exceptions (buy room without enough money, ...) and manage display with angular
+ - metrics
  - i18n messages
- - DBUnit (see http://blog.netapsys.fr/realiser-ses-tests-dintegration-avec-spring-test-dbunit/)
  - create VM, add jenkins & sonar
  - integration test 
- - metrics
+ - DBUnit (see http://blog.netapsys.fr/realiser-ses-tests-dintegration-avec-spring-test-dbunit/)
  - mock angular service for rest call
  - run test with jenkins & selenium, record jvm JMX data ? (proc, memory, network)
+ - spring security, default user in dev mode. Used to find the user's shelter
+ - attach domains to player (team, dweller, ...) if neccesasry
+ - improve perf ... example : get citis list instead of world object, and get each city one by one
  
 game : 
- - create missions "type", and percent success / reward with dwellers stats. Mission unlock with exploring (find dwellers, find food, find tech, ...)
+ - start with a small shelter, with limited space. can extend shelter with space around on the map.
+ - colonization of empty space : create new shelter for the player. 2 screens : manage shelter & world map view
+ - improve view update, avoid to refresh if not necessary, split team 
+ - generation map : Add spot to cities
  - building with resources capacity to limit food, water, ...
  - improve notion of "room size" => cells uses & dwellers capacity...
  - water & food use to "create" and train dwellers
  - money/water/food use to build room
  - power use by room
  - resources : update the new values if necessary (build, sell, all actions from player)
- - improve perf ... example : get citis list instead of world object, and get each city one by one
+ - create missions "type", and percent success / reward with dwellers stats. Mission unlock with exploring (find dwellers, find food, find tech, ...)
  
 blog : 
  - mockito any()

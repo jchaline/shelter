@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,8 @@ public class TeamService {
 	 */
 	private void tryToMove(Team team, MapCell target) {
 		if (!team.getCurrent().equals(target)) {
-			OptionalDouble averageSpeedOpt = team.getDwellers().stream().map(d -> d.getSpecial().getValue(SpecialEnum.A)).mapToInt(i -> i.intValue()).average();
+			Stream<Integer> map = team.getDwellers().stream().map(d -> d.getSpecial().getValue(SpecialEnum.A));
+			OptionalDouble averageSpeedOpt = map.mapToInt(i -> i.intValue()).average();
 			averageSpeedOpt.ifPresent(speed -> {
 				LocalDateTime now = LocalDateTime.now();
 				double cellFrequency = speed / 10;
@@ -156,6 +158,11 @@ public class TeamService {
 		
 		tryToMove(team, team.getTarget());
 		
+		if (team.getCurrent().equals(team.getTarget())) {
+			team.setDuty(null);
+			team.setTarget(null);
+		}
+		
 		//check if event should happen
 		if (team.getLastEvent().plusMinutes(frequency).isBefore(now)) {
 			//random for battle event, loot event, ...
@@ -179,9 +186,9 @@ public class TeamService {
 		Integer minLevel = itemDao.findMinLevel();
 		//TODO : ponderate with dweller avg level & dweller number
 		int random = new Random().nextInt(maxLevel - minLevel)  + minLevel;
-		LOGGER.debug("Current min level : ", minLevel);
-		LOGGER.debug("Current max level : ", maxLevel);
-		LOGGER.debug("Random result : ", random);
+		LOGGER.debug("Current min level : {}", minLevel);
+		LOGGER.debug("Current max level : {}", maxLevel);
+		LOGGER.debug("Random result : {}", random);
 	}
 	
 	/**
@@ -281,5 +288,22 @@ public class TeamService {
 		team.setDuty(dutyReturn);
 		team.setTarget(team.getOrigin());
 		return team;
+	}
+
+	/**
+	 * Disband team, to remove it from the view
+	 * @param teamId The team id
+	 * @return True if team disband
+	 */
+	@Transactional(readOnly = false)
+	public boolean disband(long teamId) {
+		Team team = teamDao.findOne(teamId);
+		if (team != null && team.getDuty() == null) {
+			team.getDwellers().forEach(d -> d.setTeam(null));
+			teamDao.delete(team);
+		} else {
+			throw new BusinessException("Team with duty or not exist !"); 
+		}
+		return true;
 	}
 }

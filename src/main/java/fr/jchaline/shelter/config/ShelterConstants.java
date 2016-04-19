@@ -24,9 +24,9 @@ public class ShelterConstants {
 	
 	
 	//TODO : move to config file
-	public static final int SHELTER_COMPUTE_ALL = 10*1000;
-	public static final int TEAM_EXPLORE = 10*1000;
-	public static final int TEAM_RECRUITMENT = 10*1000;
-	public static final int TEAM_FIGHT = 10*1000;
+	public static final int SHELTER_COMPUTE_ALL = 100*1000;
+	public static final int TEAM_EXPLORE = 100*1000;
+	public static final int TEAM_RECRUITMENT = 100*1000;
+	public static final int TEAM_FIGHT = 100*1000;
 	
 }

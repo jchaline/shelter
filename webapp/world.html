@@ -107,6 +107,9 @@
 											<button class="btn btn-xs btn-success valign" data-ng-click="sendDuty(team.id)">
 												<i class="glyphicon glyphicon-road"></i>
 											</button>
+											<button class="btn btn-xs btn-danger valign" data-ng-click="disband(team.id)">
+												<i class="glyphicon glyphicon-ban-circle"></i>
+											</button>
 										</div>
 										<div data-ng-if="team.target && team.duty.action">
 											<button class="btn btn-xs btn-danger valign" data-ng-click="cancelDuty(team.id)">
