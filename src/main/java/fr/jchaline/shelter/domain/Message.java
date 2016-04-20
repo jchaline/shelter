@@ -11,6 +11,10 @@ public class Message extends AbstractEntity {
 	@Column
 	private String content;
 	
+	public Message(String content) {
+		this.content = content;
+	}
+	
 	public Message() {
 		
 	}

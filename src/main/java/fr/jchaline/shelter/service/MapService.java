@@ -51,14 +51,23 @@ public class MapService {
 	 * @param world 
 	 * @param source
 	 * @param target
-	 * @return
+	 * @return an Optionnal, in case there are not solution
 	 */
-	public List<MapCell> computePath(World world, MapCell source, MapCell target) {
+	public Optional<List<MapCell>> computePath(World world, MapCell source, MapCell target) {
 		DefaultDirectedWeightedGraph<MapCell, DefaultWeightedEdge> graph = createGraph(world);
 
 		List<DefaultWeightedEdge> edges = DijkstraShortestPath.findPathBetween(graph, source, target);
 		
-		return edges.stream().map(e -> graph.getEdgeTarget(e)).collect(Collectors.toList());
+		
+		Optional<List<MapCell>> result;
+		
+		if (edges != null) {
+			result = Optional.ofNullable(edges.stream().map(e -> graph.getEdgeTarget(e)).collect(Collectors.toList()));
+		} else {
+			result = Optional.empty();
+		}
+		
+		return result;
 	}
 	
 	public List<MapEdge> createEdges(World world) {

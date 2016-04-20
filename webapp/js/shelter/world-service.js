@@ -69,9 +69,28 @@ app.service("worldService", function( $q ) {
 					cellType = cell.occupant.type.toLowerCase()
 				}
 					
-				var div = '<div id="' + id + '" class="cell ' + cellType + '" data-cell-id="' + cell.id + '" title="' + id + '"></div>'
+				var div = '<div id="' + id + '" data-xaxis="' + cell.xaxis + '" data-yaxis="' + cell.yaxis + '" class="cell ' + cellType + '" data-cell-id="' + cell.id + '" title="' + id + '" ondrop="drop(event)" ondragover="allowDrop(event)""></div>'
 				$(rootDiv).append(div)
 			}
 		}
 	}
 })
+
+function dragStart(event) {
+	//document.getElementById("demo").innerHTML = "Started to drag the p element";
+	event.dataTransfer.setData("teamId", $(event.target).attr('data-team-id'));
+}
+
+function allowDrop(event) {
+    event.preventDefault();
+}
+
+function drop(event) {
+    event.preventDefault();
+    var teamId = event.dataTransfer.getData("teamId");
+    var target = event.target
+    $('#xaxis_' + teamId).val($(target).attr('data-xaxis'))
+    $('#yaxis_' + teamId).val($(target).attr('data-yaxis'))
+    //event.target.appendChild(document.getElementById(data));
+    //document.getElementById("demo").innerHTML = "The p element was dropped";
+}

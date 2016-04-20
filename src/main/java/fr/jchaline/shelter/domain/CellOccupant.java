@@ -15,6 +15,7 @@ import fr.jchaline.shelter.enums.CellEnum;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class CellOccupant extends AbstractEntity {
 	
+	@Column(nullable = false)
 	private CellEnum type;
 	
 	@Column(unique = true, nullable = false)

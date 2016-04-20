@@ -26,6 +26,12 @@ public class TeamController extends AbstractShelterController {
 	public List<Team> list() {
 		return service.list();
 	}
+
+	//TODO : requestParam vs @PathVariable, who's the best for GET http method ?
+	@RequestMapping("/get")
+	public Team get(@RequestParam long teamId) {
+		return service.get(teamId);
+	}
 	
 	/**
 	 * Create team before send it to mission

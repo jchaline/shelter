@@ -22,4 +22,9 @@ public class MessageService {
 		
 		return messageDao.findAll(pageRequest);
 	}
+	
+	@Transactional(readOnly = false)
+	public Message push(String message) {
+		return messageDao.save(new Message(message));
+	}
 }

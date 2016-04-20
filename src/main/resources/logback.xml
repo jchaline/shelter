@@ -24,11 +24,11 @@
 		<appender-ref ref="STDOUT" />
 	</logger>
 
-	<logger name="org.springframework.security" additivity="debug" level="ALL">
+	<logger name="org.springframework.security" additivity="false" level="ERROR">
 		<appender-ref ref="STDOUT" />
 	</logger>
 
-	<root level="WARN" additivity="false" >
+	<root level="ERROR" additivity="false" >
 		<appender-ref ref="STDOUT" />
 	</root>
 	

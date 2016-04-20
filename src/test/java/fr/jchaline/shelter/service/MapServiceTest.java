@@ -3,9 +3,6 @@ package fr.jchaline.shelter.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultDirectedWeightedGraph;
-import org.jgrapht.graph.DefaultWeightedEdge;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,13 +69,16 @@ public class MapServiceTest {
 		MapCell target2 = WORLD_TEST.getCell(4, 2);
 		
 		WORLD_TEST.setEdges(service.createEdges(WORLD_TEST));
-		DefaultDirectedWeightedGraph<MapCell, DefaultWeightedEdge> hrefGraph = service.createGraph(WORLD_TEST);
 
-		List<DefaultWeightedEdge> findPathBetween = DijkstraShortestPath.findPathBetween(hrefGraph, origin1, target1);
-		List<DefaultWeightedEdge> findPathBetween2 = DijkstraShortestPath.findPathBetween(hrefGraph, target1, target2);
+		Optional<List<MapCell>> findPathBetween =  service.computePath(WORLD_TEST, origin1, target1);
+		Optional<List<MapCell>> findPathBetween2 = service.computePath(WORLD_TEST, target1, target2);
 
-		Assert.assertEquals(6, findPathBetween.size());
-		Assert.assertEquals(2, findPathBetween2.size());
+		Assert.assertEquals(6, findPathBetween.get().size());
+		Assert.assertEquals(2, findPathBetween2.get().size());
+
+		MapCell targetRock = WORLD_TEST.getCell(1, 1);
+		boolean pathFind = service.computePath(WORLD_TEST, origin1, targetRock).isPresent();
+		Assert.assertFalse(pathFind);
 	}
 
 }

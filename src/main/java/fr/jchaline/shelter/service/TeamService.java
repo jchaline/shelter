@@ -61,6 +61,9 @@ public class TeamService {
 	@Autowired
 	private MapCellDao mapCellDao;
 	
+	@Autowired
+	private MessageService messageService;
+	
 	@Transactional(readOnly = false)
 	@Scheduled(fixedDelay = ShelterConstants.TEAM_EXPLORE)
 	public void updateExploring() {
@@ -95,7 +98,9 @@ public class TeamService {
 			OptionalDouble averageSpeedOpt = map.mapToInt(i -> i.intValue()).average();
 			averageSpeedOpt.ifPresent(speed -> {
 				LocalDateTime now = LocalDateTime.now();
+				//TODO : comment this
 				double cellFrequency = speed / 10;
+				//TODO : to constant
 				int nbSecondsInterval = 6;
 				long secondToWait = Math.round(1 / cellFrequency * nbSecondsInterval);
 				
@@ -105,10 +110,17 @@ public class TeamService {
 				//2:if can move, find path to target
 				if (nbCellToMove > 0) {
 					//3:move team & dwellers
-					List<MapCell> path = mapService.computePath(worldService.get(), team.getCurrent(), target);
-					team.setCurrent(path.get(nbCellToMove - 1));
-					team.setLastMove(now);
-					team.getDwellers().forEach(dweller -> dweller.setMapCell(path.get(nbCellToMove - 1)));
+					Optional<List<MapCell>> pathOpt = mapService.computePath(worldService.get(), team.getCurrent(), target);
+					
+					pathOpt.ifPresent(path -> {
+						team.setCurrent(path.get(nbCellToMove - 1));
+						team.setLastMove(now);
+						team.getDwellers().forEach(dweller -> dweller.setMapCell(path.get(nbCellToMove - 1)));
+					});
+					
+					if (!pathOpt.isPresent()) {
+						messageService.push("No path to current target of team " + team.getId() + "...");
+					}
 				}
 			});
 		}
@@ -258,7 +270,7 @@ public class TeamService {
 		if (targetCell == null) {
 			throw new BusinessException("Target doesn't exist !");
 		}
-		
+
 		LocalDateTime start = LocalDateTime.now();
 		team.setBegin(start);
 		team.setLastEvent(start);
@@ -273,6 +285,10 @@ public class TeamService {
 
 	public List<Team> list() {
 		return teamDao.findAll();
+	}
+	
+	public Team get(long teamId) {
+		return teamDao.findOne(teamId);
 	}
 
 	/**

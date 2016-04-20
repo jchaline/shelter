@@ -30,7 +30,7 @@ public class WorldService {
 	 * @return
 	 */
 	public World get(String username) {
-		LOGGER.info("Load world for ", username);
+		LOGGER.info("Load world for {}", username);
 		World world = dao.findAll().get(0);
 		return world;
 	}

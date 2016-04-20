@@ -32,3 +32,4 @@ blog :
  - eclipse replace regex <bean:write name="([a-zA-Z]+)" property="([a-zA-Z]+)" *\/> => \${$1.$2}
  - generate text with csv like data
  - example for each spring mvc / data / other good thing
+ - @requestParam vs @PathVariable, who's the best for GET http method ?

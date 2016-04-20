@@ -73,7 +73,7 @@
 							<div class="row" data-ng-if="cityDwellers.length > 0">
 								<div class="col-md-12">
 									<hr>
-									<strong>Dwellers</strong>
+									<strong>Dwellers Cell</strong>
 									<div data-ng-repeat="dweller in cityDwellers | orderBy: name">
 										<input type="checkbox" name="dweller" value="{{dweller.id}}" >&nbsp;{{dweller.name}} {{dweller.firstname}}</input>
 									</div>
@@ -83,11 +83,13 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-md-12">
+								<div class="col-md-12" data-ng-if="teamDetail">
 									<hr>
-									<strong>Teams</strong>
-									<div class="row" data-ng-repeat="team in teams">
-										{{team.id}}:{{team.current.name}} <span data-ng-if="team.target">({{team.duty.name}} => {{team.target.xaxis}},{{team.target.yaxis}})</span>
+									<strong>Team selected</strong>
+									<div class="row">
+										{{teamDetail.id}}, currently at {{teamDetail.current.xaxis}},{{teamDetail.current.yaxis}}
+										<span data-ng-if="teamDetail.target">({{teamDetail.duty.name}} to {{teamDetail.target.xaxis}},{{teamDetail.target.yaxis}})</span>
+										<!-- TODO : +/- informations for each dweller, not for the team -->
 										<button class="btn btn-xs valign" data-ng-click="showme=true" data-ng-hide="showme" >
 											<i class="glyphicon glyphicon-plus"></i>
 										</button>
@@ -95,35 +97,49 @@
 											<i class="glyphicon glyphicon-minus"></i>
 										</button>
 										<div data-ng-show="showme">
-											<span data-ng-repeat="dweller in team.dwellers">&nbsp;{{dweller.name}} {{dweller.firstname}}, </span>
+											<span data-ng-repeat="dweller in teamDetail.dwellers">&nbsp;{{dweller.name}} {{dweller.firstname}}, </span>
 										</div>
-										<div data-ng-if="!team.target">
-											<input id="xaxis_{{team.id}}" name="xaxis" type="text" style="width:30px" value="" placeholder="x" />
-											<input id="yaxis_{{team.id}}" name="yaxis" type="text" style="width:30px" value="" placeholder="y" />
-											<select id="duty_{{team.id}}" name="duty">
-												<option value=""></option>
-												<option data-ng-repeat="duty in duties" value="{{duty.id}}">{{duty.name}}</option>
-											</select>
-											<button class="btn btn-xs btn-success valign" data-ng-click="sendDuty(team.id)">
-												<i class="glyphicon glyphicon-road"></i>
-											</button>
-											<button class="btn btn-xs btn-danger valign" data-ng-click="disband(team.id)">
-												<i class="glyphicon glyphicon-ban-circle"></i>
-											</button>
-										</div>
-										<div data-ng-if="team.target && team.duty.action">
-											<button class="btn btn-xs btn-danger valign" data-ng-click="cancelDuty(team.id)">
-												<i class="glyphicon glyphicon-ban-circle"></i>
-											</button>
-										</div>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<hr>
+									<strong>Teams Player</strong>
+									<div class="row" data-ng-repeat="team in teamsWithoutDuty">
+										&nbsp;<img ondragstart="dragStart(event)" data-team-id="{{team.id}}" draggable="true" class="teamIco" src="images/team.png" title="team_ico"/>{{team.id}} <span data-ng-if="team.target">({{team.duty.name}} => {{team.target.xaxis}},{{team.target.yaxis}})</span>
+										<input id="xaxis_{{team.id}}" name="xaxis" type="text" style="width:30px" value="" placeholder="x" />
+										<input id="yaxis_{{team.id}}" name="yaxis" type="text" style="width:30px" value="" placeholder="y" />
+										<select id="duty_{{team.id}}" name="duty">
+											<option value=""></option>
+											<option data-ng-repeat="duty in duties" value="{{duty.id}}">{{duty.name}}</option>
+										</select>
+										<button class="btn btn-xs btn-success valign" data-ng-click="sendDuty(team.id)">
+											<i class="glyphicon glyphicon-road"></i>
+										</button>
+										<button class="btn btn-xs btn-danger valign" data-ng-click="disband(team.id)">
+											<i class="glyphicon glyphicon-ban-circle"></i>
+										</button>
+										<button class="btn btn-xs btn-success valign" data-ng-click="showTeamDetail(team.id)">
+											<i class="glyphicon glyphicon-eye-open"></i>
+										</button>
+									</div>
+									<div class="row" data-ng-repeat="team in teamsWithDuty">
+										{{team.id}} <span data-ng-if="team.target">({{team.duty.name}} => {{team.target.xaxis}},{{team.target.yaxis}})</span>
+										<button class="btn btn-xs btn-danger valign" data-ng-click="cancelDuty(team.id)">
+											<i class="glyphicon glyphicon-ban-circle"></i>
+										</button>
+										<button class="btn btn-xs btn-success valign" data-ng-click="showTeamDetail(team.id)">
+											<i class="glyphicon glyphicon-eye-open"></i>
+										</button>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="row">
-						<div data-ng-if="messages.number > 0" data-ng-repeat="message in messages.content">
-							{{message}}
+						<div data-ng-if="messages.numberOfElements > 0" data-ng-repeat="message in messages.content">
+							{{message.dateCreate.dayOfMonth | formatTime}}/{{message.dateCreate.monthValue | formatTime}}/{{message.dateCreate.year}} 
+							{{message.dateCreate.hour | formatTime}}:{{message.dateCreate.minute | formatTime}}:{{message.dateCreate.second | formatTime}} 
+							: {{message.content}}
 						</div>
 					</div>
 				</div>
