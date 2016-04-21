@@ -67,14 +67,14 @@
 						<div id="world-info" class="container">
 							<div class="row">
 								<div class="col-md-12">
-									<strong>{{city.name}}</strong>
+									<strong>{{cell.name}}</strong>
 								</div>
 							</div>
-							<div class="row" data-ng-if="cityDwellers.length > 0">
+							<div class="row" data-ng-if="cellDwellers.length > 0">
 								<div class="col-md-12">
 									<hr>
 									<strong>Dwellers Cell</strong>
-									<div data-ng-repeat="dweller in cityDwellers | orderBy: name">
+									<div data-ng-repeat="dweller in cellDwellers | orderBy: name">
 										<input type="checkbox" name="dweller" value="{{dweller.id}}" >&nbsp;{{dweller.name}} {{dweller.firstname}}</input>
 									</div>
 									<button class="btn btn-xs btn-success valign" data-ng-click="teamup()">

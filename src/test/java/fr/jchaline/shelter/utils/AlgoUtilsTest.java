@@ -15,11 +15,11 @@ public class AlgoUtilsTest {
 	@Test
 	public void nseat() throws Exception {
 		List<Integer> input = Arrays.asList(100, 50, 100, 50, 100, 50, 100);
-		List<Integer> output = Arrays.asList(2, 1, 2, 1, 2, 1, 2);
+		List<Integer> expected = Arrays.asList(2, 1, 2, 1, 2, 1, 2);
 		
-		List<Integer> result = AlgoUtils.nseat(11, input);
+		List<Integer> output = AlgoUtils.nseat(11, input);
 		
-		assertEquals(output, result);
+		assertEquals(expected, output);
 	}
 
 }

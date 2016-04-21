@@ -192,7 +192,6 @@ public class FactoryService {
 			.stream()
 			.map(s -> new City(s))
 			.forEach( c -> {
-				
 				Arrays.asList("School", "Market", "Tower").forEach( s -> {
 					c.addSpot(new Spot(s));
 				});
@@ -215,6 +214,12 @@ public class FactoryService {
 			CellOccupant water = new CellOccupant("water" + i, CellEnum.WATER);
 			w.getCell(pos.getLeft(), pos.getRight()).setOccupant(water);
 		}
+		
+		//for the other pos, create empty occupant
+		listPos.forEach(pos -> {
+			CellOccupant empty = new CellOccupant("empty", CellEnum.EMPTY);
+			w.getCell(pos.getLeft(), pos.getRight()).setOccupant(empty);
+		});
 		
 		//create edges between vertex
 		w.setEdges(mapService.createEdges(w));
@@ -246,7 +251,7 @@ public class FactoryService {
 	 * @throws Exception 
 	 */
 	private void createDwellers(Player player) throws Exception {
-		List<MapCell> cellCities = mapCellDao.findAll().stream().filter(c -> c.getOccupant() != null && CellEnum.CITY.equals(c.getOccupant().getType())).collect(Collectors.toList());
+		List<MapCell> cellCities = mapCellDao.findAll().stream().filter(c -> CellEnum.CITY.equals(c.getOccupant().getType())).collect(Collectors.toList());
 		Dweller simon = new Dweller(true, "Adebisi", "Simon", specialService.randForDweller(7));
 		simon.setLevel(2);
 		Dweller harley = new Dweller(false, "Quinn", "Harley", specialService.randForDweller(4));

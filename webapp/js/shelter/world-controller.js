@@ -8,12 +8,12 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	
 	$scope.cancelDuty = function(teamId) {
 		httpService.postData("/team/cancelDuty", {teamId:teamId}).then(function(team) {
-			updateTeams()
+			updateTeams(true)
 		})
 	}
 	$scope.disband = function(teamId) {
 		httpService.postData("/team/disband", {teamId:teamId}).then(function(ok) {
-			updateTeams()
+			updateTeams(true)
 		})
 	}
 	
@@ -25,7 +25,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 		var cellId = $scope.worldMap.cells[xaxis][yaxis].id
 		
 		httpService.postData("/team/sendDuty", {teamId:teamId, dutyId:duty, target:cellId}).then(function(team) {
-			updateTeams()
+			updateTeams(true)
 		})
 	}
 
@@ -33,7 +33,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 		var teamup = $('[name="dweller"]:checked').map(function(){return this.value}).get()
 		
 		httpService.postData("/team/teamup", {dwellersId: _.values(teamup)}).then(function(team) {
-			updateTeams()
+			updateTeams(true)
 		})
 	}
 
@@ -51,10 +51,10 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	}
 
 	//add empty spot to city and display it
-	function updateCity(cityId) {
-		httpService.getData("/world/cell/" + cityId).then(function(city) {
-			$scope.city = city
-			$scope.cityDwellers = _.filter($scope.dwellers, function(o) { return o.mapCell.id==cityId; });
+	function updateCell(cellId) {
+		httpService.getData("/world/cell/" + cellId).then(function(cell) {
+			$scope.cell = cell
+			$scope.cellDwellers = _.filter($scope.dwellers, function(o) { return o.mapCell.id==cellId; });
 		})
 	}
 
@@ -68,7 +68,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			worldService.drawMap($scope.worldMap)
 			
 			updateDwellers()
-			updateTeams()
+			updateTeams(false)
 		})
 	}
 	
@@ -81,31 +81,14 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	
 	//TODO : add args to force refresh ?
 	//TODO : manage 'return' duty when refresh team with duty... with refresh force ?
-	function updateTeams() {
+	function updateTeams(force) {
 		httpService.getData("/team/list").then(function(teams) {
 			$scope.teams = teams
 			
-			if (!$scope.teamsWithoutDuty) {
-				$scope.teamsWithoutDuty = []
-			}
-			if (!$scope.teamsWithDuty) {
-				$scope.teamsWithDuty = []
-			}
+			var teamsDuty = worldService.updateTeamsDuty(teams, $scope.teamsWithoutDuty || [], $scope.teamsWithDuty || [], force)
 			
-			var teamsWithoutDuty = _.filter(teams, {'target':null})
-			var teamsWithDuty = _.differenceBy(teams, teamsWithoutDuty, 'id');
-
-			var teamWithoutDutyRemove = _.differenceBy($scope.teamsWithoutDuty, teamsWithoutDuty, 'id');
-			var teamWithoutDutyAdd = _.differenceBy(teamsWithoutDuty, $scope.teamsWithoutDuty, 'id');
-			if (teamWithoutDutyRemove.length > 0 || teamWithoutDutyAdd.length > 0) {
-				$scope.teamsWithoutDuty = teamsWithoutDuty
-			}
-
-			var teamWithDutyRemove = _.differenceBy($scope.teamsWithDuty, teamsWithDuty, 'id');
-			var teamWithDutyAdd = _.differenceBy(teamsWithDuty, $scope.teamsWithDuty, 'id');
-			if (teamWithDutyRemove.length > 0 || teamWithDutyAdd.length > 0) {
-				$scope.teamsWithDuty = teamsWithDuty
-			}
+			$scope.teamsWithoutDuty = teamsDuty.teamsWithoutDuty || $scope.teamsWithoutDuty
+			$scope.teamsWithDuty = teamsDuty.teamsWithDuty || $scope.teamsWithDuty
 		})
 	}
 	
@@ -121,8 +104,8 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			$scope.duties = duties
 		})
 		
-		$(rootDiv).on('click', '.city', function() {
-			updateCity($(this).attr('data-cell-id'))
+		$(rootDiv).on('click', '.cell', function() {
+			updateCell($(this).attr('data-cell-id'))
 		})
 	}
 	

@@ -54,7 +54,6 @@ public class MapServiceTest {
 		WORLD_TEST.getCell(3, 3).setOccupant(water3);
 	}
 
-	// TODO
 	@Test
 	public void createEdge() {
 		Optional<MapEdge> createEdge = service.createEdge(WORLD_TEST.getCell(1, 1), WORLD_TEST.getCell(2, 1));

@@ -67,7 +67,7 @@ public class TeamService {
 	@Transactional(readOnly = false)
 	@Scheduled(fixedDelay = ShelterConstants.TEAM_EXPLORE)
 	public void updateExploring() {
-		LOGGER.debug("update exploring for all team");
+		LOGGER.trace("update exploring for all team");
 		
 		//find team and compute event
 		teamDao.findByDuty(dutyDao.findByName(Duty.EXPLORE)).stream().forEach(it -> {
@@ -78,7 +78,7 @@ public class TeamService {
 	@Transactional(readOnly = false)
 	@Scheduled(fixedDelay = ShelterConstants.TEAM_EXPLORE)
 	public void updateReturn() {
-		LOGGER.debug("update return for all team");
+		LOGGER.trace("update return for all team");
 		
 		//find team and compute event
 		teamDao.findByDuty(dutyDao.findByName(Duty.RETURN)).stream().forEach(it -> {
@@ -88,7 +88,6 @@ public class TeamService {
 	
 	/**
 	 * Move the team to the target cell
-	 * TODO : take in consideration the edge for averageSpeed of the team
 	 * @param team The team to move
 	 * @param target The target cell
 	 */
@@ -98,20 +97,19 @@ public class TeamService {
 			OptionalDouble averageSpeedOpt = map.mapToInt(i -> i.intValue()).average();
 			averageSpeedOpt.ifPresent(speed -> {
 				LocalDateTime now = LocalDateTime.now();
-				//TODO : comment this
-				double cellFrequency = speed / 10;
-				//TODO : to constant
-				int nbSecondsInterval = 6;
-				long secondToWait = Math.round(1 / cellFrequency * nbSecondsInterval);
+				//Coefficient for the speed, the greatest it is, the fastest the team is
+				double cellFrequencyCoeff = speed / 10;
+				//the real number of seconds to wait for the current team between each move
+				long secondToWaitComputed = Math.round(1 / cellFrequencyCoeff * ShelterConstants.SECOND_BETWEEN_MOVE);
 				
-				double cellToMove = Math.abs(Duration.between(team.getLastMove(), now).getSeconds() / secondToWait);
-				int nbCellToMove = (int) Math.floor(cellToMove);
+				int nbCellToMove = (int) Math.floor(Math.abs(Duration.between(team.getLastMove(), now).getSeconds() / secondToWaitComputed));
 				
 				//2:if can move, find path to target
 				if (nbCellToMove > 0) {
 					//3:move team & dwellers
 					Optional<List<MapCell>> pathOpt = mapService.computePath(worldService.get(), team.getCurrent(), target);
 					
+					//TODO : manage case when team is enought fast to move twice or more cell by turn
 					pathOpt.ifPresent(path -> {
 						team.setCurrent(path.get(nbCellToMove - 1));
 						team.setLastMove(now);
@@ -129,7 +127,7 @@ public class TeamService {
 	@Transactional(readOnly = false)
 	@Scheduled(fixedDelay = ShelterConstants.TEAM_RECRUITMENT)
 	public void updateRecruitment() {
-		LOGGER.debug("update recruitment for all team");
+		LOGGER.trace("update recruitment for all team");
 		
 		//find team and compute event
 		teamDao.findByDuty(dutyDao.findByName(Duty.RECRUITMENT)).stream().forEach(it -> {
@@ -149,12 +147,16 @@ public class TeamService {
 	@Transactional(readOnly = false)
 	@Scheduled(fixedDelay = ShelterConstants.TEAM_FIGHT)
 	public void updateFight() {
-		LOGGER.debug("update fighting for all team");
+		LOGGER.trace("update fighting for all team");
 		
 		//find team and compute event
-		teamDao.findByDuty(dutyDao.findByName(Duty.FIGHT)).stream().forEach(it -> {
+		teamDao.findByDuty(dutyDao.findByName(Duty.FIGHT)).stream().forEach(team -> {
 			
-			//TODO : first step, move to the place,
+			tryToMove(team, team.getTarget());
+			if (team.getCurrent().equals(team.getTarget())) {
+				team.setDuty(null);
+				team.setTarget(null);
+			}
 			
 			//TODO : second step, fight !
 		});
@@ -181,7 +183,7 @@ public class TeamService {
 			double random = Math.random();
 			if (random > 0.5) {
 				happenFight(team);
-			} else if (random > 0.2) {
+			} else if (random > 0.15) {
 				happenLoot(team);
 			}
 		}
@@ -198,9 +200,7 @@ public class TeamService {
 		Integer minLevel = itemDao.findMinLevel();
 		//TODO : ponderate with dweller avg level & dweller number
 		int random = new Random().nextInt(maxLevel - minLevel)  + minLevel;
-		LOGGER.debug("Current min level : {}", minLevel);
-		LOGGER.debug("Current max level : {}", maxLevel);
-		LOGGER.debug("Random result : {}", random);
+		LOGGER.debug("Min level : {}, max level : {}, random result : {}", minLevel, maxLevel, random);
 	}
 	
 	/**

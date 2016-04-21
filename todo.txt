@@ -14,9 +14,6 @@ tech :
  - improve perf ... example : get citis list instead of world object, and get each city one by one
  
 game : 
- - start with a small shelter, with limited space. can extend shelter with space around on the map.
- - colonization of empty space : create new shelter for the player. 2 screens : manage shelter & world map view
- - improve view update, avoid to refresh if not necessary, split team 
  - generation map : Add spot to cities
  - building with resources capacity to limit food, water, ...
  - improve notion of "room size" => cells uses & dwellers capacity...
@@ -24,6 +21,8 @@ game :
  - money/water/food use to build room
  - power use by room
  - resources : update the new values if necessary (build, sell, all actions from player)
+ - start with a small shelter, with limited space. can extend shelter with space around on the map.
+ - colonization of empty space : create new shelter for the player. 2 screens : manage shelter & world map view
  - create missions "type", and percent success / reward with dwellers stats. Mission unlock with exploring (find dwellers, find food, find tech, ...)
  
 blog : 

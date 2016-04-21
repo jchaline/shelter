@@ -18,7 +18,7 @@ public class CellOccupant extends AbstractEntity {
 	@Column(nullable = false)
 	private CellEnum type;
 	
-	@Column(unique = true, nullable = false)
+	@Column(nullable = false)
 	@NotBlank
 	private String name;
 	

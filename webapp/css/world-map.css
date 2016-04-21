@@ -75,6 +75,9 @@
 .rock{
 	background-color:#996600;
 }
+.empty{
+	background-color:green;
+}
 
 .teamIco{
 	width:20px;

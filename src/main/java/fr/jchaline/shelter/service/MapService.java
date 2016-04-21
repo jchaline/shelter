@@ -21,6 +21,7 @@ import fr.jchaline.shelter.enums.CellEnum;
 @Service
 public class MapService {
 	
+	//default weight for edge between nodes
 	private static final int DEFAULT_WEIGHT = 1;
 	
 	/**
@@ -98,15 +99,15 @@ public class MapService {
 	 */
 	public Optional<MapEdge> createEdge(MapCell from, MapCell to) {
 		MapEdge edge = null;
-		boolean hasRock = from.getOccupant() != null && CellEnum.ROCK.equals(from.getOccupant().getType());
-		hasRock |= to.getOccupant() != null && CellEnum.ROCK.equals(to.getOccupant().getType());
+		boolean hasRock = CellEnum.ROCK.equals(from.getOccupant().getType());
+		hasRock |= CellEnum.ROCK.equals(to.getOccupant().getType());
 		if (!hasRock) {
 			int weight = DEFAULT_WEIGHT;
-			if (from.getOccupant() == null && to.getOccupant() != null && CellEnum.WATER.equals(to.getOccupant().getType())) {
+			if (CellEnum.EMPTY.equals(from.getOccupant().getType()) && CellEnum.WATER.equals(to.getOccupant().getType())) {
 				weight = DEFAULT_WEIGHT * 3;
-			} else if (from.getOccupant() != null && CellEnum.WATER.equals(from.getOccupant().getType()) && to.getOccupant() != null && CellEnum.WATER.equals(to.getOccupant().getType())) {
-				weight = DEFAULT_WEIGHT * 5;
-			} else if (from.getOccupant() != null && CellEnum.WATER.equals(from.getOccupant().getType()) && to.getOccupant() == null) {
+			} else if (CellEnum.WATER.equals(from.getOccupant().getType()) && CellEnum.WATER.equals(to.getOccupant().getType())) {
+				weight = DEFAULT_WEIGHT * 6;
+			} else if (CellEnum.WATER.equals(from.getOccupant().getType()) && CellEnum.EMPTY.equals(to.getOccupant().getType())) {
 				weight = DEFAULT_WEIGHT * 3;
 			}
 			edge = new MapEdge(from, to, weight);

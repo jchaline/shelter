@@ -5,8 +5,35 @@ app.service("worldService", function( $q ) {
 		updateCenter: updateCenter,
 		updateMapWithWorld: updateMapWithWorld,
 		drawMap: drawMap,
-		drawDwellers: drawDwellers
+		drawDwellers: drawDwellers,
+		updateTeamsDuty: updateTeamsDuty
 	})
+	
+	function updateTeamsDuty(teams, actualWithoutDuty, actualWithDuty, force) {
+		var res = {}
+		var teamsWithoutDuty = _.filter(teams, {'target':null})
+		var teamsWithDuty = _.differenceBy(teams, teamsWithoutDuty, 'id');
+		
+		if (force) {
+			res['teamsWithoutDuty'] = teamsWithoutDuty
+			res['teamsWithDuty'] = teamsWithDuty
+		} else {
+			var teamWithoutDutyRemove = _.differenceBy(actualWithoutDuty, teamsWithoutDuty, 'id');
+			var teamWithoutDutyAdd = _.differenceBy(teamsWithoutDuty, actualWithoutDuty, 'id');
+			
+			if (teamWithoutDutyRemove.length > 0 || teamWithoutDutyAdd.length > 0) {
+				res['teamsWithoutDuty'] = teamsWithoutDuty
+			}
+			
+			var teamWithDutyRemove = _.differenceBy(actualWithDuty, teamsWithDuty, 'id');
+			var teamWithDutyAdd = _.differenceBy(teamsWithDuty, actualWithDuty, 'id');
+			if (teamWithDutyRemove.length > 0 || teamWithDutyAdd.length > 0) {
+				res['teamsWithDuty'] = teamsWithDuty
+			}
+		}
+
+		return res
+	}
 	
 	//update map center view
 	function updateCenter(map, vx, vy) {
@@ -64,11 +91,7 @@ app.service("worldService", function( $q ) {
 				//détermination des identifiants des cellules affichés
 				var cell = $($(worldMap.cells).get((x + xLeft) % nbCeilWidthTotal)).get((y + yUp) % nbCeilHeightTotal)
 				var id = cell.xaxis + '_' + cell.yaxis
-				var cellType = "empty"
-				if (cell.occupant) {
-					cellType = cell.occupant.type.toLowerCase()
-				}
-					
+				var cellType = cell.occupant.type.toLowerCase()
 				var div = '<div id="' + id + '" data-xaxis="' + cell.xaxis + '" data-yaxis="' + cell.yaxis + '" class="cell ' + cellType + '" data-cell-id="' + cell.id + '" title="' + id + '" ondrop="drop(event)" ondragover="allowDrop(event)""></div>'
 				$(rootDiv).append(div)
 			}
@@ -76,8 +99,8 @@ app.service("worldService", function( $q ) {
 	}
 })
 
+//html standard drag'n'drop
 function dragStart(event) {
-	//document.getElementById("demo").innerHTML = "Started to drag the p element";
 	event.dataTransfer.setData("teamId", $(event.target).attr('data-team-id'));
 }
 
@@ -91,6 +114,4 @@ function drop(event) {
     var target = event.target
     $('#xaxis_' + teamId).val($(target).attr('data-xaxis'))
     $('#yaxis_' + teamId).val($(target).attr('data-yaxis'))
-    //event.target.appendChild(document.getElementById(data));
-    //document.getElementById("demo").innerHTML = "The p element was dropped";
 }

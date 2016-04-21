@@ -20,7 +20,7 @@
 		</encoder>
 	</appender>
 	
-	<logger name="fr.jchaline.shelter" additivity="false" level="TRACE">
+	<logger name="fr.jchaline.shelter" additivity="false" level="DEBUG">
 		<appender-ref ref="STDOUT" />
 	</logger>
 

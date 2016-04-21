@@ -24,9 +24,17 @@ public class ShelterConstants {
 	
 	
 	//TODO : move to config file
+	/**
+	 * Time for schedule turns
+	 */
 	public static final int SHELTER_COMPUTE_ALL = 10*1000;
 	public static final int TEAM_EXPLORE = 10*1000;
 	public static final int TEAM_RECRUITMENT = 10*1000;
 	public static final int TEAM_FIGHT = 10*1000;
+	
+	/**
+	 * Number of seconds to wait between each move. The lowest it is, the fastest all the teams are
+	 */
+	public static final int SECOND_BETWEEN_MOVE = 6;
 	
 }

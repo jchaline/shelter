@@ -82,24 +82,6 @@ final public class AlgoUtils {
 			}
 		}
 		
-		//TODO : trouver une solution pour ne plus avoir ce cas, et ainsi virer la gestion de l'exception dans la pile d'appels ...
 		throw new Exception("Error while process nseat");
 	}
-	
-//TODO : python version, implement with java and compare
-//	def proportional(nseats, votes):
-//	    quota=sum(votes)/(1.+nseats)
-//	    frac=[vote/quota for vote in votes]
-//	    res=[int(f) for f in frac]
-//	    n=nseats-sum(res)
-//	    if n==0:return res
-//	    if n<0: return [min(x, nseats) for x in res]
-//	    remainders=[ai-bi for ai, bi in zip(frac, res)]
-//	    limit=sorted(remainders, reverse=True)[n-1]
-//	    for i, r in enumerate(remainders):
-//	        if r>=limit:
-//	            res[i]+=1
-//	            n-=1
-//	            if n==0: return res
-//	    raise
 }

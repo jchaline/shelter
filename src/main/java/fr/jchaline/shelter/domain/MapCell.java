@@ -22,7 +22,7 @@ public class MapCell extends AbstractEntity {
 	@Column
 	private int yaxis;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(optional = false, cascade = CascadeType.ALL)
 	private CellOccupant occupant; 
 	
 	public MapCell(String name, int xaxis, int yaxis) {

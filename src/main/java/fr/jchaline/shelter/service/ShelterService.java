@@ -40,7 +40,7 @@ public class ShelterService {
 	@Transactional
 	@Scheduled(fixedDelay = ShelterConstants.SHELTER_COMPUTE_ALL)
 	public void computeAll() {
-		LOGGER.debug("Run computeAll for Shelters");
+		LOGGER.trace("Run computeAll for Shelters");
 		dao.findAll().stream().forEach(it -> {
 			computeAll(it);
 		});
@@ -69,10 +69,10 @@ public class ShelterService {
 	}
 
 	/**
-	 * TODO : comment this method
-	 * @param shelter
-	 * @param resource
-	 * @return
+	 * Compute the resource coeff of the shelter 
+	 * @param shelter The shelter
+	 * @param resource The type of resource to compute
+	 * @return the coeff
 	 */
 	public long computeCoeff(Shelter shelter, ResourceEnum resource) {
 		return shelter.getFloors().values().stream()
