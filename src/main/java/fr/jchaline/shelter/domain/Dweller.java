@@ -18,9 +18,15 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import fr.jchaline.shelter.enums.JobEnum;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false, exclude={"team"})
+@NoArgsConstructor
 public class Dweller extends AbstractEntity {
 	
 	@Column(nullable = false)
@@ -66,10 +72,6 @@ public class Dweller extends AbstractEntity {
 	@ManyToOne(optional = false)
 	private MapCell mapCell;
 	
-	public Dweller() {
-		
-	}
-
 	public Dweller(boolean male, String name, String firstname, Special special){
 		this.setMale(male);
 		this.setName(name);
@@ -91,101 +93,4 @@ public class Dweller extends AbstractEntity {
 		sb.append(this.getLevel());
 		return sb.toString();
 	}
-
-	public int getLevel() {
-		return level;
-	}
-
-	public void setLevel(int level) {
-		this.level = level;
-	}
-
-	public int getExperience() {
-		return experience;
-	}
-
-	public void setExperience(int experience) {
-		this.experience = experience;
-	}
-
-	public List<Item> getItems() {
-		return items;
-	}
-
-	public void setItems(List<Item> items) {
-		this.items = items;
-	}
-
-	public Weapon getWeapon() {
-		return weapon;
-	}
-
-	public void setWeapon(Weapon weapon) {
-		this.weapon = weapon;
-	}
-
-	public Room getRoom() {
-		return room;
-	}
-
-	public void setRoom(Room room) {
-		this.room = room;
-	}
-
-	public Special getSpecial() {
-		return special;
-	}
-
-	public void setSpecial(Special special) {
-		this.special = special;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getFirstname() {
-		return firstname;
-	}
-
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
-	}
-
-	public Boolean getMale() {
-		return male;
-	}
-
-	public void setMale(Boolean male) {
-		this.male = male;
-	}
-
-	public JobEnum getJob() {
-		return job;
-	}
-
-	public void setJob(JobEnum job) {
-		this.job = job;
-	}
-
-	public Team getTeam() {
-		return team;
-	}
-
-	public void setTeam(Team team) {
-		this.team = team;
-	}
-
-	public MapCell getMapCell() {
-		return mapCell;
-	}
-
-	public void setMapCell(MapCell mapCell) {
-		this.mapCell = mapCell;
-	}
-
 }

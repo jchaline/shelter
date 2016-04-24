@@ -33,9 +33,11 @@ public class MapServiceTest {
 	public void before() {
 		WORLD_TEST = new World(30, 30);
 
+		CellOccupant empty = new CellOccupant("empty", CellEnum.EMPTY);
 		for (int x = 0; x < WORLD_TEST.getWidth(); x++) {
 			for (int y = 0; y < WORLD_TEST.getHeight(); y++) {
 				WORLD_TEST.setCell(x, y, new MapCell(x + "_" + y, x, y));
+				WORLD_TEST.getCell(x, y).setOccupant(empty);
 			}
 		}
 		

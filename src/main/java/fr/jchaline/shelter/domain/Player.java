@@ -12,8 +12,15 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Player extends AbstractEntity {
 	
 	@Column(nullable = false, unique = true)
@@ -31,45 +38,8 @@ public class Player extends AbstractEntity {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<Long> discoveredStreets = new HashSet<Long>();
-	
-	public Player(){
-		
-	}
 
 	public Player(String name){
 		this.setName(name);
 	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Shelter getShelter() {
-		return shelter;
-	}
-
-	public void setShelter(Shelter shelter) {
-		this.shelter = shelter;
-	}
-
-	public Set<Long> getDiscoveredStreets() {
-		return discoveredStreets;
-	}
-
-	public void setDiscoveredStreets(Set<Long> discoveredStreets) {
-		this.discoveredStreets = discoveredStreets;
-	}
-
-	public long getMoney() {
-		return money;
-	}
-
-	public void setMoney(long money) {
-		this.money = money;
-	}
-
 }

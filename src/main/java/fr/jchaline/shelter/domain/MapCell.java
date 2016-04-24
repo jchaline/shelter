@@ -8,8 +8,15 @@ import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class MapCell extends AbstractEntity {
 	
 	@Column(unique = true, nullable = false)
@@ -31,51 +38,6 @@ public class MapCell extends AbstractEntity {
 		this.setYaxis(yaxis);
 	}
 
-	public MapCell() {
-		
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getXaxis() {
-		return xaxis;
-	}
-
-	public void setXaxis(int xaxis) {
-		this.xaxis = xaxis;
-	}
-
-	public int getYaxis() {
-		return yaxis;
-	}
-
-	public void setYaxis(int yaxis) {
-		this.yaxis = yaxis;
-	}
-
-	public CellOccupant getOccupant() {
-		return occupant;
-	}
-
-	public void setOccupant(CellOccupant occupant) {
-		this.occupant = occupant;
-	}
-	
-	public boolean equals(MapCell other) {
-		return other != null && xaxis == other.xaxis && yaxis == other.yaxis;
-	}
-	
-	@Override
-	public int hashCode() {
-		return 1024 * xaxis + yaxis;
-	}
-	
 	public String toString() {
 		return name + " (" + xaxis + "," + yaxis + ")";
 	}

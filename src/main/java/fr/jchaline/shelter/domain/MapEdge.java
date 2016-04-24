@@ -5,8 +5,15 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class MapEdge extends AbstractEntity {
 	
 	@ManyToOne(optional = false)
@@ -30,34 +37,6 @@ public class MapEdge extends AbstractEntity {
 		this.setWeight(weight);
 	}
 
-	public MapEdge() {
-		
-	}
-
-	public MapCell getSource() {
-		return source;
-	}
-
-	public void setSource(MapCell source) {
-		this.source = source;
-	}
-
-	public MapCell getTarget() {
-		return target;
-	}
-
-	public void setTarget(MapCell target) {
-		this.target = target;
-	}
-
-	public int getWeight() {
-		return weight;
-	}
-
-	public void setWeight(int weight) {
-		this.weight = weight;
-	}
-	
 	public String toString() {
 		return "(" + source.getXaxis() + "," + source.getYaxis() + ") => (" + target.getXaxis() + "," + target.getYaxis() + ") [" + weight + "]";
 	}

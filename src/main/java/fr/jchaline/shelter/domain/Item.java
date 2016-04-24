@@ -9,36 +9,35 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table
 @Inheritance(strategy = InheritanceType.JOINED)
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Item extends AbstractEntity {
 	
 	@Column(unique = true, nullable = false)
 	@NotBlank
 	private String name;
 	
+	/**
+	 * The iLevel of the object
+	 * Represent the quality of the object
+	 */
 	@Column(nullable = false)
 	@Min(1)
 	private int level;
 	
-	public Item() {
-		
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getLevel() {
-		return level;
-	}
-
-	public void setLevel(int level) {
-		this.level = level;
-	}
+	/**
+	 * Minimum dweller level to use the object
+	 */
+	@Column(nullable = false)
+	@Min(1)
+	private int requiredLevel;
+	
 }

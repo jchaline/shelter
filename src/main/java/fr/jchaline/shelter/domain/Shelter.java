@@ -14,6 +14,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 /**
  * The player's shelter
  * @author jChaline
@@ -21,6 +25,9 @@ import javax.validation.constraints.Min;
  */
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Shelter extends AbstractEntity {
 	
 	@OneToMany(cascade = CascadeType.ALL)
@@ -40,48 +47,4 @@ public class Shelter extends AbstractEntity {
 	
 	@Column(nullable = false)
 	private LocalDateTime lastCompute = LocalDateTime.now();
-
-	public Shelter(){
-		
-	}
-
-	public Map<Integer, Floor> getFloors() {
-		return floors;
-	}
-
-	public void setFloors(Map<Integer, Floor> floors) {
-		this.floors = floors;
-	}
-
-	public List<Dweller> getDwellers() {
-		return dwellers;
-	}
-
-	public void setDwellers(List<Dweller> dwellers) {
-		this.dwellers = dwellers;
-	}
-
-	public long getWater() {
-		return water;
-	}
-
-	public void setWater(long water) {
-		this.water = water;
-	}
-
-	public long getFood() {
-		return food;
-	}
-
-	public void setFood(long food) {
-		this.food = food;
-	}
-
-	public LocalDateTime getLastCompute() {
-		return lastCompute;
-	}
-
-	public void setLastCompute(LocalDateTime lastCompute) {
-		this.lastCompute = lastCompute;
-	}
 }

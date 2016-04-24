@@ -12,6 +12,10 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 /**
  * Contains 
  * @author jChaline
@@ -19,6 +23,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
  */
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false, exclude={"rooms"})
+@NoArgsConstructor
 public class Floor extends AbstractEntity {
 	
 	@Column(nullable=false)
@@ -31,37 +38,8 @@ public class Floor extends AbstractEntity {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="floor")
 	private Set<Room> rooms = new HashSet<Room>();
 	
-	public Floor(){
-		
-	}
-	
 	public Floor(int number, int size){
 		this.setNumber(number);
 		this.setSize(size);
 	}
-	
-	public int getNumber() {
-		return number;
-	}
-
-	public void setNumber(int number) {
-		this.number = number;
-	}
-
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-
-	public Set<Room> getRooms() {
-		return rooms;
-	}
-
-	public void setRooms(Set<Room> rooms) {
-		this.rooms = rooms;
-	}
-	
 }

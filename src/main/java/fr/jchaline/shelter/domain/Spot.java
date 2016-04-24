@@ -6,8 +6,15 @@ import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Spot extends AbstractEntity {
 	
 	@Column(nullable = false)
@@ -18,28 +25,6 @@ public class Spot extends AbstractEntity {
 	private int number;
 	
 	public Spot(String name) {
-		this();
 		this.setName(name);
 	}
-
-	public Spot() {
-		
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public void setNumber(int number) {
-		this.number = number;
-	}
-
 }

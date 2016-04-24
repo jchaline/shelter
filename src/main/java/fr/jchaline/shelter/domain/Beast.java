@@ -3,11 +3,19 @@ package fr.jchaline.shelter.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Beast extends AbstractEntity {
 	
 	@Column(unique = true, nullable = false)
@@ -15,59 +23,26 @@ public class Beast extends AbstractEntity {
 	private String name;
 	
 	@Column(nullable = false)
-	@NotBlank
+	@Min(0)
 	private int attack;
 	
 	@Column(nullable = false)
-	@NotBlank
+	@Min(0)
 	private int speed;
 	
 	@Column(nullable = false)
-	@NotBlank
+	@Min(0)
 	private int life;
+
+	@Column(nullable = false)
+	@Min(1)
+	private int level;
 	
-	public Beast(String name, int attack, int speed, int life) {
+	public Beast(String name, int attack, int speed, int life, int level) {
 		this.setName(name);
 		this.setAttack(attack);
 		this.setSpeed(speed);
 		this.setLife(life);
+		this.setLevel(level);
 	}
-	
-	public Beast() {
-		
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
-	public int getAttack() {
-		return attack;
-	}
-
-	public void setAttack(int attack) {
-		this.attack = attack;
-	}
-
-	public int getSpeed() {
-		return speed;
-	}
-
-	public void setSpeed(int speed) {
-		this.speed = speed;
-	}
-
-	public int getLife() {
-		return life;
-	}
-
-	public void setLife(int life) {
-		this.life = life;
-	}
-
 }

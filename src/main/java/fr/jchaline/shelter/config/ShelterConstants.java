@@ -22,6 +22,16 @@ public class ShelterConstants {
 	public static final int STREET_PER_CITY = 10;
 	public static final int BUILDING_PER_STREET = 10;
 	
+	public static final int DWELLERS_MAX_LEVEL = 50;
+
+	/**
+	 * iLevel for object
+	 */
+	public static final int I_LEVEL_PER_LEVEL = 5;
+	//nb level less than required level for compute ilevel
+	public static final int NB_LEVEL_RANGE = 5;
+	
+	
 	
 	//TODO : move to config file
 	/**

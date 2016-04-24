@@ -15,9 +15,15 @@ import javax.persistence.MapKeyEnumerated;
 import javax.persistence.Table;
 
 import fr.jchaline.shelter.enums.SpecialEnum;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Special extends AbstractEntity {
 
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -27,7 +33,6 @@ public class Special extends AbstractEntity {
 	private Map<SpecialEnum, Integer> values;
 
 	public Special(List<Integer> special) {
-		this();
 		int i = 0;
 		values = new HashMap<SpecialEnum, Integer>();
 		values.put(SpecialEnum.S, special.get(i++));
@@ -39,9 +44,6 @@ public class Special extends AbstractEntity {
 		values.put(SpecialEnum.L, special.get(i++));
 	}
 
-	public Special() {
-
-	}
 	
 	public String toString() {
 		return MessageFormat.format("S({0})P({1})E({2})C({3})I({4})A({5})L({6})", values.get(SpecialEnum.S),values.get(SpecialEnum.P),values.get(SpecialEnum.E),
@@ -51,17 +53,4 @@ public class Special extends AbstractEntity {
 	public int getValue(SpecialEnum special) {
 		return values.get(special);
 	}
-
-	public void setValue(SpecialEnum special, int value) {
-		this.getValues().put(special, value);
-	}
-
-	public Map<SpecialEnum, Integer> getValues() {
-		return values;
-	}
-
-	public void setValues(Map<SpecialEnum, Integer> values) {
-		this.values = values;
-	}
-
 }

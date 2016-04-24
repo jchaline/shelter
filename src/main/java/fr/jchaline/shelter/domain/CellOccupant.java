@@ -9,10 +9,16 @@ import javax.persistence.Table;
 import org.hibernate.validator.constraints.NotBlank;
 
 import fr.jchaline.shelter.enums.CellEnum;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table
 @Inheritance(strategy = InheritanceType.JOINED)
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class CellOccupant extends AbstractEntity {
 	
 	@Column(nullable = false)
@@ -26,25 +32,4 @@ public class CellOccupant extends AbstractEntity {
 		this.setName(name);
 		this.setType(type);
 	}
-
-	public CellOccupant() {
-		
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public CellEnum getType() {
-		return type;
-	}
-
-	public void setType(CellEnum type) {
-		this.type = type;
-	}
-
 }

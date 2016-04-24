@@ -10,8 +10,15 @@ import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Street extends AbstractEntity {
 	
 	@Column(nullable = false)
@@ -22,37 +29,6 @@ public class Street extends AbstractEntity {
 	private Map<Integer, Spot> spots = new HashMap<Integer,Spot>();
 	
 	public Street(int number) {
-		this();
 		setNumber(number);
 	}
-
-	public Street() {
-		
-	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public void setNumber(int number) {
-		this.number = number;
-	}
-
-	public Map<Integer,Spot> getSpots() {
-		return spots;
-	}
-
-	public void setSpots(Map<Integer,Spot> spots) {
-		this.spots = spots;
-	}
-
-	public void add(int number, Spot spot) {
-		spot.setNumber(number);
-		getSpots().put(number, spot);
-	}
-
-	public Spot get(int number) {
-		return getSpots().get(number);
-	}
-
 }

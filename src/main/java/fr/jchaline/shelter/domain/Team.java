@@ -11,8 +11,15 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Team extends AbstractEntity {
 	
 	@JsonManagedReference
@@ -20,13 +27,13 @@ public class Team extends AbstractEntity {
 	private List<Dweller> dwellers;
 	
 	@Column(nullable = false)
-	private LocalDateTime lastEvent;
+	private LocalDateTime lastEvent = LocalDateTime.now();
 
 	@Column
 	private LocalDateTime lastMove;
 	
 	@Column(nullable = false)
-	private LocalDateTime begin;
+	private LocalDateTime begin = LocalDateTime.now();
 	
 	@ManyToOne
 	private Duty duty;
@@ -48,74 +55,4 @@ public class Team extends AbstractEntity {
 	 */
 	@ManyToOne(optional = false)
 	private MapCell current;
-	
-	public Team() {
-		begin = LocalDateTime.now();
-		lastEvent = begin;
-	}
-
-	public List<Dweller> getDwellers() {
-		return dwellers;
-	}
-
-	public void setDwellers(List<Dweller> dwellers) {
-		this.dwellers = dwellers;
-	}
-
-	public LocalDateTime getLastEvent() {
-		return lastEvent;
-	}
-
-	public void setLastEvent(LocalDateTime lastEvent) {
-		this.lastEvent = lastEvent;
-	}
-
-	public LocalDateTime getBegin() {
-		return begin;
-	}
-
-	public void setBegin(LocalDateTime begin) {
-		this.begin = begin;
-	}
-
-	public Duty getDuty() {
-		return duty;
-	}
-
-	public void setDuty(Duty duty) {
-		this.duty = duty;
-	}
-
-	public MapCell getTarget() {
-		return target;
-	}
-
-	public void setTarget(MapCell target) {
-		this.target = target;
-	}
-
-	public MapCell getCurrent() {
-		return current;
-	}
-
-	public void setCurrent(MapCell current) {
-		this.current = current;
-	}
-
-	public MapCell getOrigin() {
-		return origin;
-	}
-
-	public void setOrigin(MapCell origin) {
-		this.origin = origin;
-	}
-
-	public LocalDateTime getLastMove() {
-		return lastMove;
-	}
-
-	public void setLastMove(LocalDateTime lastMove) {
-		this.lastMove = lastMove;
-	}
-
 }

@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.jchaline.shelter.config.ShelterConstants;
 import fr.jchaline.shelter.dao.DutyDao;
 import fr.jchaline.shelter.dao.DwellerDao;
-import fr.jchaline.shelter.dao.ItemDao;
 import fr.jchaline.shelter.dao.MapCellDao;
 import fr.jchaline.shelter.dao.TeamDao;
+import fr.jchaline.shelter.domain.Beast;
 import fr.jchaline.shelter.domain.Duty;
 import fr.jchaline.shelter.domain.Dweller;
 import fr.jchaline.shelter.domain.MapCell;
@@ -37,7 +36,7 @@ public class TeamService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(TeamService.class);
 	
-	@Value("${event.frequency.minutes}")
+	@Value("${event.frequency.second}")
 	private int frequency;
 	
 	@Autowired
@@ -50,9 +49,6 @@ public class TeamService {
 	private TeamDao teamDao;
 	
 	@Autowired
-	private ItemDao itemDao;
-	
-	@Autowired
 	private MapService mapService;
 
 	@Autowired
@@ -63,6 +59,12 @@ public class TeamService {
 	
 	@Autowired
 	private MessageService messageService;
+
+	@Autowired
+	private BeastService beastService;
+	
+	@Autowired
+	private FightService fightService;
 	
 	@Transactional(readOnly = false)
 	@Scheduled(fixedDelay = ShelterConstants.TEAM_EXPLORE)
@@ -178,7 +180,7 @@ public class TeamService {
 		}
 		
 		//check if event should happen
-		if (team.getLastEvent().plusMinutes(frequency).isBefore(now)) {
+		if (team.getLastEvent().plusSeconds(frequency).isBefore(now)) {
 			//random for battle event, loot event, ...
 			double random = Math.random();
 			if (random > 0.5) {
@@ -186,6 +188,7 @@ public class TeamService {
 			} else if (random > 0.15) {
 				happenLoot(team);
 			}
+			team.setLastEvent(now);
 		}
 	}
 	
@@ -194,13 +197,7 @@ public class TeamService {
 	 * @param team The team
 	 */
 	private void happenLoot(Team team) {
-		//TODO : todo !
-		//get items level min, max and avg, generate number, apply coeff, and find item with the closest level
-		Integer maxLevel = itemDao.findMaxLevel();
-		Integer minLevel = itemDao.findMinLevel();
-		//TODO : ponderate with dweller avg level & dweller number
-		int random = new Random().nextInt(maxLevel - minLevel)  + minLevel;
-		LOGGER.debug("Min level : {}, max level : {}, random result : {}", minLevel, maxLevel, random);
+		fightService.loot(team);
 	}
 	
 	/**
@@ -208,7 +205,8 @@ public class TeamService {
 	 * @param team The team
 	 */
 	private void happenFight(Team team) {
-		
+		List<Beast> beastGroup = beastService.makeGroup(team.getDwellers().size(), team.getDwellers().stream().mapToInt(Dweller::getLevel).summaryStatistics().getAverage());
+		fightService.fight(team, beastGroup);
 	}
 	
 	/**

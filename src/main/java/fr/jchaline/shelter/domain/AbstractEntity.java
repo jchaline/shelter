@@ -7,7 +7,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import lombok.Data;
+
 @MappedSuperclass
+@Data
 public abstract class AbstractEntity {
 
 	@Id
@@ -17,20 +20,4 @@ public abstract class AbstractEntity {
 	
 	@Column
 	private LocalDateTime dateCreate = LocalDateTime.now();
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public LocalDateTime getDateCreate() {
-		return dateCreate;
-	}
-
-	public void setDateCreate(LocalDateTime date) {
-		this.dateCreate = date;
-	}
 }

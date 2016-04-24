@@ -3,7 +3,7 @@ server:
   
 event:
  frequency:
-  minutes: 1
+  second: 60
 
 #same port for metrics
 management:

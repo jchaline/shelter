@@ -12,6 +12,9 @@ import org.hibernate.annotations.Polymorphism;
 import org.hibernate.annotations.PolymorphismType;
 
 import fr.jchaline.shelter.enums.CellEnum;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * @author JCHALINE
@@ -20,6 +23,9 @@ import fr.jchaline.shelter.enums.CellEnum;
 @Entity
 @Table
 @Polymorphism(type= PolymorphismType.EXPLICIT)
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 public class City extends CellOccupant {
 
 	//TODO : delete this, put spot (market, school, hospital, ... but not street with number etc ...)
@@ -28,18 +34,6 @@ public class City extends CellOccupant {
 	
 	public City(String name) {
 		super(name, CellEnum.CITY);
-	}
-	
-	public City() {
-		
-	}
-
-	public List<Spot> getSpots() {
-		return spots;
-	}
-
-	public void setSpots(List<Spot> spots) {
-		this.spots = spots;
 	}
 
 	public void addSpot(Spot spot) {

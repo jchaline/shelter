@@ -27,4 +27,9 @@ public class MessageService {
 	public Message push(String message) {
 		return messageDao.save(new Message(message));
 	}
+
+	@Transactional(readOnly = false)
+	public Message push(String message, Object...args) {
+		return messageDao.save(new Message(String.format(message, args)));
+	}
 }

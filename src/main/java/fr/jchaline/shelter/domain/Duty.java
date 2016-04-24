@@ -4,11 +4,18 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 /**
  * Team task !
  */
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class Duty extends AbstractEntity {
 	
 	public static final String EXPLORE = "explore";
@@ -28,38 +35,9 @@ public class Duty extends AbstractEntity {
 	@Column(nullable = false)
 	private boolean action = false;
 	
-	public Duty() {
-		
-	}
-
 	public Duty(String name, String label, boolean action) {
 		this.setName(name);
 		this.setLabel(label);
 		this.setAction(action);
 	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	public boolean isAction() {
-		return action;
-	}
-
-	public void setAction(boolean action) {
-		this.action = action;
-	}
-
 }

@@ -11,9 +11,15 @@ import org.hibernate.validator.constraints.NotBlank;
 import fr.jchaline.shelter.config.ShelterConstants;
 import fr.jchaline.shelter.enums.ResourceEnum;
 import fr.jchaline.shelter.enums.SpecialEnum;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class RoomType extends AbstractEntity {
 	
 	@Column(unique = true, nullable = false)
@@ -38,10 +44,6 @@ public class RoomType extends AbstractEntity {
 	@Column
 	private ResourceEnum resource;
 	
-	public RoomType() {
-		
-	}
-	
 	public RoomType(String name, ResourceEnum resource, int size, SpecialEnum special, int cost, int maxSize) {
 		this.setName(name);
 		this.setSize(size);
@@ -49,53 +51,5 @@ public class RoomType extends AbstractEntity {
 		this.setCost(cost);
 		this.setMaxSize(maxSize);
 		this.setResource(resource);
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-
-	public SpecialEnum getSpecial() {
-		return special;
-	}
-
-	public void setSpecial(SpecialEnum special) {
-		this.special = special;
-	}
-
-	public int getCost() {
-		return cost;
-	}
-
-	public void setCost(int cost) {
-		this.cost = cost;
-	}
-
-	public int getMaxSize() {
-		return maxSize;
-	}
-
-	public void setMaxSize(int maxSize) {
-		this.maxSize = maxSize;
-	}
-
-	public ResourceEnum getResource() {
-		return resource;
-	}
-
-	public void setResource(ResourceEnum resource) {
-		this.resource = resource;
 	}
 }

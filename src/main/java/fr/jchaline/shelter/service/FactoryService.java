@@ -15,15 +15,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.jchaline.shelter.config.ShelterConstants;
+import fr.jchaline.shelter.dao.BeastDao;
 import fr.jchaline.shelter.dao.DutyDao;
 import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.MapCellDao;
 import fr.jchaline.shelter.dao.PlayerDao;
 import fr.jchaline.shelter.dao.RoomDao;
 import fr.jchaline.shelter.dao.RoomTypeDao;
-import fr.jchaline.shelter.dao.SuitDao;
-import fr.jchaline.shelter.dao.WeaponDao;
 import fr.jchaline.shelter.dao.WorldDao;
+import fr.jchaline.shelter.domain.Beast;
 import fr.jchaline.shelter.domain.CellOccupant;
 import fr.jchaline.shelter.domain.City;
 import fr.jchaline.shelter.domain.Duty;
@@ -35,8 +35,6 @@ import fr.jchaline.shelter.domain.Room;
 import fr.jchaline.shelter.domain.RoomType;
 import fr.jchaline.shelter.domain.Shelter;
 import fr.jchaline.shelter.domain.Spot;
-import fr.jchaline.shelter.domain.Suit;
-import fr.jchaline.shelter.domain.Weapon;
 import fr.jchaline.shelter.domain.World;
 import fr.jchaline.shelter.enums.CellEnum;
 import fr.jchaline.shelter.enums.ResourceEnum;
@@ -79,16 +77,13 @@ public class FactoryService {
 	private SpecialService specialService;
 	
 	@Autowired
-	private WeaponDao weaponDao;
-	
-	@Autowired
-	private SuitDao suitDao;
-	
-	@Autowired
 	private MapCellDao mapCellDao;
 
 	@Autowired
 	private MapService mapService;
+	
+	@Autowired
+	private BeastDao beastDao;
 	
 	/**
 	 * Initialize mandatory data
@@ -118,7 +113,11 @@ public class FactoryService {
 	 */
 	private void initBestiary() {
 		LOGGER.info("init bestiary");
-		//TODO : generate monsters and bad guys !
+		List<Beast> beasts = Arrays.asList(new Beast("walker", 5, 2, 10, 3), new Beast("runner", 5, 5, 20, 11), new Beast("tanker", 10, 1, 50, 50));
+		
+		beasts.forEach(b -> {
+			beastDao.save(b);
+		});
 	}
 	
 	/**
@@ -143,25 +142,8 @@ public class FactoryService {
 	 */
 	private void initItems() {
 		//i18n file for weapon name, translate by client, only store i18n key
-		 
 		LOGGER.info("init weapons");
-		Arrays.asList(new Weapon("knife", 4, 0), new Weapon("sword", 7, 0), new Weapon("katana", 10, 0), 
-				new Weapon("gun", 3, 3), new Weapon("riffle", 7, 6), new Weapon("sniper", 10, 10), new Weapon("rocket_launcher", 15, 6))
-		.stream()
-		.forEach(it -> {
-			weaponDao.save(it);
-			weaponDao.save(new Weapon(it.getName() + "_rare", (int) Math.ceil(it.getDamage() * 3), it.getScope()));
-			weaponDao.save(new Weapon(it.getName() + "_epic", (int) Math.ceil(it.getDamage() * 9), it.getScope()));
-		});
-		
-		LOGGER.info("init suits");
-		Arrays.asList(new Suit("suit", 1), new Suit("leather", 5), new Suit("kelvar", 10), new Suit("cortosis", 15))
-		.stream()
-		.forEach(it -> {
-			suitDao.save(it);
-			suitDao.save(new Suit(it.getName() + "_rare", (int) Math.ceil(it.getArmor() * 1.25)));
-			suitDao.save(new Suit(it.getName() + "_epic", (int) Math.ceil(it.getArmor() * 1.5)));
-		});
+		//weapons model in ItemService
 	}
 
 	/**

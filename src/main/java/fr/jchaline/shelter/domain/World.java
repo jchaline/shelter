@@ -13,8 +13,15 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class World extends AbstractEntity {
 
 	@OneToMany(cascade = CascadeType.ALL)
@@ -40,56 +47,11 @@ public class World extends AbstractEntity {
 		this.setHeight(height);
 	}
 	
-	public World() {
-		
-	}
-	
 	public void setCell(int x, int y, MapCell cell) {
 		map.put(x + "_" + y, cell);
 	}
 
-	public MapCell getCell(int x, int y) {
+	public MapCell getCell(Integer x, Integer y) {
 		return map.get(x + "_" + y);
 	}
-
-	public Set<City> getCities() {
-		return cities;
-	}
-
-	public void setCities(Set<City> cities) {
-		this.cities = cities;
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
-	public Map<String, MapCell> getMap() {
-		return map;
-	}
-
-	public void setMap(Map<String, MapCell> map) {
-		this.map = map;
-	}
-
-	public List<MapEdge> getEdges() {
-		return edges;
-	}
-
-	public void setEdges(List<MapEdge> edges) {
-		this.edges = edges;
-	}
-
 }

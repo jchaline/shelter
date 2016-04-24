@@ -1,6 +1,8 @@
 Ordered by priority
 
 tech :
+ - see lombok hashCode / equals generated methods, how it work
+ - test lombok equals generated for superclass like weapon (does it use item name to compare ?)
  - throw functionnals exceptions (buy room without enough money, ...) and manage display with angular
  - metrics
  - i18n messages
