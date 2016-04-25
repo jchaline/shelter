@@ -27,6 +27,9 @@ public class World extends AbstractEntity {
 	@OneToMany(cascade = CascadeType.ALL)
 	private Set<City> cities = new HashSet<City>();
 	
+	@Column
+	private String name;
+	
 	/**
 	 * Map : cells are nodes, and map is represented with a directed/weighted graph
 	 */
@@ -42,7 +45,8 @@ public class World extends AbstractEntity {
 	@Column
 	private int height;
 	
-	public World(int width, int height) {
+	public World(String name, int width, int height) {
+		this.setName(name);
 		this.setWidth(width);
 		this.setHeight(height);
 	}

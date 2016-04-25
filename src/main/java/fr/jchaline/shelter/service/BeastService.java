@@ -22,9 +22,12 @@ public class BeastService {
 	
 	/**
 	 * TODO : rules for making beasts group....
-	 * @return
+	 * Create a group (List) of beast
+	 * @param teamSize The size of the team which confront the beasts group
+	 * @param avgLevel The avg level of the team
+	 * @return The group
 	 */
-	public List<Beast> makeGroup(int size, double avgLevel) {
+	public List<Beast> makeGroup(int teamSize, double avgLevel) {
 		//1 : compute level
 		
 		//2 : compute group size
@@ -34,7 +37,7 @@ public class BeastService {
 		List<Beast> range = beastDao.findByLevelBetween(1, (int) avgLevel + 10);
 		
 		List<Beast> asList = new ArrayList<>();
-		for (int i = 0; i < size + new Random().nextInt(size); i++) {
+		for (int i = 0; i < teamSize + new Random().nextInt(teamSize); i++) {
 			Beast clone = new Beast();
 			BeanUtils.copyProperties(AlgoUtils.rand(range), clone);
 			asList.add(clone);

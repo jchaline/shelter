@@ -30,6 +30,8 @@ public class ShelterConstants {
 	public static final int I_LEVEL_PER_LEVEL = 5;
 	//nb level less than required level for compute ilevel
 	public static final int NB_LEVEL_RANGE = 5;
+	// minimum level required to equip item
+	public static final int MIN_ITEM_LEVEL = 1;
 	
 	
 	

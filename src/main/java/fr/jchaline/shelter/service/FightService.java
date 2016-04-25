@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.jchaline.shelter.dao.SuitDao;
+import fr.jchaline.shelter.dao.WeaponDao;
 import fr.jchaline.shelter.domain.Beast;
 import fr.jchaline.shelter.domain.Dweller;
 import fr.jchaline.shelter.domain.Suit;
@@ -27,8 +29,14 @@ public class FightService {
 	@Autowired
 	private ItemService itemService;
 	
+	@Autowired
+	private WeaponDao weaponDao;
+
+	@Autowired
+	private SuitDao suitDao;
+	
 	/**
-	 * compute the fight
+	 * Compute the fight
 	 * @param team The player team
 	 * @param opponent The beast group
 	 */
@@ -38,20 +46,24 @@ public class FightService {
 		messageService.push("Team %d meet a beasts group ! Size %d, from level %d to %d", team.getId(), opponent.size(), summaryStatistics.getMin(), summaryStatistics.getMax());
 	}
 	
+	/**
+	 * Loot an item for a team, and add it to random teammate
+	 * @param team The team
+	 */
 	public void loot(Team team) {
-		int avgLevel = (int)team.getDwellers().stream().mapToInt(Dweller::getLevel).summaryStatistics().getAverage();
+		int avgLevel = (int) Math.ceil(team.getDwellers().stream().mapToInt(Dweller::getLevel).summaryStatistics().getAverage());
 		Suit randSuit = itemService.randSuit(avgLevel);
 		Weapon randWeapon = itemService.randWeapon(avgLevel);
 		team.getDwellers().stream().findAny().ifPresent(dweller -> {
-			dweller.getItems().add(randSuit);
-			dweller.getItems().add(randWeapon);
+			dweller.getItems().add(suitDao.save(randSuit));
+			dweller.getItems().add(weaponDao.save(randWeapon));
 		});
 	}
 	
 	/**
-	 * 
-	 * @param aTeam The attack Team
-	 * @param dTeam The defense Team
+	 * Compute the fight
+	 * @param team The attack team
+	 * @param team The defense team
 	 */
 	public void fight(Team aTeam, Team dTeam) {
 		LOGGER.info("Fight between {} and {}", aTeam, dTeam);

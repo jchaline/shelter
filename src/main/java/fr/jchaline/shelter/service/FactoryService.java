@@ -147,22 +147,26 @@ public class FactoryService {
 	}
 
 	/**
-	 * Initialisation du "Monde physique", création des villes et génération de bâtiments
+	 * Create world map, randomize, with cities, water, and rock
 	 */
 	private World initWorld() {
 		LOGGER.info("Start init World");
 		
-		World w = new World(CITIES_LIST_DEV.size() * 2, CITIES_LIST_DEV.size() * 2);
+		World w = new World(WorldService.TERRE_1, CITIES_LIST_DEV.size() * 2, CITIES_LIST_DEV.size() * 2);
 		
+		//generate empty cells
 		for (int x = 0; x < w.getWidth(); x++) {
 			for (int y = 0; y < w.getHeight(); y++) {
+				CellOccupant empty = new CellOccupant("empty", CellEnum.EMPTY);
 				w.setCell(x, y, new MapCell(x + "_" + y, x, y));
+				w.getCell(x, y).setOccupant(empty);
 			}
 		}
 		
 		List<Integer> xAxisPick = Stream.iterate(0, n  ->  n  + 1).limit(w.getWidth()).collect(Collectors.toList());
 		List<Integer> yAxisPick = Stream.iterate(0, n  ->  n  + 1).limit(w.getHeight()).collect(Collectors.toList());
 
+		//get list of each cells
 		List<Pair<Integer, Integer>> listPos = new ArrayList<>();
 		xAxisPick.forEach(x -> {
 			yAxisPick.forEach(y -> {
@@ -170,38 +174,8 @@ public class FactoryService {
 			});
 		});
 		
-		CITIES_LIST_DEV
-			.stream()
-			.map(s -> new City(s))
-			.forEach( c -> {
-				Arrays.asList("School", "Market", "Tower").forEach( s -> {
-					c.addSpot(new Spot(s));
-				});
-				Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
-				w.getCell(pos.getLeft(), pos.getRight()).setOccupant(c);;
-				w.getCities().add(c);
-			});
-		
-		int percentRock = 10;
-		int percentWater = 30;
-		
-		for (int i = 0; i < w.getHeight() * w.getHeight() * percentRock / 100; i++) {
-			Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
-			CellOccupant rock = new CellOccupant("rock" + i, CellEnum.ROCK);
-			w.getCell(pos.getLeft(), pos.getRight()).setOccupant(rock);
-		}
-
-		for (int i = 0; i < w.getHeight() * w.getHeight() * percentWater / 100; i++) {
-			Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
-			CellOccupant water = new CellOccupant("water" + i, CellEnum.WATER);
-			w.getCell(pos.getLeft(), pos.getRight()).setOccupant(water);
-		}
-		
-		//for the other pos, create empty occupant
-		listPos.forEach(pos -> {
-			CellOccupant empty = new CellOccupant("empty", CellEnum.EMPTY);
-			w.getCell(pos.getLeft(), pos.getRight()).setOccupant(empty);
-		});
+		addCities(w, listPos, CITIES_LIST_DEV);
+		addWaterAndRocks(w, listPos, 30, 10);
 		
 		//create edges between vertex
 		w.setEdges(mapService.createEdges(w));
@@ -210,10 +184,51 @@ public class FactoryService {
 	}
 
 	/**
+	 * Add water and rock to the world
+	 * @param world The world
+	 * @param listPos The available positions
+	 * @param percentWater The water percent
+	 * @param percentRock The rock percent
+	 */
+	private void addWaterAndRocks(World world, List<Pair<Integer, Integer>> listPos, int percentWater, int percentRock) {
+		for (int i = 0; i < world.getHeight() * world.getHeight() * percentRock / 100; i++) {
+			Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
+			CellOccupant rock = new CellOccupant("rock" + i, CellEnum.ROCK);
+			world.getCell(pos.getLeft(), pos.getRight()).setOccupant(rock);
+		}
+
+		for (int i = 0; i < world.getHeight() * world.getHeight() * percentWater / 100; i++) {
+			Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
+			CellOccupant water = new CellOccupant("water" + i, CellEnum.WATER);
+			world.getCell(pos.getLeft(), pos.getRight()).setOccupant(water);
+		}
+	}
+
+	/**
+	 * Add cities to the world
+	 * @param world The world
+	 * @param listPos The available positions
+	 * @param cities The cities
+	 */
+	private void addCities(World world, List<Pair<Integer, Integer>> listPos, List<String> cities) {
+		cities
+			.stream()
+			.map(s -> new City(s))
+			.forEach( c -> {
+				Arrays.asList("School", "Market", "Tower").forEach( s -> {
+					c.addSpot(new Spot(s));
+				});
+				Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
+				world.getCell(pos.getLeft(), pos.getRight()).setOccupant(c);;
+				world.getCities().add(c);
+			});
+	}
+
+	/**
 	 * Create data for a player
 	 * @throws Exception 
 	 */
-	public void createData() throws Exception {
+	public void createData() {
 		LOGGER.info("begin create Data");
 		
 		//create a player with the player's shelter
@@ -232,7 +247,7 @@ public class FactoryService {
 	 * @param player
 	 * @throws Exception 
 	 */
-	private void createDwellers(Player player) throws Exception {
+	private void createDwellers(Player player) {
 		List<MapCell> cellCities = mapCellDao.findAll().stream().filter(c -> CellEnum.CITY.equals(c.getOccupant().getType())).collect(Collectors.toList());
 		Dweller simon = new Dweller(true, "Adebisi", "Simon", specialService.randForDweller(7));
 		simon.setLevel(2);

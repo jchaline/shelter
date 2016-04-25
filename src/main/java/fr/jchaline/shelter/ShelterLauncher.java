@@ -13,7 +13,7 @@ public class ShelterLauncher {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShelterLauncher.class);
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		ConfigurableApplicationContext ctx = SpringApplication.run(ShelterLauncher.class, args);
 		
 		FactoryService factory = ctx.getBean(FactoryService.class);

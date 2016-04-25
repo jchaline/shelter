@@ -37,7 +37,7 @@ final public class AlgoUtils {
 	 * @return La liste des valeurs relatives.
 	 * @throws Exception en cas d'erreur lors de la répartition
 	 */
-	public static List<Integer> nseat(final int nseats, final List<Integer> valeurs) throws Exception {
+	public static List<Integer> nseat(final int nseats, final List<Integer> valeurs) throws RuntimeException {
 		int somme = valeurs.stream().reduce(0, (a,b) -> {return a+b;});
 		//si la somme est égal à 0, les pourcentages sont définis à 0 donc on 
 		if (somme == 0) return valeurs;
@@ -82,6 +82,6 @@ final public class AlgoUtils {
 			}
 		}
 		
-		throw new Exception("Error while process nseat");
+		throw new RuntimeException("Error while process nseat");
 	}
 }

@@ -68,7 +68,7 @@ public class TeamService {
 	
 	@Transactional(readOnly = false)
 	@Scheduled(fixedDelay = ShelterConstants.TEAM_EXPLORE)
-	public void updateExploring() {
+	public void scheduleExploring() {
 		LOGGER.trace("update exploring for all team");
 		
 		//find team and compute event
@@ -79,12 +79,41 @@ public class TeamService {
 	
 	@Transactional(readOnly = false)
 	@Scheduled(fixedDelay = ShelterConstants.TEAM_EXPLORE)
-	public void updateReturn() {
+	public void scheduleReturn() {
 		LOGGER.trace("update return for all team");
 		
 		//find team and compute event
 		teamDao.findByDuty(dutyDao.findByName(Duty.RETURN)).stream().forEach(it -> {
 			computeExplore(it);
+		});
+	}
+	
+	@Transactional(readOnly = false)
+	@Scheduled(fixedDelay = ShelterConstants.TEAM_FIGHT)
+	public void scheduleFight() {
+		LOGGER.trace("update fighting for all team");
+		
+		//find team and compute event
+		teamDao.findByDuty(dutyDao.findByName(Duty.FIGHT)).stream().forEach(team -> {
+			
+			tryToMove(team, team.getTarget());
+			if (team.getCurrent().equals(team.getTarget())) {
+				team.setDuty(null);
+				team.setTarget(null);
+			}
+			
+			//TODO : second step, fight !
+		});
+	}
+	
+	@Transactional(readOnly = false)
+	@Scheduled(fixedDelay = ShelterConstants.TEAM_RECRUITMENT)
+	public void scheduleRecruitment() {
+		LOGGER.trace("update recruitment for all team");
+		
+		//find team and compute event
+		teamDao.findByDuty(dutyDao.findByName(Duty.RECRUITMENT)).stream().forEach(it -> {
+			computeRecruitment(it);
 		});
 	}
 	
@@ -126,17 +155,6 @@ public class TeamService {
 		}
 	}
 
-	@Transactional(readOnly = false)
-	@Scheduled(fixedDelay = ShelterConstants.TEAM_RECRUITMENT)
-	public void updateRecruitment() {
-		LOGGER.trace("update recruitment for all team");
-		
-		//find team and compute event
-		teamDao.findByDuty(dutyDao.findByName(Duty.RECRUITMENT)).stream().forEach(it -> {
-			computeRecruitment(it);
-		});
-	}
-
 	private void computeRecruitment(Team team) {
 		//LocalDateTime now = LocalDateTime.now();
 		//first, move to the target cell. The farthest you will go, the luckiest you will be
@@ -144,24 +162,6 @@ public class TeamService {
 		//when arrive, search to recruit
 		
 		//check if event should happen
-	}
-
-	@Transactional(readOnly = false)
-	@Scheduled(fixedDelay = ShelterConstants.TEAM_FIGHT)
-	public void updateFight() {
-		LOGGER.trace("update fighting for all team");
-		
-		//find team and compute event
-		teamDao.findByDuty(dutyDao.findByName(Duty.FIGHT)).stream().forEach(team -> {
-			
-			tryToMove(team, team.getTarget());
-			if (team.getCurrent().equals(team.getTarget())) {
-				team.setDuty(null);
-				team.setTarget(null);
-			}
-			
-			//TODO : second step, fight !
-		});
 	}
 	
 	/**

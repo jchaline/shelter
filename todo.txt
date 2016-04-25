@@ -5,6 +5,7 @@ tech :
  - test lombok equals generated for superclass like weapon (does it use item name to compare ?)
  - throw functionnals exceptions (buy room without enough money, ...) and manage display with angular
  - metrics
+ - externalize configuration
  - i18n messages
  - create VM, add jenkins & sonar
  - integration test 
@@ -17,6 +18,8 @@ tech :
  
 game : 
  - generation map : Add spot to cities
+ - generation map : generate square (empty), then generate water (shape), then add some rock
+ - add vehicles : team only can own vehicle, but vehicles had size limit
  - building with resources capacity to limit food, water, ...
  - improve notion of "room size" => cells uses & dwellers capacity...
  - water & food use to "create" and train dwellers

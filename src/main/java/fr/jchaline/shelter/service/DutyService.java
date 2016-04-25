@@ -20,6 +20,10 @@ public class DutyService {
 		return dutyDao.findAll();
 	}
 
+	/**
+	 * Find all the action duties
+	 * @return The action duties
+	 */
 	public List<Duty> listAction() {
 		return dutyDao.findByAction(true);
 	}

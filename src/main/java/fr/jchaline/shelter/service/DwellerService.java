@@ -44,7 +44,12 @@ public class DwellerService {
 		return dao.findAll(pageRequest);
 	}
 	
-	public Dweller generate() throws Exception {
+	/**
+	 * Generate random dweller
+	 * @return the dweller
+	 * @throws Exception 
+	 */
+	public Dweller generate() {
 		boolean male = new Random().nextBoolean();
 		String name = AlgoUtils.rand(NAMES);
 		String firstname = AlgoUtils.rand(male ? MALE_FIRSTNAMES : FEMALE_FIRSTNAMES);

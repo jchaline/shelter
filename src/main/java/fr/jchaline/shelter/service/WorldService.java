@@ -17,6 +17,8 @@ public class WorldService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(WorldService.class);
 	
+	public static final String TERRE_1 = "Terre1";
+	
 	@Autowired
 	private WorldDao dao;
 	
@@ -31,12 +33,12 @@ public class WorldService {
 	 */
 	public World get(String username) {
 		LOGGER.trace("Load world for {}", username);
-		World world = dao.findAll().get(0);
+		World world = dao.findByName(TERRE_1);
 		return world;
 	}
 	
 	public World get() {
-		return dao.findAll().get(0);
+		return dao.findByName(TERRE_1);
 	}
 
 	public MapCell findCell(long cellId) {

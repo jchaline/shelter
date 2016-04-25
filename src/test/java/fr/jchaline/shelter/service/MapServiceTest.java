@@ -31,7 +31,7 @@ public class MapServiceTest {
 
 	@Before
 	public void before() {
-		WORLD_TEST = new World(30, 30);
+		WORLD_TEST = new World("terre2", 30, 30);
 
 		CellOccupant empty = new CellOccupant("empty", CellEnum.EMPTY);
 		for (int x = 0; x < WORLD_TEST.getWidth(); x++) {

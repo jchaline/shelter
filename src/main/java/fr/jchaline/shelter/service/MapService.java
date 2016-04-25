@@ -92,7 +92,6 @@ public class MapService {
 	}
 	
 	/**
-	 * TODO : don't use empty occupant for green, create type of and leave empty occupant for other purpose
 	 * @param from
 	 * @param to
 	 * @return

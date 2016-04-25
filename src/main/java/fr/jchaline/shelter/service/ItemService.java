@@ -52,26 +52,41 @@ public class ItemService {
 		return suitDao.findAll();
 	}
 
+	/**
+	 * Randomize a Weapon for a specific required level
+	 * @param requiredLevel The required level to use the weapon
+	 * @return The random weapon
+	 */
 	public Weapon randWeapon(int requiredLevel) {
-		int iLevel = randILevel(requiredLevel);
+		int iLevel = randItemLevel(requiredLevel);
 		// 2) rand object
 		Triplet<String, Integer, Integer> w = AlgoUtils.rand(WEAPONS_LIST);
 		// 3) make object with ilvl
 		return new Weapon(w.getValue0(), w.getValue1() * iLevel, w.getValue2() * iLevel, iLevel, requiredLevel);
 	}
 
+	/**
+	 * Randomize a Suit for a specific required level
+	 * @param requiredLevel The required level to use the suit
+	 * @return The random suit
+	 */
 	public Suit randSuit(int requiredLevel) {
-		int iLevel = randILevel(requiredLevel);
+		int iLevel = randItemLevel(requiredLevel);
 		// 2) rand object
 		Pair<String, Integer> s = AlgoUtils.rand(SUITS_LIST);
 		// 3) make object with ilvl
 		return new Suit(s.getValue0(), s.getValue1() * iLevel, iLevel, requiredLevel);
 	}
 
-	private int randILevel(int requiredLevel) {
+	/**
+	 * Randomize an item level with required level
+	 * @param requiredLevel The required level to use the item
+	 * @return The item levle
+	 */
+	private int randItemLevel(int requiredLevel) {
 		// 1) rand ilvl with requiredLevel
 		int iLevelBonus = new Random().nextInt(ShelterConstants.I_LEVEL_PER_LEVEL * ShelterConstants.NB_LEVEL_RANGE);
-		int iLevelMin = (requiredLevel - ShelterConstants.NB_LEVEL_RANGE) * ShelterConstants.I_LEVEL_PER_LEVEL;
+		int iLevelMin = Math.max(ShelterConstants.MIN_ITEM_LEVEL, requiredLevel - ShelterConstants.NB_LEVEL_RANGE) * ShelterConstants.I_LEVEL_PER_LEVEL;
 		int iLevel = iLevelBonus + iLevelMin;
 		return iLevel;
 	}
