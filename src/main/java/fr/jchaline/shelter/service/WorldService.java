@@ -1,5 +1,8 @@
 package fr.jchaline.shelter.service;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +34,38 @@ public class WorldService {
 	 * @param username
 	 * @return
 	 */
-	public World get(String username) {
+	public World get(String username, int xcenter, int ycenter) {
 		LOGGER.trace("Load world for {}", username);
 		World world = dao.findByName(TERRE_1);
+		return limit(world, xcenter, ycenter);
+	}
+
+	/**
+	 * Remove element to the world to limit the data transfert
+	 * @param world The world to limit
+	 * @param x The map view center xaxis
+	 * @param y The map view center yaxis
+	 * @return
+	 */
+	public World limit(World world, int x, int y) {
+		int width = 40;
+		int height = 40;//TODO : to constant
+		
+		LOGGER.info("world size before : {}", world.getMap().size());
+		
+		Iterator<Entry<String, MapCell>> iterator = world.getMap().entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<String, MapCell> entry = iterator.next();
+			if (Math.abs(entry.getValue().getXaxis() - x) > width / 2 || Math.abs(entry.getValue().getYaxis() - y) > height / 2) {
+				iterator.remove();
+			}
+		}
+		
+		//unused by client
+		world.setEdges(null);
+
+		LOGGER.info("world size after : {}", world.getMap().size());
+		
 		return world;
 	}
 	

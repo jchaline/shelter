@@ -17,8 +17,9 @@ tech :
  - improve perf ... example : get citis list instead of world object, and get each city one by one
  
 game : 
+ - /!\ Optimize the world data transfert (get view center and limit cells send)
  - generation map : Add spot to cities
- - generation map : generate square (empty), then generate water (shape), then add some rock
+ - generation map : generate square (empty), then generate water (shape), then add some rock (remove circular map fonctionnality)
  - add vehicles : team only can own vehicle, but vehicles had size limit
  - building with resources capacity to limit food, water, ...
  - improve notion of "room size" => cells uses & dwellers capacity...

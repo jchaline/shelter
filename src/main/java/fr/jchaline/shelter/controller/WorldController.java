@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.jchaline.shelter.domain.MapCell;
@@ -20,8 +21,8 @@ public class WorldController extends AbstractShelterController {
 	private WorldService service;
 
 	@RequestMapping("/get")
-	public World get(@AuthenticationPrincipal User activeUser) {
-		return service.get(activeUser.getUsername());
+	public World get(@AuthenticationPrincipal User activeUser, @RequestParam int xcenter, @RequestParam int ycenter) {
+		return service.get(activeUser.getUsername(), xcenter, ycenter);
 	}
 
 	@RequestMapping("/cell/{cellId}")

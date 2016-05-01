@@ -152,7 +152,7 @@ public class FactoryService {
 	private World initWorld() {
 		LOGGER.info("Start init World");
 		
-		World w = new World(WorldService.TERRE_1, CITIES_LIST_DEV.size() * 2, CITIES_LIST_DEV.size() * 2);
+		World w = new World(WorldService.TERRE_1, CITIES_LIST_DEV.size() * 5, CITIES_LIST_DEV.size() * 5);
 		
 		//generate empty cells
 		for (int x = 0; x < w.getWidth(); x++) {

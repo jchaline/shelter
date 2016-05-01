@@ -77,12 +77,12 @@ public class MapService {
 			for (int y = 0; y < world.getHeight(); y++) {
 				MapCell cell = world.getCell(x, y);
 				
-				List<MapCell> neighbours = Arrays.asList(world.getCell(Math.floorMod((x + 1), world.getWidth()), y), 
-														world.getCell(Math.floorMod((x - 1), world.getWidth()), y),
-														world.getCell(x, Math.floorMod((y + 1), world.getHeight())),
-														world.getCell(x, Math.floorMod((y - 1), world.getHeight())));
+				List<MapCell> neighbours = Arrays.asList(world.getCell(x + 1, y), 
+														world.getCell(x - 1, y),
+														world.getCell(x, y + 1),
+														world.getCell(x, y - 1));
 				
-				neighbours.forEach(n -> {
+				neighbours.stream().filter(n -> n != null).forEach(n -> {
 					Optional<MapEdge> edge = createEdge(cell, n);
 					edge.ifPresent(e -> edges.add(e));
 				});

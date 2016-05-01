@@ -268,6 +268,11 @@ public class TeamService {
 		if (targetCell == null) {
 			throw new BusinessException("Target doesn't exist !");
 		}
+		
+		LocalDateTime beforePath = LocalDateTime.now();
+		Optional<List<MapCell>> pathOpt = mapService.computePath(worldService.get(), team.getCurrent(), targetCell);
+		LocalDateTime afterPath = LocalDateTime.now();
+		LOGGER.info("Find path ({}) for duty in {} seconds", pathOpt.isPresent(), Duration.between(beforePath, afterPath).getSeconds());
 
 		LocalDateTime start = LocalDateTime.now();
 		team.setBegin(start);

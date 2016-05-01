@@ -60,7 +60,9 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 
 	//update the world map with server data
 	function updateWorld() {
-		httpService.getData("/world/get").then(function(world) {
+		var xcenter = $scope.worldMap ? $scope.worldMap.center.x : 25
+		var ycenter = $scope.worldMap ? $scope.worldMap.center.y : 25
+		httpService.getData("/world/get", {'xcenter': xcenter || 0, 'ycenter': ycenter}).then(function(world) {
 			$scope.world = world
 			
 			$scope.worldMap = worldService.updateMapWithWorld($scope.world, $scope.worldMap)
