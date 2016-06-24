@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.jchaline.shelter.config.ShelterConstants;
 import fr.jchaline.shelter.dao.BeastDao;
 import fr.jchaline.shelter.dao.DutyDao;
+import fr.jchaline.shelter.dao.DwellerDao;
 import fr.jchaline.shelter.dao.FloorDao;
 import fr.jchaline.shelter.dao.MapCellDao;
 import fr.jchaline.shelter.dao.PlayerDao;
@@ -63,6 +64,9 @@ public class FactoryService {
 	
 	@Autowired
 	private PlayerDao playerDao;
+
+	@Autowired
+	private DwellerDao dwellerDao;
 	
 	@Autowired
 	private DutyDao dutyDao;
@@ -113,7 +117,7 @@ public class FactoryService {
 	 */
 	private void initBestiary() {
 		LOGGER.info("init bestiary");
-		List<Beast> beasts = Arrays.asList(new Beast("walker", 5, 2, 10, 3), new Beast("runner", 5, 5, 20, 11), new Beast("tanker", 10, 1, 50, 50));
+		List<Beast> beasts = Arrays.asList(new Beast("walker hurt", 5, 2, 1), new Beast("walker", 5, 2, 3), new Beast("walker armored", 5, 2, 5), new Beast("runner hurt", 5, 5, 8), new Beast("runner", 5, 5, 11), new Beast("tanker", 10, 1, 50));
 		
 		beasts.forEach(b -> {
 			beastDao.save(b);
@@ -281,7 +285,8 @@ public class FactoryService {
 				).stream()
 			.forEach(d -> {
 				d.setMapCell(AlgoUtils.rand(cellCities));
-				player.getShelter().getDwellers().add(d);
+				d.setPlayer(player);
+				dwellerDao.save(d);
 			});
 		LOGGER.info("Dweller generate over.");
 	}

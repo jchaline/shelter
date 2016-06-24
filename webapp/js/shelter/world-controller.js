@@ -40,8 +40,9 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	//move the displayed map
 	$scope.moveMap = function(vx, vy) {
 		worldService.updateCenter($scope.worldMap, vx, vy)
-		worldService.drawMap($scope.worldMap)
-		worldService.drawDwellers($scope.dwellers)
+		var thenDo = function(){worldService.drawMap($scope.worldMap); worldService.drawDwellers($scope.dwellers)}
+		updateWorld()
+		thenDo()
 	}
 	
 	$scope.showTeamDetail = function(teamId) {
@@ -58,8 +59,8 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 		})
 	}
 
-	//update the world map with server data
-	function updateWorld() {
+	//update the world map with server data, run thenDo after if function is given
+	function updateWorld(thenDo) {
 		var xcenter = $scope.worldMap ? $scope.worldMap.center.x : 25
 		var ycenter = $scope.worldMap ? $scope.worldMap.center.y : 25
 		httpService.getData("/world/get", {'xcenter': xcenter || 0, 'ycenter': ycenter}).then(function(world) {
@@ -71,6 +72,9 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			
 			updateDwellers()
 			updateTeams(false)
+			if (_.isFunction(thenDo)) {
+				thenDo()
+			}
 		})
 	}
 	
@@ -106,7 +110,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			$scope.duties = duties
 		})
 		
-		$(rootDiv).on('click', '.cell', function() {
+		$(rootDiv).on('click', '.cell:not(.void)', function() {
 			updateCell($(this).attr('data-cell-id'))
 		})
 	}
@@ -136,3 +140,24 @@ app.filter('formatTime', function() {
 		return (!!input) ? (input < 10 ? '0' + input : input) : '';
 	}
 })
+
+//html standard drag'n'drop
+function dragTeamStart(event) {
+	event.dataTransfer.setData("teamId", $(event.target).attr('data-team-id'));
+}
+
+function allowDrop(event) {
+	event.preventDefault();
+}
+
+function drop(event) {
+	event.preventDefault();
+	var teamId = event.dataTransfer.getData("teamId");
+	var target = event.target
+	var xaxis = $(target).attr('data-xaxis')
+	var yaxis = $(target).attr('data-yaxis')
+	if (teamId) {
+		$('#xaxis_' + teamId).val(xaxis)
+		$('#yaxis_' + teamId).val(yaxis)
+	}
+}

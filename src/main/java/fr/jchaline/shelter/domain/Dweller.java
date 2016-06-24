@@ -1,6 +1,7 @@
 package fr.jchaline.shelter.domain;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import fr.jchaline.shelter.enums.JobEnum;
+import fr.jchaline.shelter.enums.SpecialEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -27,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper = false, exclude={"team"})
 @NoArgsConstructor
-public class Dweller extends AbstractEntity {
+public class Dweller extends AbstractEntity implements Fighter {
 	
 	@Column(nullable = false)
 	private Boolean male;
@@ -47,6 +49,14 @@ public class Dweller extends AbstractEntity {
 	@Column(nullable = false)
 	@Min(0)
 	private int experience;
+	
+	@Column(nullable = false)
+	@Min(0)
+	private int life;
+
+	@Column(nullable = false)
+	@Min(0)
+	private int maxLife;
 	
 	@OneToMany
 	private List<Item> items;
@@ -72,6 +82,10 @@ public class Dweller extends AbstractEntity {
 	@ManyToOne(optional = false)
 	private MapCell mapCell;
 	
+	
+	@ManyToOne(optional = false)
+	private Player player;
+	
 	public Dweller(boolean male, String name, String firstname, Special special){
 		this.setMale(male);
 		this.setName(name);
@@ -79,6 +93,8 @@ public class Dweller extends AbstractEntity {
 		this.setLevel(1);
 		this.setExperience(0);
 		this.setSpecial(special);
+		this.updateMaxLife();
+		this.setLife(this.getMaxLife());
 	}
 	
 	public String toString() {
@@ -92,5 +108,53 @@ public class Dweller extends AbstractEntity {
 		sb.append(", level : ");
 		sb.append(this.getLevel());
 		return sb.toString();
+	}
+
+	@Override
+	public int attackPerTurn() {
+		return (int) Math.ceil(special.getValue(SpecialEnum.A) / 3) + 1;
+	}
+
+	@Override
+	public int computeDamage(Fighter target) {
+		int result = special.getValue(SpecialEnum.S) * (15 + level);
+		if (weapon != null) {
+			result += weapon.getDamage();
+		}
+		//rand coeff 0.8 to 1.2
+		double randomBonusMalus = new Random().nextDouble() * 0.4 - 0.2;
+		result += (int) Math.ceil(result * randomBonusMalus);
+		
+		//can critic with perception : 100% with 20 perception, 50% with 10
+		int criticRand = new Random().nextInt(20) + 1;
+		if (criticRand - special.getValue(SpecialEnum.P) < 0) {
+			result *= 2;
+		}
+		
+		return result;
+	}
+	
+	public int getSpeed() {
+		return special.getValue(SpecialEnum.A);
+	}
+
+	@Override
+	public void takeDamage(int damage) {
+		life = Math.max(0, life - damage);
+	}
+	
+	private void updateMaxLife() {
+		maxLife = level * 30;
+	}
+	
+	public void takeExperience(int experience) {
+		//TODO : improve increase level formula
+		experience += experience;
+		int levelUp = (int) (level * 5 + Math.pow(level, 2));
+		while (experience >= levelUp) {
+			experience -= levelUp;
+			level++;
+			levelUp = (int) (level * 5 + Math.pow(level, 2));
+		}
 	}
 }

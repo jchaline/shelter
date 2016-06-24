@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
-public class Beast extends AbstractEntity {
+public class Beast extends AbstractEntity implements Fighter{
 	
 	@Column(unique = true, nullable = false)
 	@NotBlank
@@ -38,11 +38,31 @@ public class Beast extends AbstractEntity {
 	@Min(1)
 	private int level;
 	
-	public Beast(String name, int attack, int speed, int life, int level) {
+	public Beast(String name, int attack, int speed, int level) {
 		this.setName(name);
 		this.setAttack(attack);
 		this.setSpeed(speed);
 		this.setLife(life);
 		this.setLevel(level);
+		this.updateMaxLife();
+	}
+
+	@Override
+	public int attackPerTurn() {
+		return (int) Math.ceil(speed / 3) + 1;
+	}
+
+	@Override
+	public int computeDamage(Fighter target) {
+		return attack;
+	}
+
+	@Override
+	public void takeDamage(int damage) {
+		life = Math.max(0, life - damage);
+	}
+	
+	private void updateMaxLife() {
+		life = level * 30;
 	}
 }

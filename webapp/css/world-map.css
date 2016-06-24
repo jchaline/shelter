@@ -62,8 +62,8 @@
 	float:left;
 }
 
-.empty{
-	background-color:green;
+.cboth{
+	clear: both;
 }
 
 .city{
@@ -77,6 +77,9 @@
 }
 .empty{
 	background-color:green;
+}
+.void{
+	background-color:black;
 }
 
 .teamIco{

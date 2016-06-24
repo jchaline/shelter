@@ -2,6 +2,8 @@ package fr.jchaline.shelter.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.IntSummaryStatistics;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -148,7 +150,7 @@ public class TeamService {
 					});
 					
 					if (!pathOpt.isPresent()) {
-						messageService.push("No path to current target of team " + team.getId() + "...");
+						messageService.push("No path to current target of team %d ...", team.getId());
 					}
 				}
 			});
@@ -185,7 +187,7 @@ public class TeamService {
 			double random = Math.random();
 			if (random > 0.5) {
 				happenFight(team);
-			} else if (random > 0.15) {
+			} else if (random < 0.15) {
 				happenLoot(team);
 			}
 			team.setLastEvent(now);
@@ -197,7 +199,8 @@ public class TeamService {
 	 * @param team The team
 	 */
 	private void happenLoot(Team team) {
-		fightService.loot(team);
+		messageService.push("Team %d find loot !", team.getId());
+		//fightService.loot(team);
 	}
 	
 	/**
@@ -205,8 +208,33 @@ public class TeamService {
 	 * @param team The team
 	 */
 	private void happenFight(Team team) {
-		List<Beast> beastGroup = beastService.makeGroup(team.getDwellers().size(), team.getDwellers().stream().mapToInt(Dweller::getLevel).summaryStatistics().getAverage());
+		List<Beast> beastGroup = beastService.makeGroup(team);
+		
+		IntSummaryStatistics summaryStatistics = beastGroup.stream().mapToInt(Beast::getLevel).summaryStatistics();
+		messageService.push("Team %d meet a beasts group ! Size %d, from level %d to %d", team.getId(), beastGroup.size(), summaryStatistics.getMin(), summaryStatistics.getMax());
+
 		fightService.fight(team, beastGroup);
+		
+		Iterator<Dweller> iterator = team.getDwellers().iterator();
+		while (iterator.hasNext()) {
+			Dweller next = iterator.next();
+			if (next.getLife() <= 0) {
+				dwellerDao.delete(next);
+				iterator.remove();
+			}
+		};
+		
+		
+		//if all dwellers dies, stop the move, remove the team
+		if (team.getDwellers().isEmpty()) {
+			messageService.push("The team %d loose the fight ...", team.getId());
+			teamDao.delete(team);
+		} else {
+			int exp = beastGroup.stream().mapToInt(b -> b.computeExperience()).sum();
+			int eachExp = (int) exp / team.getDwellers().size();
+			team.getDwellers().forEach(d->d.takeExperience(eachExp));
+			messageService.push("The team %d win the fight !", team.getId());
+		}
 	}
 	
 	/**

@@ -1,9 +1,7 @@
 package fr.jchaline.shelter.domain;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
@@ -33,9 +31,6 @@ public class Shelter extends AbstractEntity {
 	@OneToMany(cascade = CascadeType.ALL)
 	@MapKey(name = "number")
 	private Map<Integer, Floor> floors = new HashMap<Integer, Floor>();
-	
-	@OneToMany(cascade = CascadeType.ALL)
-	private List<Dweller> dwellers = new ArrayList<Dweller>();
 	
 	@Column(nullable = false)
 	@Min(0)

@@ -18,6 +18,10 @@ tech :
  
 game : 
  - /!\ Optimize the world data transfert (get view center and limit cells send)
+ - /!\ experience, lvl up : implement mathematical formula for the xp and the level
+ - build unit, improve unit with room improvement like STR
+ - add strategy for team : attack lower hp, lower lvl, ...
+ - add strategy for dweller : when take potion (if carry) ?
  - generation map : Add spot to cities
  - generation map : generate square (empty), then generate water (shape), then add some rock (remove circular map fonctionnality)
  - add vehicles : team only can own vehicle, but vehicles had size limit

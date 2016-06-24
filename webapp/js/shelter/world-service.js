@@ -37,8 +37,9 @@ app.service("worldService", function( $q ) {
 	
 	//update map center view
 	function updateCenter(map, vx, vy) {
-		map.center.x = map.center.x + vx
-		map.center.y = map.center.y + vy
+		map.center.x = Math.min(Math.max(map.center.x + vx, 0), map.width - 1)
+		map.center.y = Math.min(Math.max(map.center.y + vy, 0), map.height - 1)
+		console.log("update center : " + map.center.x + "," + map.center.y)
 	}
 	
 	//Update the world Map, with new cells. Keep the center if exist, else, take the map absolute center
@@ -88,29 +89,23 @@ app.service("worldService", function( $q ) {
 		for (y = 0; y < nbCeilHeight; y++) {
 			for (x = 0; x < nbCeilWidth; x++) {
 				//détermination des identifiants des cellules affichés
-				var cell = $( $(worldMap.cells).get((x + xLeft) % nbCeilWidthTotal) ).get((y + yUp) % nbCeilHeightTotal)
-				var id = cell.xaxis + '_' + cell.yaxis
-				var cellType = cell.occupant.type.toLowerCase()
-				var div = '<div id="' + id + '" data-xaxis="' + cell.xaxis + '" data-yaxis="' + cell.yaxis + '" class="cell ' + cellType + '" data-cell-id="' + cell.id + '" title="' + id + '" ondrop="drop(event)" ondragover="allowDrop(event)""></div>'
-				$(rootDiv).append(div)
+				try {
+					var cellX = x + xLeft
+					var cellY = y + yUp
+					var cell = worldMap.cells[cellX][cellY]
+					var id = cell.xaxis + '_' + cell.yaxis
+					var cellType = cell.occupant.type.toLowerCase()
+					var div = '<div id="' + id + '" data-xaxis="' + cell.xaxis + '" data-yaxis="' + cell.yaxis + '" class="cell ' + cellType + '" data-cell-id="' + cell.id + '" title="' + id
+					div += '" ondrop="drop(event)" ondragover="allowDrop(event)">'
+					div += '</div>'
+					$(rootDiv).append(div)
+				} catch (e) {
+					//console.log("try to display cell at (" + x + "," + y + ") , cannot find")
+					var div = '<div class="cell void"></div>'
+					$(rootDiv).append(div)
+				}
 			}
 		}
 	}
 })
 
-//html standard drag'n'drop
-function dragStart(event) {
-	event.dataTransfer.setData("teamId", $(event.target).attr('data-team-id'));
-}
-
-function allowDrop(event) {
-    event.preventDefault();
-}
-
-function drop(event) {
-    event.preventDefault();
-    var teamId = event.dataTransfer.getData("teamId");
-    var target = event.target
-    $('#xaxis_' + teamId).val($(target).attr('data-xaxis'))
-    $('#yaxis_' + teamId).val($(target).attr('data-yaxis'))
-}

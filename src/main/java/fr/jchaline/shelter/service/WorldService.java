@@ -22,6 +22,9 @@ public class WorldService {
 	
 	public static final String TERRE_1 = "Terre1";
 	
+	private static final int HEIGHT_MAP_LIMIT = 40;
+	private static final int WIDTH_MAP_LIMIT = 40;
+	
 	@Autowired
 	private WorldDao dao;
 	
@@ -48,15 +51,15 @@ public class WorldService {
 	 * @return
 	 */
 	public World limit(World world, int x, int y) {
-		int width = 40;
-		int height = 40;//TODO : to constant
-		
-		LOGGER.info("world size before : {}", world.getMap().size());
+		LOGGER.trace("world size before : {}", world.getMap().size());
 		
 		Iterator<Entry<String, MapCell>> iterator = world.getMap().entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, MapCell> entry = iterator.next();
-			if (Math.abs(entry.getValue().getXaxis() - x) > width / 2 || Math.abs(entry.getValue().getYaxis() - y) > height / 2) {
+			int pX = entry.getValue().getXaxis();
+			int pY = entry.getValue().getYaxis();
+			
+			if (Math.abs(pX - x) > WIDTH_MAP_LIMIT / 2 || Math.abs(pY - y) > HEIGHT_MAP_LIMIT / 2) {
 				iterator.remove();
 			}
 		}
@@ -64,7 +67,7 @@ public class WorldService {
 		//unused by client
 		world.setEdges(null);
 
-		LOGGER.info("world size after : {}", world.getMap().size());
+		LOGGER.trace("world size after : {}", world.getMap().size());
 		
 		return world;
 	}
