@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,6 +55,9 @@ public class FactoryService {
 	//private static final List<String> CITIES_LIST = Arrays.asList("Nantes", "Paris", "Metz", "Lyon", "Montpellier", "Barcelone", "Madrid", "Valence", "Seville", "Porto", "Lisonne", "Londre", "Manchester", "Glasgow", "Dublin", "Bruxelles", "Munich", "Berlin", "Moscou", "Pekin", "Tokyo", "Sydney", "New-York", "Los Angeles", "Washington", "Miami", "Seattle", "Rio", "Buenos Aires", "Pretoria", "Yaoundé", "Abuja", "Abidjan", "Dakar", "Rabat", "Alger", "Tunis", "Le Caire", "Bombay", "Seoul");
 	private static final List<String> CITIES_LIST_DEV = Arrays.asList("Nantes", "Barcelone", "Londre", "Munich", "Moscou", "Pekin", "Tokyo", "Sydney", "Buenos Aires", "Dakar");
 
+	private static final int WATER_NEIGHBORS_PERCENT = 20;
+	private static final int WATER_PERCENT = 5;
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FactoryService.class);
 	
 	@Autowired
@@ -156,7 +160,7 @@ public class FactoryService {
 	private World initWorld() {
 		LOGGER.info("Start init World");
 		
-		World w = new World(WorldService.TERRE_1, CITIES_LIST_DEV.size() * 5, CITIES_LIST_DEV.size() * 5);
+		World w = new World(WorldService.TERRE_1, CITIES_LIST_DEV.size() * 6, CITIES_LIST_DEV.size() * 6);
 		
 		//generate empty cells
 		for (int x = 0; x < w.getWidth(); x++) {
@@ -167,44 +171,76 @@ public class FactoryService {
 			}
 		}
 		
-		List<Integer> xAxisPick = Stream.iterate(0, n  ->  n  + 1).limit(w.getWidth()).collect(Collectors.toList());
-		List<Integer> yAxisPick = Stream.iterate(0, n  ->  n  + 1).limit(w.getHeight()).collect(Collectors.toList());
 
 		//get list of each cells
-		List<Pair<Integer, Integer>> listPos = new ArrayList<>();
-		xAxisPick.forEach(x -> {
-			yAxisPick.forEach(y -> {
-				listPos.add(Pair.of(x, y));
-			});
-		});
+		//random city, water & rock positions
+		//randomizeMapOccupants(w);
 		
-		addCities(w, listPos, CITIES_LIST_DEV);
-		addWaterAndRocks(w, listPos, 30, 10);
+		computeMapOccupants(w);
 		
 		//create edges between vertex
 		w.setEdges(mapService.createEdges(w));
 		
 		return worldDao.save(w);
 	}
-
+	
 	/**
-	 * Add water and rock to the world
-	 * @param world The world
-	 * @param listPos The available positions
-	 * @param percentWater The water percent
-	 * @param percentRock The rock percent
+	 * Compute cell for the neighbor x,y
+	 * @param world
+	 * @param x
+	 * @param y
 	 */
-	private void addWaterAndRocks(World world, List<Pair<Integer, Integer>> listPos, int percentWater, int percentRock) {
-		for (int i = 0; i < world.getHeight() * world.getHeight() * percentRock / 100; i++) {
-			Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
-			CellOccupant rock = new CellOccupant("rock" + i, CellEnum.ROCK);
-			world.getCell(pos.getLeft(), pos.getRight()).setOccupant(rock);
+	private void computeForNeighbor(World world, CellEnum type, int neighboursPercent, int x, int y) {
+		if (x < world.getWidth() && x >= 0 && y < world.getHeight() && y >= 0 && new Random().nextInt(100) < neighboursPercent) {
+			CellOccupant water = new CellOccupant(type.toString(), type);
+			world.getCell(x, y).setOccupant(water);
+			computeForNeighbors(world, type, neighboursPercent, x, y);
 		}
+	}
+	
+	/**
+	 * Compute cells for the neighbors of x,y
+	 * @param world
+	 * @param x
+	 * @param y
+	 */
+	private void computeForNeighbors(World world, CellEnum type, int neighboursPerent, int x, int y) {
+		computeForNeighbor(world, type, neighboursPerent, x, y + 1);
+		computeForNeighbor(world, type, neighboursPerent, x, y - 1);
+		computeForNeighbor(world, type, neighboursPerent, x + 1, y);
+		computeForNeighbor(world, type, neighboursPerent, x - 1, y);
+	}
 
-		for (int i = 0; i < world.getHeight() * world.getHeight() * percentWater / 100; i++) {
-			Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
-			CellOccupant water = new CellOccupant("water" + i, CellEnum.WATER);
-			world.getCell(pos.getLeft(), pos.getRight()).setOccupant(water);
+	private void computeMapOccupants(World world) {
+		//first, create water
+		createGroupCell(world, CellEnum.WATER, WATER_PERCENT, WATER_NEIGHBORS_PERCENT);
+		createGroupCell(world, CellEnum.ROCK, 2, 10);
+		
+		//then, create rock
+		
+		//then, create city
+		List<Pair<Integer, Integer>> listPositions = new ArrayList<>();
+		
+		List<Integer> xAxisPick = Stream.iterate(0, n  ->  n  + 1).limit(world.getWidth()).collect(Collectors.toList());
+		List<Integer> yAxisPick = Stream.iterate(0, n  ->  n  + 1).limit(world.getHeight()).collect(Collectors.toList());
+		
+		xAxisPick.forEach(x -> {
+			yAxisPick.forEach(y -> {
+				listPositions.add(Pair.of(x, y));
+			});
+		});
+		addCities(world, listPositions, CITIES_LIST_DEV);
+	}
+
+	private void createGroupCell(World world, CellEnum type, int percent, int neighboursPercent) {
+		for (int y = 0; y < world.getHeight(); y++ ) {
+			for (int x = 0; x < world.getWidth(); x++ ) {
+				if (new Random().nextInt(100) < percent) {
+					CellOccupant cell = new CellOccupant(type.toString(), type);
+					world.getCell(x, y).setOccupant(cell);
+					computeForNeighbors(world, type, neighboursPercent, x, y);
+				}
+			}
 		}
 	}
 
@@ -223,7 +259,7 @@ public class FactoryService {
 					c.addSpot(new Spot(s));
 				});
 				Pair<Integer, Integer> pos = AlgoUtils.randPick(listPos);
-				world.getCell(pos.getLeft(), pos.getRight()).setOccupant(c);;
+				world.getCell(pos.getLeft(), pos.getRight()).setOccupant(c);
 				world.getCities().add(c);
 			});
 	}

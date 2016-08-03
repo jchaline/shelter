@@ -34,8 +34,11 @@ public class World extends AbstractEntity {
 	 * Map : cells are nodes, and map is represented with a directed/weighted graph
 	 */
 	@OneToMany(cascade = CascadeType.ALL)
-	private Map<String, MapCell> map = new HashMap<>();
 	
+	private Map<String, MapCell> map = new HashMap<>();
+	/**
+	 * Path between cells
+	 */
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<MapEdge> edges = new ArrayList<>();
 	

@@ -17,9 +17,12 @@ tech :
  - improve perf ... example : get citis list instead of world object, and get each city one by one
  
 game : 
+ - world map & city map => same thing with different scale. World map => map cells => city => city map => map cells => buildings, dwellers ... 3D city map ?
  - /!\ Optimize the world data transfert (get view center and limit cells send)
  - /!\ experience, lvl up : implement mathematical formula for the xp and the level
- - build unit, improve unit with room improvement like STR
+ - build unit, improve unit with room improvement like STR (battle realms ?)
+	-> water & food use to "create" and train dwellers
+	-> player can create new cities on the map, find empty or fight to take controle
  - add strategy for team : attack lower hp, lower lvl, ...
  - add strategy for dweller : when take potion (if carry) ?
  - generation map : Add spot to cities
@@ -27,12 +30,11 @@ game :
  - add vehicles : team only can own vehicle, but vehicles had size limit
  - building with resources capacity to limit food, water, ...
  - improve notion of "room size" => cells uses & dwellers capacity...
- - water & food use to "create" and train dwellers
  - money/water/food use to build room
  - power use by room
  - resources : update the new values if necessary (build, sell, all actions from player)
  - start with a small shelter, with limited space. can extend shelter with space around on the map.
- - colonization of empty space : create new shelter for the player. 2 screens : manage shelter & world map view
+ - colonization of empty space : create new city for the player. 2 screens : manage city & world map view
  - create missions "type", and percent success / reward with dwellers stats. Mission unlock with exploring (find dwellers, find food, find tech, ...)
  
 blog : 

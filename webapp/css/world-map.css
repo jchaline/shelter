@@ -1,9 +1,9 @@
-#world-view{
+#world-view {
 	margin-left:10px;
 	width:1000px;
 }
 
-#world-map-container{
+#world-map-container {
 	position:relative;
 	height:700px;
 	width:700px;
@@ -11,11 +11,11 @@
 	float:left;
 }
 
-#teams{
+#teams {
 	position:absolute;
 }
 
-#world-info{
+#world-info {
 	position:relative;
 	height:700px;
 	width:300px;
@@ -24,7 +24,7 @@
 }
 
 #world-map-bottom,
-#world-map-top{
+#world-map-top {
 	position:relative;
 	height:50px;
 	width:700px;
@@ -33,7 +33,7 @@
 }
 
 #world-map-left,
-#world-map-right{
+#world-map-right {
 	position:relative;
 	text-align: center;
 	height:600px;
@@ -41,13 +41,13 @@
 	float:left;
 }
 
-.valign{
+.valign {
 	display: inline-block;
 	float: none;
 	vertical-align: middle;
 }
 
-#world-map{
+#world-map {
 	position:relative;
 	outline:1px solid black;
 	height:600px; /* = 2^3 * 3 * 5^2  */
@@ -55,34 +55,61 @@
 	float:left;
 }
 
-.cell{
+.cell {
 	height:30px;
 	width:30px;
 	position:relative;
 	float:left;
 }
 
-.cboth{
+.cboth {
 	clear: both;
 }
 
-.city{
+
+[class^="texture-"],
+[class*="texture-"] {
+	display: inline-block;
+	background-image: url("../images/textures.png");
+	background-repeat: no-repeat;
+	line-height: 30px;
+	width: 30px;
+	height: 30px;
+}
+
+.texture-empty {
+	background-position: 0      0;
+}
+
+.texture-water {
+	background-position: -30px 0;
+}
+
+.texture-rock {
+	background-position: -60px 0;
+}
+
+.texture-city {
+	background-position: -90px 0;
+}
+
+.city {
 	background-color:grey;
 }
-.water{
+.water {
 	background-color:blue;
 }
-.rock{
+.rock {
 	background-color:#996600;
 }
-.empty{
+.empty {
 	background-color:green;
 }
-.void{
+.void {
 	background-color:black;
 }
 
-.teamIco{
+.teamIco {
 	width:20px;
 	height:20px;
 }

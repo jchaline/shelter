@@ -24,6 +24,12 @@ public class Spot extends AbstractEntity {
 	@Column(nullable = false)
 	private int number;
 	
+	@Column
+	private int xaxis;
+	
+	@Column
+	private int yaxis;
+	
 	public Spot(String name) {
 		this.setName(name);
 	}

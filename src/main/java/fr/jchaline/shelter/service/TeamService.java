@@ -232,7 +232,13 @@ public class TeamService {
 		} else {
 			int exp = beastGroup.stream().mapToInt(b -> b.computeExperience()).sum();
 			int eachExp = (int) exp / team.getDwellers().size();
-			team.getDwellers().forEach(d->d.takeExperience(eachExp));
+			team.getDwellers().forEach(d -> {
+				d.addExperience(eachExp);
+				d.setLife(d.getMaxLife());
+				
+				//TODO : improve this ...
+				d.getPlayer().setMoney(d.getPlayer().getMoney() + eachExp * 10);
+			});
 			messageService.push("The team %d win the fight !", team.getId());
 		}
 	}

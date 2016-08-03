@@ -95,7 +95,7 @@ app.service("worldService", function( $q ) {
 					var cell = worldMap.cells[cellX][cellY]
 					var id = cell.xaxis + '_' + cell.yaxis
 					var cellType = cell.occupant.type.toLowerCase()
-					var div = '<div id="' + id + '" data-xaxis="' + cell.xaxis + '" data-yaxis="' + cell.yaxis + '" class="cell ' + cellType + '" data-cell-id="' + cell.id + '" title="' + id
+					var div = '<div id="' + id + '" data-xaxis="' + cell.xaxis + '" data-yaxis="' + cell.yaxis + '" class="cell texture-' + cellType + '" data-cell-id="' + cell.id + '" title="' + id
 					div += '" ondrop="drop(event)" ondragover="allowDrop(event)">'
 					div += '</div>'
 					$(rootDiv).append(div)

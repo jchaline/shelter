@@ -82,7 +82,6 @@ public class Dweller extends AbstractEntity implements Fighter {
 	@ManyToOne(optional = false)
 	private MapCell mapCell;
 	
-	
 	@ManyToOne(optional = false)
 	private Player player;
 	
@@ -147,14 +146,19 @@ public class Dweller extends AbstractEntity implements Fighter {
 		maxLife = level * 30;
 	}
 	
-	public void takeExperience(int experience) {
+	public void addExperience(int addExperience) {
 		//TODO : improve increase level formula
-		experience += experience;
-		int levelUp = (int) (level * 5 + Math.pow(level, 2));
-		while (experience >= levelUp) {
-			experience -= levelUp;
+		experience += addExperience;
+		int maxExpBeforeLevelUp = getMaxExperience();
+		while (experience >= maxExpBeforeLevelUp) {
+			experience -= maxExpBeforeLevelUp;
 			level++;
-			levelUp = (int) (level * 5 + Math.pow(level, 2));
+			maxExpBeforeLevelUp = getMaxExperience();
+			updateMaxLife();
 		}
+	}
+
+	public int getMaxExperience() {
+		return (int) (level * 5 + Math.pow(level, 2));
 	}
 }

@@ -52,12 +52,14 @@ public class FightService {
 			List<Fighter> alives = alives(smashBrawl);
 			alives.sort((x,y) -> x.getSpeed() - y.getSpeed());
 			alives.forEach(johnDoe -> {
-				//TODO : use map to store opponent list of each fighter instead Dweller Vs Beast
-				List<? extends Fighter> list = (johnDoe instanceof Dweller) ? badGuys : team.getDwellers();
-				Optional<Fighter> optTarget = chooseTarget(johnDoe, list);
-				optTarget.ifPresent(target -> {
-					processActions(johnDoe, target);
-				});
+				if (johnDoe.getLife() > 0) {
+					//TODO : use map to store opponent list of each fighter instead Dweller Vs Beast
+					List<? extends Fighter> list = (johnDoe instanceof Dweller) ? badGuys : team.getDwellers();
+					Optional<Fighter> optTarget = chooseTarget(johnDoe, list);
+					optTarget.ifPresent(target -> {
+						processActions(johnDoe, target);
+					});
+				}
 			});
 		}
 	}
@@ -66,7 +68,7 @@ public class FightService {
 		for (int i=0; i<johnDoe.attackPerTurn(); i++) {
 			int damage = johnDoe.computeDamage(target);
 			double accuracy = johnDoe.computeAccuracy(target);
-			if (new Random().nextDouble() <= accuracy) {
+			if (target.getLife() > 0 && new Random().nextDouble() <= accuracy) {
 				LOGGER.debug(String.format("%s attack %s with %d damage", johnDoe.toString(), target.toString(), damage));
 				target.takeDamage(damage);
 				LOGGER.debug(String.format("%s remain %d hp", target.toString(), target.getLife()));

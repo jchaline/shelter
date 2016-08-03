@@ -6,6 +6,13 @@ app.run(function ($rootScope) { $rootScope._ = _; });
 
 app.controller('worldController', function( $scope, $interval, httpService, worldService ) {
 	
+	$scope.showDwellerDetails = function(dwellerId) {
+		httpService.getData("/dweller/get", {dwellerId: dwellerId}).then(function(dweller) {
+			$scope.dwellerDetail = dweller
+			$('#dwellerInfoModal').modal('show')
+		})
+	}
+	
 	$scope.cancelDuty = function(teamId) {
 		httpService.postData("/team/cancelDuty", {teamId:teamId}).then(function(team) {
 			updateTeams(true)

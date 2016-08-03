@@ -76,6 +76,9 @@
 									<strong>Dwellers Cell</strong>
 									<div data-ng-repeat="dweller in cellDwellers | orderBy: name">
 										<input type="checkbox" name="dweller" value="{{dweller.id}}" >&nbsp;{{dweller.name}} {{dweller.firstname}}</input>
+										<button class="btn btn-xs btn-info valign" data-ng-click="showDwellerDetails(dweller.id)">
+											<i class="glyphicon glyphicon-info-sign"></i>
+										</button>
 									</div>
 									<button class="btn btn-xs btn-success valign" data-ng-click="teamup()">
 										<i class="glyphicon glyphicon-road"></i>
@@ -118,7 +121,7 @@
 										<button class="btn btn-xs btn-danger valign" data-ng-click="disband(team.id)">
 											<i class="glyphicon glyphicon-ban-circle"></i>
 										</button>
-										<button class="btn btn-xs btn-success valign" data-ng-click="showTeamDetail(team.id)">
+										<button class="btn btn-xs btn-info valign" data-ng-click="showTeamDetail(team.id)">
 											<i class="glyphicon glyphicon-eye-open"></i>
 										</button>
 									</div>
@@ -140,6 +143,22 @@
 							{{message.dateCreate.dayOfMonth | formatTime}}/{{message.dateCreate.monthValue | formatTime}}/{{message.dateCreate.year}} 
 							{{message.dateCreate.hour | formatTime}}:{{message.dateCreate.minute | formatTime}}:{{message.dateCreate.second | formatTime}} 
 							: {{message.content}}
+						</div>
+					</div>
+				</div>
+				
+				<div class="modal fade" tabindex="-1" role="dialog" id="dwellerInfoModal" >
+					<div class="modal-dialog modal-sm">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title" id="myModalLabel">Dweller details</h4>
+							</div>
+							<div class="modal-body">
+								{{dwellerDetail.name}} {{dwellerDetail.firstname}}, level {{dwellerDetail.level}}<br/>
+								Life : {{dwellerDetail.life}}/{{dwellerDetail.maxLife}}<br/>
+								Xp : {{dwellerDetail.experience}}/{{dwellerDetail.maxExperience}}<br/>
+							</div>
 						</div>
 					</div>
 				</div>

@@ -35,6 +35,10 @@ public class DwellerService {
 		return dao.findAll();
 	}
 	
+	public Dweller get(long dwellerId) {
+		return dao.findOne(dwellerId);
+	}
+	
 	public Page<Dweller> paginate(int pageNumber, int offset) {
 		PageRequest pageRequest = new PageRequest(
 			pageNumber, offset, new Sort(
