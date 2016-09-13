@@ -15,8 +15,9 @@
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="js/angular.min.js"></script>
 	<script type="text/javascript" src="js/lodash.js"></script>
-	<script type="text/javascript" src="js/shelter/shelter.js"></script>
+	<script type="text/javascript" src="js/shelter/shelter-canvas.js"></script>
 	
+	<script type="text/javascript" src="js/shelter/shelter.js"></script>
 	<script type="text/javascript" src="js/shelter/world-controller.js"></script>
 	<script type="text/javascript" src="js/shelter/world-service.js"></script>
 	<script type="text/javascript" src="js/shelter/http-service.js"></script>
@@ -137,6 +138,10 @@
 								</div>
 							</div>
 						</div>
+					</div>
+					<div id="canvas-container" class="row">
+						<canvas id="background-layer" width="960" height="640"></canvas>
+						<canvas id="game-layer" width="960" height="640"></canvas>
 					</div>
 					<div data-ng-if="messages.numberOfElements > 0" class="row">
 						<div data-ng-repeat="message in messages.content">

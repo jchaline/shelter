@@ -1,6 +1,8 @@
 var app = angular.module( 'worldModule', [] )
 
 var rootDiv = "#world-map"
+var canvasBackground
+var canvasGame
 
 app.run(function ($rootScope) { $rootScope._ = _; });
 
@@ -47,7 +49,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	//move the displayed map
 	$scope.moveMap = function(vx, vy) {
 		worldService.updateCenter($scope.worldMap, vx, vy)
-		var thenDo = function(){worldService.drawMap($scope.worldMap); worldService.drawDwellers($scope.dwellers)}
+		var thenDo = function(){worldService.drawMap($scope.worldMap, canvasBackground); worldService.drawDwellers($scope.worldMap, $scope.dwellers, canvasGame)}
 		updateWorld()
 		thenDo()
 	}
@@ -75,7 +77,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			
 			$scope.worldMap = worldService.updateMapWithWorld($scope.world, $scope.worldMap)
 			
-			worldService.drawMap($scope.worldMap)
+			worldService.drawMap($scope.worldMap, canvasBackground)
 			
 			updateDwellers()
 			updateTeams(false)
@@ -88,7 +90,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	function updateDwellers() {
 		httpService.getData("/dweller/list").then(function(dwellers) {
 			$scope.dwellers = dwellers
-			worldService.drawDwellers($scope.dwellers)
+			worldService.drawDwellers($scope.worldMap, $scope.dwellers, canvasGame)
 		})
 	}
 	
@@ -113,6 +115,8 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	
 	// function call once, init data for app
 	function _init() {
+		canvasBackground = mkCanvas("background-layer")
+		canvasGame = mkCanvas("game-layer")
 		httpService.getData("/duty/listAction").then(function(duties) {
 			$scope.duties = duties
 		})

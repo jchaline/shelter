@@ -1,0 +1,133 @@
+$widthSize: 1000;
+$spritesSize: 32;
+$mapSize: 20*$spritesSize;
+$mapContainerSize: $mapSize + 2*$spritesSize;
+
+#world-view {
+	margin-left: 10 px;
+	width: unquote($widthSize + 'px');
+} 
+
+#world-map-container {
+	position: relative;
+	height: unquote($mapContainerSize + 'px');
+	width: unquote($mapContainerSize + 'px');
+	outline: 1px solid black;
+	float: left;
+}
+
+#teams {
+	position: absolute;
+}
+
+#world-info {
+	position: relative;
+	height: unquote($mapContainerSize + 'px');
+	width: unquote($widthSize - $mapContainerSize + 'px');
+	outline: 1px solid black;
+	float: left;
+}
+
+#world-map-bottom,
+#world-map-top {
+	position: relative;
+	height: unquote($spritesSize + 'px');
+	width: unquote($mapContainerSize + 'px');
+	float: left;
+	text-align: center;
+}
+
+#world-map-left,
+#world-map-right {
+	position: relative;
+	text-align: center;
+	height: unquote($mapSize + 'px');
+	width: unquote($spritesSize + 'px');
+	float: left;
+}
+
+.valign {
+	display: inline-block;
+	float: none;
+	vertical-align: middle;
+}
+
+#world-map {
+	position: relative;
+	outline: 1px solid black;
+	height: unquote($mapSize + 'px');
+	width: unquote($mapSize + 'px');
+	float: left;
+}
+
+.cell {
+	height: unquote($spritesSize + 'px');
+	width: unquote($spritesSize + 'px');
+	position: relative;
+	float: left;
+}
+
+.cboth {
+	clear: both;
+}
+
+
+[class^="texture-"],
+[class*="texture-"] {
+	display: inline-block;
+	background-image: url("../images/textures32.png");
+	background-repeat: no-repeat;
+	line-height: unquote($spritesSize + 'px');
+	width: unquote($spritesSize + 'px');
+	height: unquote($spritesSize + 'px');
+}
+
+.texture-empty {
+	background-position: 0      0;
+}
+
+.texture-water {
+	background-position: - unquote($spritesSize + 'px') 0;
+}
+
+.texture-rock {
+	background-position: - unquote(2*$spritesSize + 'px') 0;
+}
+
+.texture-city {
+	background-position: - unquote(3*$spritesSize + 'px') 0;
+}
+
+.city {
+	background-color: grey;
+}
+.water {
+	background-color: blue;
+}
+.rock {
+	background-color: #996600;
+}
+.empty {
+	background-color: green;
+}
+.void {
+	background-color: black;
+}
+
+.teamIco {
+	width: 20px;
+	height: 20px;
+}
+#canvas-container {
+	width: 964px;
+	height: 644px;
+	position: relative;
+	border: 2px solid black
+}
+
+canvas { position: absolute; }
+
+
+#ui-layer { z-index: 3 }
+#game-layer { z-index: 2 }
+#background-layer { z-index: 0 }

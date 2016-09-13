@@ -58,23 +58,71 @@ app.service("worldService", function( $q ) {
 	}
 
 	// display dwellers position on the map
-	function drawDwellers(dwellers) {
+	function drawDwellers(worldMap, dwellers, canvas) {
+		var cellHeightPx = 32 //config
+		var cellWidthPx = 32 //config
+		
+		var canvasXsize = 960 //config
+		var canvasYsize = 640 // config
+		
+		var nbCeilHeight = canvasYsize / cellHeightPx // nombre de cellules à afficher sur la hauteur
+		var nbCeilWidth = canvasXsize / cellWidthPx // nombre de cellules à afficher sur la largeur
+		
+		var xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
+		var yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
+		
+		canvas.ctx.clearRect(0, 0, canvasXsize, canvasYsize)
+		
 		dwellers.forEach(function(d) {
 			var cellId = d.mapCell.id
-			$('[data-cell-id="' + cellId + '"]').html('<span class="glyphicon glyphicon-user"></span>')
+			var x = d.mapCell.xaxis - xLeft
+			var y = d.mapCell.yaxis - yUp
+			
+			draw(canvas, x * 32, y * 32, "dweller")
 		})
 	}
 	
 	// display the map
-	function drawMap(worldMap) {
-		$(rootDiv).html("")
+	function drawMap(worldMap, canvas) {
+		var cellHeightPx = 32 //config
+		var cellWidthPx = 32 //config
 		
+		
+		$.when.apply(null, canvas.loaders).done(function() {
+			var canvasXsize = 960 //config
+			var canvasYsize = 640 // config
+			
+			var nbCeilHeight = canvasYsize / cellHeightPx // nombre de cellules à afficher sur la hauteur
+			var nbCeilWidth = canvasXsize / cellWidthPx // nombre de cellules à afficher sur la largeur
+
+			var xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
+			var yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
+			
+			for (var x=0; x<nbCeilWidth; x++) {
+				for (var y=0; y<nbCeilHeight; y++) {
+					
+					var cellX = x + xLeft
+					var cellY = y + yUp
+					try {
+						var cell = worldMap.cells[cellX][cellY]
+						var cellType = cell.occupant.type.toLowerCase()
+						draw(canvas, x * 32, y * 32, cellType)
+						
+					} catch (e) {
+						draw(canvas, x * 32, y * 32, "off")
+					}
+				}
+			}
+		})
+
+		$(rootDiv).html("")
+
 		//param/constante
 		var mapHeightPx = 600
 		var mapWidthPx = 600
 		var cellHeightPx = 30 // taille hauteur en px d'une cell
 		var cellWidthPx = 30 // taille largeur en px d'une cell
-
+		
 		var nbCeilHeight = mapHeightPx / cellHeightPx // nombre de cellules à afficher sur la hauteur
 		var nbCeilWidth = mapWidthPx / cellWidthPx // nombre de cellules à afficher sur la largeur
 		
