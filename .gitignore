@@ -5,3 +5,5 @@
 *log.zip
 shelter.log
 /bin/
+/dist/
+/node_modules/
