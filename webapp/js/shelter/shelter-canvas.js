@@ -1,6 +1,6 @@
 
 function mkCanvas(id) {
-	var canvas = {id:id, loaders:[], images:{}}
+	var canvas = {id:id, loaders:[], images:{}, cellSize:32, width:960, height:640}
 	
 	canvas.loaders.push(loadSprite(canvas, 'images/textures32.png', 'textures'));
 	canvas.loaders.push(loadSprite(canvas, 'images/sprites/sprite_sacha.png', 'sacha'));

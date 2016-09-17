@@ -59,44 +59,33 @@ app.service("worldService", function( $q ) {
 
 	// display dwellers position on the map
 	function drawDwellers(worldMap, dwellers, canvas) {
-		var cellHeightPx = 32 //config
-		var cellWidthPx = 32 //config
-		
-		var canvasXsize = 960 //config
-		var canvasYsize = 640 // config
-		
-		var nbCeilHeight = canvasYsize / cellHeightPx // nombre de cellules à afficher sur la hauteur
-		var nbCeilWidth = canvasXsize / cellWidthPx // nombre de cellules à afficher sur la largeur
+		var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
+		var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
 		
 		var xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
 		var yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
 		
-		canvas.ctx.clearRect(0, 0, canvasXsize, canvasYsize)
+		canvas.ctx.clearRect(0, 0, canvas.width, canvas.height)
 		
 		dwellers.forEach(function(d) {
 			var cellId = d.mapCell.id
 			var x = d.mapCell.xaxis - xLeft
 			var y = d.mapCell.yaxis - yUp
 			
-			draw(canvas, x * 32, y * 32, "dweller")
+			draw(canvas, x * canvas.cellSize, y * canvas.cellSize, "dweller")
 		})
 	}
 	
 	// display the map
 	function drawMap(worldMap, canvas) {
-		var cellHeightPx = 32 //config
-		var cellWidthPx = 32 //config
-		
-		
 		$.when.apply(null, canvas.loaders).done(function() {
-			var canvasXsize = 960 //config
-			var canvasYsize = 640 // config
-			
-			var nbCeilHeight = canvasYsize / cellHeightPx // nombre de cellules à afficher sur la hauteur
-			var nbCeilWidth = canvasXsize / cellWidthPx // nombre de cellules à afficher sur la largeur
+			var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
+			var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
 
 			var xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
 			var yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
+			
+			canvas.ctx.clearRect(0, 0, canvas.width, canvas.height)
 			
 			for (var x=0; x<nbCeilWidth; x++) {
 				for (var y=0; y<nbCeilHeight; y++) {
@@ -106,10 +95,10 @@ app.service("worldService", function( $q ) {
 					try {
 						var cell = worldMap.cells[cellX][cellY]
 						var cellType = cell.occupant.type.toLowerCase()
-						draw(canvas, x * 32, y * 32, cellType)
+						draw(canvas, x * canvas.cellSize, y * canvas.cellSize, cellType)
 						
 					} catch (e) {
-						draw(canvas, x * 32, y * 32, "off")
+						draw(canvas, x * canvas.cellSize, y * canvas.cellSize, "off")
 					}
 				}
 			}
