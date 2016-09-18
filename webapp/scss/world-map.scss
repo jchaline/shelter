@@ -2,6 +2,8 @@ $widthSize: 1000;
 $spritesSize: 32;
 $mapSize: 20*$spritesSize;
 $mapContainerSize: $mapSize + 2*$spritesSize;
+$canvasMapHeight: 18*$spritesSize;
+$canvasMapWidth: 28*$spritesSize;
 
 #world-view {
 	margin-left: 10 px;
@@ -71,7 +73,6 @@ $mapContainerSize: $mapSize + 2*$spritesSize;
 	clear: both;
 }
 
-
 [class^="texture-"],
 [class*="texture-"] {
 	display: inline-block;
@@ -101,15 +102,19 @@ $mapContainerSize: $mapSize + 2*$spritesSize;
 .city {
 	background-color: grey;
 }
+
 .water {
 	background-color: blue;
 }
+
 .rock {
 	background-color: #996600;
 }
+
 .empty {
 	background-color: green;
 }
+
 .void {
 	background-color: black;
 }
@@ -118,6 +123,7 @@ $mapContainerSize: $mapSize + 2*$spritesSize;
 	width: 20px;
 	height: 20px;
 }
+
 #canvas-container {
 	width: 964px;
 	height: 644px;
@@ -125,9 +131,41 @@ $mapContainerSize: $mapSize + 2*$spritesSize;
 	border: 2px solid black
 }
 
-canvas { position: absolute; }
+#canvas-center {
+	position: relative;
+	height: unquote($canvasMapHeight + 'px');
+	width: unquote($canvasMapWidth + 'px');
+	float: left;
+}
 
+#canvas-top, #canvas-bottom {
+	position: relative;
+	height: unquote($spritesSize + 'px');
+	width: unquote($canvasMapWidth + 2*$spritesSize + 'px');
+	float: left;
+	text-align: center;
+}
 
-#ui-layer { z-index: 3 }
-#game-layer { z-index: 2 }
-#background-layer { z-index: 0 }
+#canvas-left, #canvas-right {
+	position: relative;
+	height: unquote($canvasMapHeight + 'px');
+	width: unquote($spritesSize + 'px');
+	float: left;
+	text-align: center;
+}
+
+canvas {
+	position: absolute;
+}
+
+#ui-layer {
+	z-index: 3;
+}
+
+#game-layer {
+	z-index: 2;
+}
+
+#background-layer {
+	z-index: 0
+}

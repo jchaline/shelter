@@ -22,6 +22,7 @@ public class WorldService {
 	
 	public static final String TERRE_1 = "Terre1";
 	
+	//nb ceils max
 	private static final int HEIGHT_MAP_LIMIT = 40;
 	private static final int WIDTH_MAP_LIMIT = 40;
 	

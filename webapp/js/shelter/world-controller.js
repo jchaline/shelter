@@ -138,7 +138,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			httpService.getData("/metrics").then(function(data) {
 				console.log(data)
 			})
-		}, 5 * 1000);
+		}, 60 * 1000);
 
 		$interval(function() {
 			updateMessages()

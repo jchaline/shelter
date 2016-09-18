@@ -79,6 +79,8 @@ app.service("worldService", function( $q ) {
 	// display the map
 	function drawMap(worldMap, canvas) {
 		$.when.apply(null, canvas.loaders).done(function() {
+			
+			var t1 = new Date().getTime()
 			var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
 			var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
 
@@ -102,8 +104,12 @@ app.service("worldService", function( $q ) {
 					}
 				}
 			}
+			
+			console.log("t1 Take " + (new Date().getTime() - t1))
 		})
 
+		var t2 = new Date().getTime()
+		
 		$(rootDiv).html("")
 
 		//param/constante
@@ -143,6 +149,8 @@ app.service("worldService", function( $q ) {
 				}
 			}
 		}
+		
+		console.log("t2 Take " + (new Date().getTime() - t2))
 	}
 })
 
