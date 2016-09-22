@@ -116,7 +116,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	// function call once, init data for app
 	function _init() {
 		canvasBackground = mkCanvas("background-layer")
-		canvasGame = mkCanvas("game-layer")
+		//canvasGame = mkCanvas("game-layer")
 		httpService.getData("/duty/listAction").then(function(duties) {
 			$scope.duties = duties
 		})

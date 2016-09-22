@@ -59,21 +59,21 @@ app.service("worldService", function( $q ) {
 
 	// display dwellers position on the map
 	function drawDwellers(worldMap, dwellers, canvas) {
-		var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
-		var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
-		
-		var xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
-		var yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
-		
-		canvas.ctx.clearRect(0, 0, canvas.width, canvas.height)
-		
-		dwellers.forEach(function(d) {
-			var cellId = d.mapCell.id
-			var x = d.mapCell.xaxis - xLeft
-			var y = d.mapCell.yaxis - yUp
-			
-			draw(canvas, x * canvas.cellSize, y * canvas.cellSize, "dweller")
-		})
+//		var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
+//		var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
+//		
+//		var xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
+//		var yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
+//		
+//		canvas.ctx.clearRect(0, 0, canvas.width, canvas.height)
+//		
+//		dwellers.forEach(function(d) {
+//			var cellId = d.mapCell.id
+//			var x = d.mapCell.xaxis - xLeft
+//			var y = d.mapCell.yaxis - yUp
+//			
+//			draw(canvas, x * canvas.cellSize, y * canvas.cellSize, "dweller")
+//		})
 	}
 	
 	// display the map
