@@ -38,13 +38,18 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 
 	$scope.teamup = function() {
 		var teamup = $('[name="dweller"]:checked').map(function(){return this.value}).get()
-		console.log("create team :")
-		console.log(teamup)
 		$('#ui-layer').hide()
 		
-//		httpService.postData("/team/teamup", {dwellersId: _.values(teamup)}).then(function(team) {
-//			updateTeams(true)
-//		})
+		httpService.postData("/team/teamup", {dwellersId: _.values(teamup)}).then(function(team) {
+			var xaxis = $('#targetX').val()
+			var yaxis = $('#targetY').val()
+			var cellId = $scope.worldMap.cells[xaxis][yaxis].id
+			var dutyId = $('#duty').val()
+			
+			httpService.postData("/team/sendDuty", {teamId:team.id, dutyId:0, target:cellId}).then(function(team) {
+				updateTeams(true)
+			})
+		})
 	}
 
 	//move the displayed map
@@ -55,8 +60,8 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 		thenDo()
 	}
 	canvasGame.addEventListener('moveMap', function (e) {
-		var vx = -1 * Math.floor((e.detail.vx-e.detail.x) / 32)
-		var vy = -1 * Math.floor((e.detail.vy-e.detail.y) / 32)
+		var vx = -1 * idx(e.detail.vx-e.detail.x)
+		var vy = -1 * idx(e.detail.vy-e.detail.y)
 		$scope.moveMap(vx, vy);
 	}, false);
 	
@@ -103,6 +108,8 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 
 	function movePnj(xPix, yPix, vx, vy) {
 		$scope.movedDwellers = worldService.findDweller(xPix, yPix)
+		$('#targetX').val(idx(vx))
+		$('#targetY').val(idx(vy))
 		//instruction for background color
 		// set the div content, then show
 		$('#ui-layer').show()
@@ -170,6 +177,10 @@ function dragTeamStart(event) {
 
 function allowDrop(event) {
 	event.preventDefault();
+}
+
+function idx(pix) {
+	return Math.floor(pix/32)
 }
 
 function drop(event) {

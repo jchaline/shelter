@@ -54,13 +54,19 @@
 						<div id="canvas-center">
 							<canvas id="background-layer" width="896" height="576"></canvas>
 							<canvas id="game-layer" width="896" height="576"></canvas>
-							<div id="ui-layer" width="896" height="576">
+							<div id="ui-layer" >
 								<div data-ng-repeat="dweller in movedDwellers | orderBy: name">
 									<input type="checkbox" name="dweller" value="{{dweller.id}}" >&nbsp;{{dweller.name}} {{dweller.firstname}}</input>
 									<button class="btn btn-xs btn-info valign" data-ng-click="showDwellerDetails(dweller.id)">
 										<i class="glyphicon glyphicon-info-sign"></i>
 									</button>
 								</div>
+								<select id="duty" name="duty">
+									<option value=""></option>
+									<option data-ng-repeat="duty in duties" value="{{duty.id}}">{{duty.name}}</option>
+								</select>
+								<input type="hidden" id="targetX" name="targetX" />
+								<input type="hidden" id="targetY" name="targetY" />
 								<button class="btn btn-xs btn-success valign" data-ng-click="teamup()">
 									<i class="glyphicon glyphicon-road"></i>
 								</button>
