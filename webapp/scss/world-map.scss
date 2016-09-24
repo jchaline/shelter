@@ -159,7 +159,13 @@ canvas {
 }
 
 #ui-layer {
+	position: absolute;
 	z-index: 3;
+	height: unquote($canvasMapHeight + 'px');
+  width: unquote($canvasMapWidth + 'px');
+  float: left;
+  background-color: rgba(125, 125, 125, 0.7);
+  visibility: hidden;//default value
 }
 
 #game-layer {

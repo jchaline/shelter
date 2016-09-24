@@ -40,31 +40,44 @@
 		<div data-ng-controller="worldController" class="row">
 		    <div class="col-xs-12 col-sm-12 col-md-12">
 				<div id="world-view" data-ng-view="worldView">
-					<div class="row">
-						<div id="world-map-container">
-							<div id="world-map-top">
-								<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(0, -2)">
-									<i class="glyphicon glyphicon-arrow-up"></i>
-								</button>
-							</div>
-							<div id="world-map-left">
-								<button class="btn btn-xs btn-success" data-ng-click="moveMap(-2, 0)">
-									<i class="glyphicon glyphicon-arrow-left"></i>
-								</button>
-							</div>
-							<div id="world-map">
-							</div>
-							<div id="world-map-right">
-								<button class="btn btn-xs btn-success" data-ng-click="moveMap(2, 0)">
-									<i class="glyphicon glyphicon-arrow-right"></i>
-								</button>
-							</div>
-							<div id="world-map-bottom">
-								<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(0, 2)">
-									<i class="glyphicon glyphicon-arrow-down"></i>
+					<div id="canvas-container" class="row">
+						<div id="canvas-top">
+							<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(0, -2)">
+								<i class="glyphicon glyphicon-arrow-up"></i>
+							</button>
+						</div>
+						<div id="canvas-left">
+							<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(-2, 0)">
+								<i class="glyphicon glyphicon-arrow-left"></i>
+							</button>
+						</div>
+						<div id="canvas-center">
+							<canvas id="background-layer" width="896" height="576"></canvas>
+							<canvas id="game-layer" width="896" height="576"></canvas>
+							<div id="ui-layer" width="896" height="576">
+								<div data-ng-repeat="dweller in movedDwellers | orderBy: name">
+									<input type="checkbox" name="dweller" value="{{dweller.id}}" >&nbsp;{{dweller.name}} {{dweller.firstname}}</input>
+									<button class="btn btn-xs btn-info valign" data-ng-click="showDwellerDetails(dweller.id)">
+										<i class="glyphicon glyphicon-info-sign"></i>
+									</button>
+								</div>
+								<button class="btn btn-xs btn-success valign" data-ng-click="teamup()">
+									<i class="glyphicon glyphicon-road"></i>
 								</button>
 							</div>
 						</div>
+						<div id="canvas-right">
+							<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(2, 0)">
+								<i class="glyphicon glyphicon-arrow-right"></i>
+							</button>
+						</div>
+						<div id="canvas-bottom">
+							<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(0, 2)">
+								<i class="glyphicon glyphicon-arrow-down"></i>
+							</button>
+						</div>
+					</div>
+					<div class="row">
 						<div id="world-info" class="container">
 							<div class="row">
 								<div class="col-md-12">
@@ -137,32 +150,6 @@
 									</div>
 								</div>
 							</div>
-						</div>
-					</div>
-					<div id="canvas-container" class="row">
-						<div id="canvas-top">
-							<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(0, -2)">
-								<i class="glyphicon glyphicon-arrow-up"></i>
-							</button>
-						</div>
-						<div id="canvas-left">
-							<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(-2, 0)">
-								<i class="glyphicon glyphicon-arrow-left"></i>
-							</button>
-						</div>
-						<div id="canvas-center">
-							<canvas id="background-layer" width="896" height="576"></canvas>
-							<canvas id="game-layer" width="896" height="576"></canvas>
-						</div>
-						<div id="canvas-right">
-							<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(2, 0)">
-								<i class="glyphicon glyphicon-arrow-right"></i>
-							</button>
-						</div>
-						<div id="canvas-bottom">
-							<button class="btn btn-xs btn-success valign" data-ng-click="moveMap(0, 2)">
-								<i class="glyphicon glyphicon-arrow-down"></i>
-							</button>
 						</div>
 					</div>
 					<div data-ng-if="messages.numberOfElements > 0" class="row">

@@ -1,4 +1,16 @@
+
+// TODO : when move pnj ie dweller(s), open window to select wich dwellers to move to the target
+
 app.service("worldService", function( $q ) {
+	
+	var canvasGame = document.getElementById('game-layer');
+	
+	var gameCanvas = new CanvasGame(canvasGame);
+	var canvasBackground = new CanvasBackground(document.getElementById('background-layer'));
+	var _dwellers = []
+	var _worldMap = {}
+	var xLeft
+	var yUp
 	
 	// public API
 	return({
@@ -6,8 +18,21 @@ app.service("worldService", function( $q ) {
 		updateMapWithWorld: updateMapWithWorld,
 		drawMap: drawMap,
 		drawDwellers: drawDwellers,
-		updateTeamsDuty: updateTeamsDuty
+		updateTeamsDuty: updateTeamsDuty,
+		findDweller: findDweller
 	})
+	
+	function findDweller(x, y) {
+		//transcrire valeur px sur le canvas en indices x / y avec le map center
+		var xPos = Math.floor(x / 32) + xLeft
+		var yPos = Math.floor(y / 32) + yUp
+		
+		var res = _.filter(_dwellers, function(d){
+			return d.mapCell.xaxis == xPos && d.mapCell.yaxis == yPos;
+		})
+		
+		return res
+	}
 	
 	function updateTeamsDuty(teams, actualWithoutDuty, actualWithDuty, force) {
 		var res = {}
@@ -58,99 +83,63 @@ app.service("worldService", function( $q ) {
 	}
 
 	// display dwellers position on the map
-	function drawDwellers(worldMap, dwellers, canvas) {
-//		var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
-//		var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
-//		
-//		var xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
-//		var yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
-//		
-//		canvas.ctx.clearRect(0, 0, canvas.width, canvas.height)
-//		
-//		dwellers.forEach(function(d) {
-//			var cellId = d.mapCell.id
-//			var x = d.mapCell.xaxis - xLeft
-//			var y = d.mapCell.yaxis - yUp
-//			
-//			draw(canvas, x * canvas.cellSize, y * canvas.cellSize, "dweller")
-//		})
+	function drawDwellers(worldMap, dwellers) {
+		var canvas = gameCanvas
+		
+		_dwellers = dwellers
+		var withoutDuplicate = _.uniqBy(dwellers, 'mapCell.id');
+		
+		var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
+		var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
+		
+		xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
+		yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
+		
+		canvas.drop()
+		canvas.clear()
+
+		//wait the sprites loader
+		$.when.apply(null, canvas.loaders).done(function() {
+			withoutDuplicate.forEach(function(d) {
+				var cellId = d.mapCell.id
+				var x = d.mapCell.xaxis - xLeft
+				var y = d.mapCell.yaxis - yUp
+				
+				canvas.addPnj(new Pnj(x * canvas.cellSize, y * canvas.cellSize, 32, 32, canvas.sprites.pnj));
+			})
+		})
 	}
 	
 	// display the map
-	function drawMap(worldMap, canvas) {
-		$.when.apply(null, canvas.loaders).done(function() {
-			
-			var t1 = new Date().getTime()
-			var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
-			var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
+	function drawMap(worldMap) {
+		_worldMap = worldMap
+		
+		var canvas = canvasBackground
+		
+		var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
+		var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
+		
+		xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
+		yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
+		
+		canvas.ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-			var xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
-			var yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
-			
-			canvas.ctx.clearRect(0, 0, canvas.width, canvas.height)
-			
+		//wait the sprites loader
+		$.when.apply(null, canvas.loaders).done(function() {
 			for (var x=0; x<nbCeilWidth; x++) {
 				for (var y=0; y<nbCeilHeight; y++) {
-					
 					var cellX = x + xLeft
 					var cellY = y + yUp
 					try {
 						var cell = worldMap.cells[cellX][cellY]
 						var cellType = cell.occupant.type.toLowerCase()
-						draw(canvas, x * canvas.cellSize, y * canvas.cellSize, cellType)
-						
+						canvas.drawTexture(x * canvas.cellSize, y * canvas.cellSize, cellType)
 					} catch (e) {
-						draw(canvas, x * canvas.cellSize, y * canvas.cellSize, "off")
+						canvas.drawTexture(x * canvas.cellSize, y * canvas.cellSize, "off")
 					}
 				}
 			}
-			
-			console.log("t1 Take " + (new Date().getTime() - t1))
 		})
-
-		var t2 = new Date().getTime()
-		
-		$(rootDiv).html("")
-
-		//param/constante
-		var mapHeightPx = 600
-		var mapWidthPx = 600
-		var cellHeightPx = 30 // taille hauteur en px d'une cell
-		var cellWidthPx = 30 // taille largeur en px d'une cell
-		
-		var nbCeilHeight = mapHeightPx / cellHeightPx // nombre de cellules à afficher sur la hauteur
-		var nbCeilWidth = mapWidthPx / cellWidthPx // nombre de cellules à afficher sur la largeur
-		
-		var nbCeilHeightTotal = worldMap.height // nombre total de cellule sur la hauteur
-		var nbCeilWidthTotal = worldMap.width // nombre total de cellule sur la largeur
-		
-		//determination des bornes de la map en fonction du point
-		var xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
-		var yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
-		
-		//cellules à afficher
-		for (y = 0; y < nbCeilHeight; y++) {
-			for (x = 0; x < nbCeilWidth; x++) {
-				//détermination des identifiants des cellules affichés
-				try {
-					var cellX = x + xLeft
-					var cellY = y + yUp
-					var cell = worldMap.cells[cellX][cellY]
-					var id = cell.xaxis + '_' + cell.yaxis
-					var cellType = cell.occupant.type.toLowerCase()
-					var div = '<div id="' + id + '" data-xaxis="' + cell.xaxis + '" data-yaxis="' + cell.yaxis + '" class="cell texture-' + cellType + '" data-cell-id="' + cell.id + '" title="' + id
-					div += '" ondrop="drop(event)" ondragover="allowDrop(event)">'
-					div += '</div>'
-					$(rootDiv).append(div)
-				} catch (e) {
-					//console.log("try to display cell at (" + x + "," + y + ") , cannot find")
-					var div = '<div class="cell void"></div>'
-					$(rootDiv).append(div)
-				}
-			}
-		}
-		
-		console.log("t2 Take " + (new Date().getTime() - t2))
 	}
 })
 

@@ -1,12 +1,10 @@
 var app = angular.module( 'worldModule', [] )
 
-var rootDiv = "#world-map"
-var canvasBackground
-var canvasGame
-
 app.run(function ($rootScope) { $rootScope._ = _; });
 
 app.controller('worldController', function( $scope, $interval, httpService, worldService ) {
+	
+	var canvasGame = document.getElementById('game-layer');
 	
 	$scope.showDwellerDetails = function(dwellerId) {
 		httpService.getData("/dweller/get", {dwellerId: dwellerId}).then(function(dweller) {
@@ -40,19 +38,27 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 
 	$scope.teamup = function() {
 		var teamup = $('[name="dweller"]:checked').map(function(){return this.value}).get()
+		console.log("create team :")
+		console.log(teamup)
+		$('#ui-layer').hide()
 		
-		httpService.postData("/team/teamup", {dwellersId: _.values(teamup)}).then(function(team) {
-			updateTeams(true)
-		})
+//		httpService.postData("/team/teamup", {dwellersId: _.values(teamup)}).then(function(team) {
+//			updateTeams(true)
+//		})
 	}
 
 	//move the displayed map
 	$scope.moveMap = function(vx, vy) {
 		worldService.updateCenter($scope.worldMap, vx, vy)
-		var thenDo = function(){worldService.drawMap($scope.worldMap, canvasBackground); worldService.drawDwellers($scope.worldMap, $scope.dwellers, canvasGame)}
+		var thenDo = function(){worldService.drawMap($scope.worldMap); worldService.drawDwellers($scope.worldMap, $scope.dwellers)}
 		updateWorld()
 		thenDo()
 	}
+	canvasGame.addEventListener('moveMap', function (e) {
+		var vx = -1 * Math.floor((e.detail.vx-e.detail.x) / 32)
+		var vy = -1 * Math.floor((e.detail.vy-e.detail.y) / 32)
+		$scope.moveMap(vx, vy);
+	}, false);
 	
 	$scope.showTeamDetail = function(teamId) {
 		httpService.getData("/team/get", {teamId: teamId}).then(function(team) {
@@ -77,7 +83,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			
 			$scope.worldMap = worldService.updateMapWithWorld($scope.world, $scope.worldMap)
 			
-			worldService.drawMap($scope.worldMap, canvasBackground)
+			worldService.drawMap($scope.worldMap)
 			
 			updateDwellers()
 			updateTeams(false)
@@ -90,9 +96,20 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	function updateDwellers() {
 		httpService.getData("/dweller/list").then(function(dwellers) {
 			$scope.dwellers = dwellers
-			worldService.drawDwellers($scope.worldMap, $scope.dwellers, canvasGame)
+			worldService.drawDwellers($scope.worldMap, $scope.dwellers)
 		})
 	}
+	
+
+	function movePnj(xPix, yPix, vx, vy) {
+		$scope.movedDwellers = worldService.findDweller(xPix, yPix)
+		//instruction for background color
+		// set the div content, then show
+		$('#ui-layer').show()
+		//$('#ui-layer').css('background-color', 'rgba(125,125,125,0.8)')
+	}
+	canvasGame.addEventListener('movePnj', function (e) { movePnj(e.detail.x, e.detail.y, e.detail.vx, e.detail.vy) }, false);
+	
 	
 	//TODO : add args to force refresh ?
 	//TODO : manage 'return' duty when refresh team with duty... with refresh force ?
@@ -115,18 +132,12 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	
 	// function call once, init data for app
 	function _init() {
-		canvasBackground = mkCanvas("background-layer")
-		//canvasGame = mkCanvas("game-layer")
 		httpService.getData("/duty/listAction").then(function(duties) {
 			$scope.duties = duties
 		})
-		
-		$(rootDiv).on('click', '.cell:not(.void)', function() {
-			updateCell($(this).attr('data-cell-id'))
-		})
 	}
 	
-	//TODO : fix dev frequency, externalize & integrate with grunt ?
+	//TODO : fix dev frequency, externalize & integrate with gulp ?
 	angular.element(document).ready(function () {
 		_init()
 		updateWorld()
