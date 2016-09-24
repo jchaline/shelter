@@ -46,7 +46,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			var cellId = $scope.worldMap.cells[xaxis][yaxis].id
 			var dutyId = $('#duty').val()
 			
-			httpService.postData("/team/sendDuty", {teamId:team.id, dutyId:0, target:cellId}).then(function(team) {
+			httpService.postData("/team/sendDuty", {teamId:team.id, dutyId:dutyId, target:cellId}).then(function(team) {
 				updateTeams(true)
 			})
 		})
@@ -107,9 +107,9 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	
 
 	function movePnj(xPix, yPix, vx, vy) {
-		$scope.movedDwellers = worldService.findDweller(xPix, yPix)
-		$('#targetX').val(idx(vx))
-		$('#targetY').val(idx(vy))
+		$scope.movedDwellers = worldService.findDweller(idx(xPix) + $scope.worldMap.xLeft, idx(yPix) + $scope.worldMap.yUp)
+		$('#targetX').val(idx(vx) + $scope.worldMap.xLeft)
+		$('#targetY').val(idx(vy) + $scope.worldMap.yUp)
 		//instruction for background color
 		// set the div content, then show
 		$('#ui-layer').show()

@@ -317,6 +317,7 @@ public class TeamService {
 		team.setDuty(duty);
 		team.setTarget(targetCell);
 		team.setOrigin(team.getCurrent());
+		LOGGER.debug("send team to duty !");
 		return teamDao.save(team);
 	}
 

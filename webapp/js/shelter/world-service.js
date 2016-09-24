@@ -3,17 +3,17 @@
 
 app.service("worldService", function( $q ) {
 	
-	var canvasGame = document.getElementById('game-layer');
+	var canvasDom = document.getElementById('game-layer');
+	var backgroundDom = document.getElementById('background-layer')
 	
-	var gameCanvas = new CanvasGame(canvasGame);
-	var canvasBackground = new CanvasBackground(document.getElementById('background-layer'));
+	var gameCanvas = new CanvasGame(canvasDom);
+	var backgroundCanvas = new CanvasBackground(backgroundDom);
+	
 	var _dwellers = []
 	var _worldMap = {}
-	var xLeft
-	var yUp
 	
 	// public API
-	return({
+	return ({
 		updateCenter: updateCenter,
 		updateMapWithWorld: updateMapWithWorld,
 		drawMap: drawMap,
@@ -23,12 +23,8 @@ app.service("worldService", function( $q ) {
 	})
 	
 	function findDweller(x, y) {
-		//transcrire valeur px sur le canvas en indices x / y avec le map center
-		var xPos = Math.floor(x / 32) + xLeft
-		var yPos = Math.floor(y / 32) + yUp
-		
 		var res = _.filter(_dwellers, function(d){
-			return d.mapCell.xaxis == xPos && d.mapCell.yaxis == yPos;
+			return d.mapCell.xaxis == x && d.mapCell.yaxis == y;
 		})
 		
 		return res
@@ -62,15 +58,22 @@ app.service("worldService", function( $q ) {
 	
 	//update map center view
 	function updateCenter(map, vx, vy) {
+		var canvas = backgroundCanvas
+
 		map.center.x = Math.min(Math.max(map.center.x + vx, 0), map.width - 1)
 		map.center.y = Math.min(Math.max(map.center.y + vy, 0), map.height - 1)
-		console.log("update center : " + map.center.x + "," + map.center.y)
+		
+		var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
+		var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
+		
+		map.xLeft = map.center.x - Math.round(nbCeilWidth / 2)
+		map.yUp = map.center.y - Math.round(nbCeilHeight / 2)
 	}
 	
 	//Update the world Map, with new cells. Keep the center if exist, else, take the map absolute center
 	function updateMapWithWorld(world, worldMap) {
-		
-		var map = {'height':world.height, 'width':world.width, 'cells':[], 'center':worldMap != undefined ? worldMap.center : {'x':Math.round(world.width / 2), 'y':Math.round(world.height / 2)}}
+		var defaultCenter = {'x':Math.round(world.width / 2), 'y':Math.round(world.height / 2)}
+		var map = {'height':world.height, 'width':world.width, 'cells':[], 'center':(worldMap != undefined ? worldMap.center : defaultCenter) || defaultCenter}
 		
 		//transform the object into array
 		Object.keys(world.map).forEach(function(key) {
@@ -78,6 +81,8 @@ app.service("worldService", function( $q ) {
 			map.cells[cell.xaxis] = map.cells[cell.xaxis] || []
 			map.cells[cell.xaxis][cell.yaxis] = cell
 		})
+		
+		updateCenter(map, 0, 0)
 		
 		return map
 	}
@@ -89,12 +94,6 @@ app.service("worldService", function( $q ) {
 		_dwellers = dwellers
 		var withoutDuplicate = _.uniqBy(dwellers, 'mapCell.id');
 		
-		var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
-		var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
-		
-		xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
-		yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
-		
 		canvas.drop()
 		canvas.clear()
 
@@ -102,8 +101,8 @@ app.service("worldService", function( $q ) {
 		$.when.apply(null, canvas.loaders).done(function() {
 			withoutDuplicate.forEach(function(d) {
 				var cellId = d.mapCell.id
-				var x = d.mapCell.xaxis - xLeft
-				var y = d.mapCell.yaxis - yUp
+				var x = d.mapCell.xaxis - worldMap.xLeft
+				var y = d.mapCell.yaxis - worldMap.yUp
 				
 				canvas.addPnj(new Pnj(x * canvas.cellSize, y * canvas.cellSize, 32, 32, canvas.sprites.pnj));
 			})
@@ -114,13 +113,10 @@ app.service("worldService", function( $q ) {
 	function drawMap(worldMap) {
 		_worldMap = worldMap
 		
-		var canvas = canvasBackground
+		var canvas = backgroundCanvas
 		
 		var nbCeilHeight = canvas.height / canvas.cellSize // nombre de cellules à afficher sur la hauteur
 		var nbCeilWidth = canvas.width / canvas.cellSize // nombre de cellules à afficher sur la largeur
-		
-		xLeft = worldMap.center.x - Math.round(nbCeilWidth / 2)
-		yUp = worldMap.center.y - Math.round(nbCeilHeight / 2)
 		
 		canvas.ctx.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -128,8 +124,8 @@ app.service("worldService", function( $q ) {
 		$.when.apply(null, canvas.loaders).done(function() {
 			for (var x=0; x<nbCeilWidth; x++) {
 				for (var y=0; y<nbCeilHeight; y++) {
-					var cellX = x + xLeft
-					var cellY = y + yUp
+					var cellX = x + worldMap.xLeft
+					var cellY = y + worldMap.yUp
 					try {
 						var cell = worldMap.cells[cellX][cellY]
 						var cellType = cell.occupant.type.toLowerCase()
