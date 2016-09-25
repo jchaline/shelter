@@ -68,6 +68,7 @@ public class MapServiceTest {
 		MapCell target1 = WORLD_TEST.getCell(2, 2);
 
 		MapCell target2 = WORLD_TEST.getCell(4, 2);
+		MapCell target3 = WORLD_TEST.getCell(15, 15);
 		
 		WORLD_TEST.setEdges(service.createEdges(WORLD_TEST));
 
@@ -78,8 +79,13 @@ public class MapServiceTest {
 		Assert.assertEquals(2, findPathBetween2.get().size());
 
 		MapCell targetRock = WORLD_TEST.getCell(1, 1);
-		boolean pathFind = service.computePath(WORLD_TEST, origin1, targetRock).isPresent();
-		Assert.assertFalse(pathFind);
+		boolean pathFindPresent = service.computePath(WORLD_TEST, origin1, targetRock).isPresent();
+		Assert.assertFalse(pathFindPresent);
+
+		System.out.println(WORLD_TEST.draw());
+		
+		Optional<List<MapCell>> longPath = service.computePath(WORLD_TEST, origin1, target3);
+		Assert.assertTrue(longPath.get().size() > 0);
 	}
 
 }

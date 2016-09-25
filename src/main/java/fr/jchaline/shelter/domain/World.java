@@ -1,11 +1,13 @@
 package fr.jchaline.shelter.domain;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -60,5 +62,32 @@ public class World extends AbstractEntity {
 
 	public MapCell getCell(Integer x, Integer y) {
 		return map.get(x + "_" + y);
+	}
+	
+	/**
+	 * Draw String version of the map, for debug
+	 */
+	public String draw() {
+		final StringBuilder sb = new StringBuilder();
+		
+		sb.append("  ");
+		
+		Stream.iterate(0, n  ->  n  + 1).limit(10).forEach(x -> {
+			sb.append(x + ";");
+		});
+		
+		sb.append("\n\r");
+		
+		sb.append("");
+		for (int y = 0; y<height; y++) {
+			sb.append(y + ";");
+			for (int x = 0; x<width; x++) {
+				char type = getCell(x, y).getOccupant().getType().toString().charAt(0);
+				sb.append(type).append(";");
+			}
+			sb.append("\n\r");
+		}
+		
+		return sb.toString();
 	}
 }
