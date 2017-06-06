@@ -34,4 +34,6 @@ Required : LoadModule proxy_module modules/mod_proxy.so & LoadModule proxy_http_
 	
 3) run ShelterLauncher.java
 
+x) Explain gulp part ...
+
 4) Then go to http://localhost/shelter/index.html
