@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import fr.jchaline.shelter.domain.Duty;
+import fr.jchaline.shelter.domain.Player;
 import fr.jchaline.shelter.domain.Team;
 
 public interface TeamDao  extends JpaRepository<Team, Long> {
@@ -16,4 +17,5 @@ public interface TeamDao  extends JpaRepository<Team, Long> {
 	 */
 	List<Team> findByDuty(Duty duty);
 
+	List<Team> findAllByPlayer(Player player);
 }

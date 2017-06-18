@@ -55,4 +55,21 @@ public class Team extends AbstractEntity {
 	 */
 	@ManyToOne(optional = false)
 	private MapCell current;
+	
+	@ManyToOne(optional = false)
+	private Player player;
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("(");
+		sb.append(this.getId());
+		sb.append(") ");
+		sb.append(" origin : ");
+		sb.append(this.getOrigin());
+		sb.append(", target : ");
+		sb.append(this.getTarget());
+		sb.append(", current : ");
+		sb.append(this.getCurrent());
+		return sb.toString();
+	}
 }

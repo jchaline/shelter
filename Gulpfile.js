@@ -13,7 +13,7 @@ var outputWebapp = 'dist/';
 var inputScss = './webapp/scss/**/*.scss';
 var outputCss = './dist/css';
 
-var onError = function (err) {  
+var onError = function (err) {
   gutil.beep();
   console.log(err);
 };

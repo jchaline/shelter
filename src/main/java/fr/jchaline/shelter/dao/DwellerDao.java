@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import fr.jchaline.shelter.domain.Dweller;
+import fr.jchaline.shelter.domain.Player;
 import fr.jchaline.shelter.domain.Room;
 
 public interface DwellerDao extends JpaRepository<Dweller, Long> {
@@ -14,5 +15,7 @@ public interface DwellerDao extends JpaRepository<Dweller, Long> {
 	Page<Dweller> findAll(Pageable pageable);
 	
 	List<Dweller> findAllByRoom(Room room);
+	
+	List<Dweller> findAllByPlayer(Player player);
 	
 }

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en" data-ng-app="worldModule">
+<html lang="en" data-ng-app="commandModule">
 <head>
 	<title>Shelter</title>
 	<meta charset="utf-8">
@@ -14,7 +14,11 @@
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="js/angular.min.js"></script>
 	<script type="text/javascript" src="js/lodash.js"></script>
+	
 	<script type="text/javascript" src="js/shelter/shelter.js"></script>
+	<script type="text/javascript" src="js/shelter/command-controller.js"></script>
+	<script type="text/javascript" src="js/shelter/command-service.js"></script>
+	<script type="text/javascript" src="js/shelter/http-service.js"></script>
 </head>
 
 <body role="document" >
@@ -33,14 +37,10 @@
 	</nav>
 	
 	<div class="container" role="main">
-		<div data-ng-controller="worldController" class="row">
+		<div data-ng-controller="commandController" class="row">
 		    <div class="col-xs-12 col-sm-12 col-md-12">
-				<input type="text" size="80" name="command" id="command" />
-				<div data-ng-if="messages.numberOfElements > 0" class="row">
-					<div data-ng-repeat="message in messages.content">
-						{{message}}
-					</div>
-				</div>
+				<input type="text" size="80" name="command" id="command" data-ng-keyup="$event.keyCode == 13 && ask()" />
+				<textarea id="textarea" name="textarea" rows="25" cols="150"></textarea>
 			</div>
 		</div>
 	</div>

@@ -4,15 +4,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table
 @Data
 @EqualsAndHashCode(callSuper = false)
-@NoArgsConstructor
 public class Message extends AbstractEntity {
 	
 	@Column
@@ -20,5 +20,9 @@ public class Message extends AbstractEntity {
 	
 	public Message(String content) {
 		this.content = content;
+	}
+	
+	public Message() {
+		this.content = StringUtils.EMPTY;
 	}
 }
