@@ -12,13 +12,13 @@
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css">
 	
 	<script type="text/javascript" src="js/jquery-1.11.3.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="js/angular.min.js"></script>
 	<script type="text/javascript" src="js/lodash.js"></script>
 	<script type="text/javascript" src="js/shelter/shelter.js"></script>
 	
-    <script type="text/javascript" src="js/jquery.dataTables-1.10.9.min.js"></script>
-    <script type="text/javascript" src="js/jquery.dataTables.columnFilter-1.5.6.js"></script>
+	<script type="text/javascript" src="js/jquery.dataTables-1.10.9.min.js"></script>
+	<script type="text/javascript" src="js/jquery.dataTables.columnFilter-1.5.6.js"></script>
 	<script type="text/javascript" src="js/angular-resource.js"></script>
 	<script type="text/javascript" src="js/angular-datatables.min.js"></script>
 	<script type="text/javascript" src="js/angular-datatables.columnfilter.min.js"></script>
@@ -44,19 +44,19 @@
 	
 	<div class="container" role="main">
 		<div data-ng-controller="shelterController" class="row">
-		    <div class="col-xs-12 col-sm-12 col-md-12">
+			<div class="col-xs-12 col-sm-12 col-md-12">
 				<h3>
 					Shelter view
 					<span class="pull-right">
-			    		<button class="btn btn-xs btn-primary" data-ng-click="updateShelter()">
+						<button class="btn btn-xs btn-primary" data-ng-click="updateShelter()">
 							<i class="glyphicon glyphicon-refresh"></i>
-			    			<span class="hidden-xs">refresh Shelter</span>
-			    		</button>
-			    		<button class="btn btn-xs btn-primary" data-ng-click="updateDwellers()">
+							<span class="hidden-xs">refresh Shelter</span>
+						</button>
+						<button class="btn btn-xs btn-primary" data-ng-click="updateDwellers()">
 							<i class="glyphicon glyphicon-refresh"></i>
-			    			<span class="hidden-xs">refresh dwellers</span>
-			    		</button>
-			    	</span>
+							<span class="hidden-xs">refresh dwellers</span>
+						</button>
+					</span>
 				</h3>
 				<div class="bg-silver" data-ng-view="shelterView" id="shelter">
 					<span class="text-center">{{money | formatResources}} $, {{food | formatResources}} food, {{water | formatResources}} water. Power : {{ power }} / {{ powerRequired }}</span>

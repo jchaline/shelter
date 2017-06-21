@@ -161,7 +161,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 		$interval(function() {
 			updateMessages()
 		}, 5 * 1000);
-    });
+	});
 })
 
 app.filter('formatTime', function() {

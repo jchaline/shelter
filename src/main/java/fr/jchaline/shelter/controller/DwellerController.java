@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,8 +32,8 @@ public class DwellerController extends AbstractShelterController {
 	}
 	
 	@RequestMapping("/paginate/{pageNumber}/{offset}")
-	public Page<Dweller> paginate(@PathVariable int pageNumber, @PathVariable int offset) {
-		return service.paginate(pageNumber, offset);
+	public Page<Dweller> paginate(@PathVariable int pageNumber, @PathVariable int offset, @RequestParam String order, @RequestParam Direction direction) {
+		return service.paginate(pageNumber, offset, order, direction);
 	}
 
 }

@@ -77,11 +77,11 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 		httpService.postData("/room/" + room + "/assign/" + dweller, {}).then(function(data){
 			$scope.updateDwellers()
 		})
-    });
+	});
 
 	// function use to order room in floor
 	$scope.roomOrder = function(room){
-	    return room.cells[0]
+		return room.cells[0]
 	}
 
 	// call when app is loaded
@@ -93,5 +93,5 @@ app.controller("shelterController", function( $scope, $rootScope, $interval, htt
 		$interval(function(){
 			$scope.updateShelter()
 		}, 5000);
-    });
+	});
 })

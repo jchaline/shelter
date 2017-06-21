@@ -39,10 +39,29 @@ public class DwellerService {
 		return dao.findOne(dwellerId);
 	}
 	
+	/**
+	 * Return page of Dweller
+	 * Defaut sort : id ASC
+	 * @param pageNumber The page to return, between 1 and nbPages
+	 * @param offset the number of element per page
+	 * @return the page
+	 */
 	public Page<Dweller> paginate(int pageNumber, int offset) {
+		return paginate(pageNumber, offset, "id", Direction.ASC);
+	}
+	
+	/**
+	 * 
+	 * @param pageNumber
+	 * @param offset
+	 * @param order
+	 * @param direction
+	 * @return
+	 */
+	public Page<Dweller> paginate(int pageNumber, int offset, String order, Direction direction) {
 		PageRequest pageRequest = new PageRequest(
-			pageNumber, offset, new Sort(
-					new Order(Direction.ASC, "nickname")
+			pageNumber - 1, offset, new Sort(
+					new Order(direction, order), new Order(Direction.ASC, "id")
 			)
 		);
 		return dao.findAll(pageRequest);
