@@ -66,7 +66,7 @@ app.controller('commandController', function( $scope, $interval, httpService, co
 	})
 	
 	function updateMessages() {
-		httpService.getData("/message/last", {page:0, size:10}).then(function(messages) {
+		httpService.getData("/message/last", {page:0, size:20}).then(function(messages) {
 			$scope.messages = messages
 		})
 	}

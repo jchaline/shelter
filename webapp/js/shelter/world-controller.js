@@ -2,6 +2,8 @@ var app = angular.module( 'worldModule', [] )
 
 app.run(function ($rootScope) { $rootScope._ = _; });
 
+
+//$scope.moveMap, 
 app.controller('worldController', function( $scope, $interval, httpService, worldService ) {
 	
 	var canvasGame = document.getElementById('game-layer');
@@ -35,6 +37,12 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			updateTeams(true)
 		})
 	}
+	
+	$scope.closeUiLayer = function() {
+		$('#ui-layer').hide()
+		$scope.movedDwellers = []
+		updateWorld()
+	}
 
 	$scope.teamup = function() {
 		var teamup = $('[name="dweller"]:checked').map(function(){return this.value}).get()
@@ -55,10 +63,14 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	//move the displayed map
 	$scope.moveMap = function(vx, vy) {
 		worldService.updateCenter($scope.worldMap, vx, vy)
-		var thenDo = function(){worldService.drawMap($scope.worldMap); worldService.drawDwellers($scope.worldMap, $scope.dwellers)}
+		var thenDo = function(){
+			worldService.drawMap($scope.worldMap);
+			worldService.drawDwellers($scope.worldMap, $scope.dwellers)
+		}
 		updateWorld()
 		thenDo()
 	}
+	
 	canvasGame.addEventListener('moveMap', function (e) {
 		var vx = -1 * idx(e.detail.vx-e.detail.x)
 		var vy = -1 * idx(e.detail.vy-e.detail.y)
