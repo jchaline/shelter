@@ -14,10 +14,11 @@ public class ServiceMonitor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceMonitor.class);
 	
 	@Around("execution(* fr.jchaline.shelter.service.WorldService.*(..))")
-	public void logServiceAccess(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+	public Object logServiceAccess(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		long before = System.currentTimeMillis();
-		proceedingJoinPoint.proceed();
+		Object proceed = proceedingJoinPoint.proceed();
 		long after = System.currentTimeMillis();
 		LOGGER.debug("Time for method {} : {} ms", proceedingJoinPoint.getSignature(), after - before);
+		return proceed;
 	}
 }
