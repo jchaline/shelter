@@ -19,8 +19,19 @@ app.service("worldService", function( $q ) {
 		drawMap: drawMap,
 		drawDwellers: drawDwellers,
 		updateTeamsDuty: updateTeamsDuty,
-		findDweller: findDweller
+		findDweller: findDweller,
+		distance: distance
 	})
+	
+	/**
+	 * Get the distance bewtween 2 points
+	 * @param a first point
+	 * @param b second point
+	 * @returns distance 
+	 */
+	function distance(a, b) {
+		return parseInt(Math.sqrt(Math.pow(a.x-b.x, 2)+ Math.pow(a.y-b.y, 2)))
+	}
 	
 	function findDweller(x, y) {
 		var res = _.filter(_dwellers, function(d){
