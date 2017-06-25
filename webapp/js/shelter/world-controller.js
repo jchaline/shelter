@@ -6,6 +6,10 @@ app.run(function ($rootScope) { $rootScope._ = _; });
 //$scope.moveMap, 
 app.controller('worldController', function( $scope, $interval, httpService, worldService ) {
 	
+	var UPDATE_WORLD_MS_INTERVAL = 15 * 1000
+	var MAX_DISTANCE_WITHOUT_REFRESH_WORLD = 10
+	var lastCenter = {'x':0, 'y':0}
+	
 	var canvasGame = document.getElementById('game-layer');
 	
 	$scope.showDwellerDetails = function(dwellerId) {
@@ -67,7 +71,12 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 			worldService.drawMap($scope.worldMap);
 			worldService.drawDwellers($scope.worldMap, $scope.dwellers)
 		}
-		updateWorld()
+		var distance = worldService.distance(lastCenter, $scope.worldMap.center)
+		if (distance > MAX_DISTANCE_WITHOUT_REFRESH_WORLD) {
+			lastCenter.x = $scope.worldMap.center.x
+			lastCenter.y = $scope.worldMap.center.y
+			updateWorld()
+		}
 		thenDo()
 	}
 	
@@ -165,10 +174,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 		//update view
 		$interval(function() {
 			updateWorld()
-			httpService.getData("/metrics").then(function(data) {
-				console.log(data)
-			})
-		}, 60 * 1000);
+		}, UPDATE_WORLD_MS_INTERVAL);
 
 		$interval(function() {
 			updateMessages()
