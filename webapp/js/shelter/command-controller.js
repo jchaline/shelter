@@ -43,7 +43,6 @@ app.controller('commandController', function( $scope, $interval, httpService, co
 	}
 		
 	function updateTeams() {
-		console.log("updateTeams")
 		httpService.getData("/team/list").then(function(teams) {
 			$scope.teams = teams
 		})
