@@ -1,6 +1,7 @@
 package fr.jchaline.shelter.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -36,13 +37,17 @@ public class CommandController extends AbstractShelterController {
 	public List<Message> ask(@AuthenticationPrincipal User activeUser, @RequestParam String command) {
 		LOGGER.debug("command : {}", command);
 		List<Message> result = null;
-		String[] split = command.split(" ");
-		switch (split[0]) {
+		try {
+			String[] split = command.split(" ");
+			switch (split[0]) {
 			case "echo" : result = service.echo(command); break;
 			case "ls" : result = service.ls(activeUser.getUsername(), command); break;
 			case "ts" : result = service.ts(activeUser.getUsername(), command); break;
 			case "go" : result = service.go(activeUser.getUsername(), command); break;
 			default: result = new ArrayList<Message>();
+			}
+		} catch (Exception e) {
+			result = Arrays.asList(new Message(e.getMessage()));
 		}
 		return result;
 	}
