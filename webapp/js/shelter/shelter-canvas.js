@@ -100,7 +100,7 @@ Pnj.prototype.draw = function(ctx, dragging) {
 Pnj.prototype.contains = function(mx, my) {
 	// All we have to do is make sure the Mouse X,Y fall in the area between
 	// the shape's X and (X + Height) and its Y and (Y + Height)
-	return	(this.x <= mx) && (this.x + this.w >= mx) && (this.y <= my) && (this.y + this.h >= my);
+	return (this.x <= mx) && (this.x + this.w >= mx) && (this.y <= my) && (this.y + this.h >= my);
 }
 
 Pnj.prototype.updateXY = function() {
@@ -160,6 +160,12 @@ function CanvasGame(canvas) {
 		var my = mouse.y;
 		myState.downX = mx;
 		myState.downY = my;
+		
+		//last point down
+		myState.lastMoveX = mx;
+		myState.lastMoveY = my;
+		
+		myState.draggingMap = true;
 		var pnjs = myState.pnjs; //concat with other things to draw
 		var l = pnjs.length;
 		for (var i = l-1; i >= 0; i--) {
@@ -171,6 +177,7 @@ function CanvasGame(canvas) {
 				myState.dragoffx = mx - mySel.x;
 				myState.dragoffy = my - mySel.y;
 				myState.dragging = true;
+				myState.draggingMap = false;
 				myState.selection = mySel;
 				myState.valid = false;
 				return;
@@ -186,6 +193,7 @@ function CanvasGame(canvas) {
 	}, true);
 	
 	canvas.addEventListener('mousemove', function(e) {
+		var mouse = myState.getMouse(e);
 		if (myState.dragging){
 			var mouse = myState.getMouse(e);
 			// We don't want to drag the object by its top-left corner, we want to drag it
@@ -193,6 +201,9 @@ function CanvasGame(canvas) {
 			myState.selection.x = mouse.x - myState.dragoffx;
 			myState.selection.y = mouse.y - myState.dragoffy;	 
 			myState.valid = false; // Something's dragging so we must redraw
+		} else if (myState.draggingMap) {
+			var event = new CustomEvent('moveMap', { 'detail': {x:mouse.x, y:mouse.y} });
+			canvas.dispatchEvent(event);
 		}
 	}, true);
 	
@@ -222,10 +233,11 @@ function CanvasGame(canvas) {
 		}
 		if (!movePnj) {
 			//deplacement du centre de la carte possible !
-			var event = new CustomEvent('moveMap', { 'detail': {'x':myState.downX, 'y':myState.downY, 'vx':mx, 'vy':my} });
+			var event = new CustomEvent('moveMapEnd', { 'detail': {'x':myState.downX, 'y':myState.downY, 'vx':mx, 'vy':my} });
 			canvas.dispatchEvent(event);
 		}
 		
+		myState.draggingMap = false
 		myState.dragging = false;
 	}, true);
 	

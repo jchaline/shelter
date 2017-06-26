@@ -9,6 +9,7 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	var UPDATE_WORLD_MS_INTERVAL = 15 * 1000
 	var MAX_DISTANCE_WITHOUT_REFRESH_WORLD = 10
 	var lastCenter = {'x':0, 'y':0}
+	var lastMoveMap = {}
 	
 	var canvasGame = document.getElementById('game-layer');
 	
@@ -81,9 +82,32 @@ app.controller('worldController', function( $scope, $interval, httpService, worl
 	}
 	
 	canvasGame.addEventListener('moveMap', function (e) {
-		var vx = -1 * idx(e.detail.vx-e.detail.x)
-		var vy = -1 * idx(e.detail.vy-e.detail.y)
+		//si le mouvement n'est déjà initié
+		if (!lastMoveMap.x) {
+			lastMoveMap.x = e.detail.x
+			lastMoveMap.y = e.detail.y
+		}
+		
+		//adjust hear the move speed
+		var vx = -1 * idx(e.detail.x - lastMoveMap.x)
+		var vy = -1 * idx(e.detail.y - lastMoveMap.y)
+		
+		if (vx != 0) {
+			lastMoveMap.x = e.detail.x
+		}
+		if (vy != 0) {
+			lastMoveMap.y = e.detail.y
+		}
+		
 		$scope.moveMap(vx, vy);
+	})
+	
+	canvasGame.addEventListener('moveMapEnd', function (e) {
+		var vx = -1 * idx(e.detail.vx - e.detail.x)
+		var vy = -1 * idx(e.detail.vy - e.detail.y)
+		
+		lastMoveMap.x = null;
+		lastMoveMap.y = null;
 	}, false);
 	
 	$scope.showTeamDetail = function(teamId) {
@@ -198,7 +222,7 @@ function allowDrop(event) {
 }
 
 function idx(pix) {
-	return Math.floor(pix/32)
+	return (pix > 0 ? Math.floor(pix/32) : Math.ceil(pix/32))
 }
 
 function drop(event) {
