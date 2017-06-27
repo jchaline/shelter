@@ -30,10 +30,14 @@ You can also include httpd-shelter.conf from src/main/resources.
 The port is configured by application.yml
 You must change the file path to your project workspace
 
-Required : LoadModule proxy_module modules/mod_proxy.so & LoadModule proxy_http_module modules/mod_proxy_http.so
-	
+Window : LoadModule proxy_module modules/mod_proxy.so & LoadModule proxy_http_module modules/mod_proxy_http.so
+Linux : $apt-get install apache2, $a2enmod proxy_http, move conf file to sites-enabled
+
 3) run ShelterLauncher.java
 
 x) Explain gulp part ...
+	a) Ubuntu 
+		sudo apt-get install npm nodejs
+			=> sudo ln -s /usr/bin/nodejs /usr/bin/node if conflict between node and nodejs
 
 4) Then go to http://localhost/shelter/index.html
