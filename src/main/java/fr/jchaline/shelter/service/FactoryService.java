@@ -111,7 +111,7 @@ public class FactoryService {
 	 */
 	private void initDuty() {
 		Arrays
-			.asList(new Duty(Duty.EXPLORE, "Exploration", true), new Duty(Duty.FIGHT, "Combat", true), new Duty(Duty.RECRUITMENT, "Recrutement", true), new Duty(Duty.RETURN, "Retour", false))
+			.asList(new Duty(Duty.EXPLORE, "Exploration", true), new Duty(Duty.FIGHT, "Combat", false), new Duty(Duty.RECRUITMENT, "Recrutement", false), new Duty(Duty.RETURN, "Retour", false))
 			.stream()
 			.forEach(dutyDao::save);
 	}
